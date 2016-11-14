@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BCD686CD-FF82-46F3-A275-554F6D7C33C1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QZ.Foundation.Cache</RootNamespace>
+    <AssemblyName>QZ.Foundation.Cache</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CacheProvider.cs" />
+    <Compile Include="CacheHelper.cs" />
+    <Compile Include="Enyim.Caching\Configuration\ConfigurationHelper.cs" />
+    <Compile Include="Enyim.Caching\Configuration\EndPointElement.cs" />
+    <Compile Include="Enyim.Caching\Configuration\EndPointElementCollection.cs" />
+    <Compile Include="Enyim.Caching\Configuration\IMemcachedClientConfiguration.cs" />
+    <Compile Include="Enyim.Caching\Configuration\InterfaceValidator.cs" />
+    <Compile Include="Enyim.Caching\Configuration\ISocketPoolConfiguration.cs" />
+    <Compile Include="Enyim.Caching\Configuration\MemcachedClientConfiguration.cs" />
+    <Compile Include="Enyim.Caching\Configuration\MemcachedClientSection.cs" />
+    <Compile Include="Enyim.Caching\Configuration\SocketPoolElement.cs" />
+    <Compile Include="Enyim.Caching\FastActivator.cs" />
+    <Compile Include="Enyim.Caching\FnvHash.cs" />
+    <Compile Include="Enyim.Caching\IFastObjectFacory.cs" />
+    <Compile Include="Enyim.Caching\InterlockedQueue.cs" />
+    <Compile Include="Enyim.Caching\MemcachedClient.cs" />
+    <Compile Include="Enyim.Caching\Memcached\CommandNotSupportedException.cs" />
+    <Compile Include="Enyim.Caching\Memcached\DefaultNodeLocator.cs" />
+    <Compile Include="Enyim.Caching\Memcached\IMemcachedKeyTransformer.cs" />
+    <Compile Include="Enyim.Caching\Memcached\IMemcachedNodeLocator.cs" />
+    <Compile Include="Enyim.Caching\Memcached\KeyTransformers\Base64KeyTransformer.cs" />
+    <Compile Include="Enyim.Caching\Memcached\KeyTransformers\DefaultKeyTransformer.cs" />
+    <Compile Include="Enyim.Caching\Memcached\KeyTransformers\SHA1KeyTransformer.cs" />
+    <Compile Include="Enyim.Caching\Memcached\KeyTransformers\TigerHashKeyTransformer.cs" />
+    <Compile Include="Enyim.Caching\Memcached\MemcachedClientException.cs" />
+    <Compile Include="Enyim.Caching\Memcached\MemcachedException.cs" />
+    <Compile Include="Enyim.Caching\Memcached\MemcachedNode.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\DecrementOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\DeleteOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\FlushOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\GetHelper.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\GetOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\IncrementOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\ItemOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\MultiGetOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\Operation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\StatsOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Operations\StoreOperation.cs" />
+    <Compile Include="Enyim.Caching\Memcached\PooledSocket.cs" />
+    <Compile Include="Enyim.Caching\Memcached\ServerPool.cs" />
+    <Compile Include="Enyim.Caching\Memcached\ServerStats.cs" />
+    <Compile Include="Enyim.Caching\Memcached\SingleNodeLocator.cs" />
+    <Compile Include="Enyim.Caching\Memcached\StatItem.cs" />
+    <Compile Include="Enyim.Caching\Memcached\StoreMode.cs" />
+    <Compile Include="Enyim.Caching\Memcached\ThrowHelper.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Transcoders\CacheItem.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Transcoders\DefaultTranscoder.cs" />
+    <Compile Include="Enyim.Caching\Memcached\Transcoders\ITranscoder.cs" />
+    <Compile Include="Enyim.Caching\TigerHash.cs" />
+    <Compile Include="Enyim.Caching\UIntEqualityComparer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Enyim.Caching\Memcached.cd" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

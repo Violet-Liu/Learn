@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/KeyTransformers
+END
+Base64KeyTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/KeyTransformers/Base64KeyTransformer.cs
+END
+DefaultKeyTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/KeyTransformers/DefaultKeyTransformer.cs
+END
+SHA1KeyTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/KeyTransformers/SHA1KeyTransformer.cs
+END
+TigerHashKeyTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/KeyTransformers/TigerHashKeyTransformer.cs
+END

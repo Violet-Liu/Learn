@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/System.Collections.Generic" />
+  <xs:complexType name="ArrayOfAnalysesResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AnalysesResult" nillable="true" type="tns:AnalysesResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAnalysesResult" nillable="true" type="tns:ArrayOfAnalysesResult" />
+  <xs:complexType name="AnalysesResult">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="exhibitonTagList" nillable="true" type="q1:ArrayOfKeyValuePairOfstringdouble" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="forwardTradeList" nillable="true" type="q2:ArrayOfKeyValuePairOfstringdouble" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="productList" nillable="true" type="q3:ArrayOfKeyValuePairOfstringdouble" />
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="tradeList" nillable="true" type="q4:ArrayOfKeyValuePairOfstringdouble" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AnalysesResult" nillable="true" type="tns:AnalysesResult" />
+</xs:schema>

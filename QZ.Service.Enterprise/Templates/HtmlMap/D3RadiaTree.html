@@ -1,0 +1,603 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes, target-densitydpi=device-dpi" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>D3 Radia Tree</title>
+    <style>
+        .node circle {
+            fill: #fff;
+            stroke: #81E5E6;
+            stroke-width: 1.5px;
+        }
+
+        .node {
+            font-family: "微软雅黑";
+            font-size: 12px;
+        }
+
+        .link {
+            fill: none;
+            stroke: #81E5E6;
+            stroke-width: 1px;
+        }
+
+        text{
+            fill:#37bac2; 
+        }
+
+        html, body, div, svg {
+            overflow: visible;
+        }
+		body{
+			background: #F1F5F8
+		}
+        div {
+            margin: 5%;
+        }
+    </style>
+
+    <script type="text/javascript" src="http://img1.qiye.qianzhan.com/scripts/d3.min.js"></script>
+
+
+</head>
+<body>
+    <div></div>
+
+
+
+    <script>
+
+        var root = {
+            nodes:
+
+            [[[]]]
+
+
+            , links: []
+        };
+
+        var
+            iosBridge,
+        bridgeReady = function () {
+
+            if (!window.WebViewJavascriptBridge) {
+                document.addEventListener('WebViewJavascriptBridgeReady', function (e) {
+                    iosBridge = WebViewJavascriptBridge;
+                }, false)
+            }
+        },
+        isIOS = /iphone|ipad/.test(navigator.userAgent.toLowerCase()),
+            totalEles = 0,
+            getSize = function (length) {
+
+
+                var maxDim = 0,
+                    maxDimLen = 0,
+                    dims = [],
+                    total = 0,
+                tmpDim = 0,
+                tmpLen = 0;
+
+                for (var n in dimessionCount) {
+                    tmpDim = parseInt(n);
+                    tmpLen = dimessionCount[n];
+                    if (tmpDim > maxDim) {
+                        maxDim = tmpDim;
+                    }
+                    total += tmpLen;
+                    if (tmpLen > maxDimLen) {
+                        maxDimLen = tmpLen;
+                    }
+                    dims.push({ "dim": tmpDim, "len": dimessionCount[n] });
+                }
+
+
+
+                var w = isIOS ? window.screen.availWidth : window.innerWidth, h = isIOS ? window.screen.availHeight : window.innerHeight, e = Math.E, dr = window.devicePixelRatio || 1;
+
+                if (dimessionCount[maxDim] > 1)
+                    maxDim = maxDim + 1;
+
+                var minR = maxDim * 200,
+                    d = minR * 2,
+                    c = d * Math.PI,
+                    mpert = total / maxDimLen;
+                currC = maxDimLen * (21 + (mpert + maxDim * (mpert - 1))),
+                currD = currC / Math.PI;
+
+                size = [currD > d ? currD : d];
+
+                return size;
+            };
+
+
+        bridgeReady();
+
+        var
+            onlyInvest = 1,
+
+
+            trMaps = [],
+            broot = {},
+            dimessionCount = {},
+            gMap = [],
+            pMap = [],
+            buildRoot = function (nodes) {
+
+                var i = 0, len = nodes.length, node;
+                var filter = new Array(len);
+                trMaps = new Array(len);
+                while (i < len) {
+                    node = nodes[i];
+                    if (!dimessionCount[node.dimession])
+                        dimessionCount[node.dimession] = 1;
+                    //i.toString();
+                    trMaps[node.nodeIndex] = node;
+                    gMap[node.nodeIndex] = node;
+                    node.children.forEach(function (jd) {
+                        var pa = pMap[jd.nodeIndex];
+                        if (pa) {
+                            pa.push(node);
+                        } else {
+                            pMap[jd.nodeIndex] = [node];
+                        }
+
+                    })
+
+                    i++;
+                }
+
+                i = 0;
+
+
+                var eachChildren = function (cd, prev, deepth) {
+                    var j, jlen, brh, tmp, noeach;
+                    if (!cd.children)
+                        return;
+
+                    jlen = cd.children.length;
+                    if (jlen < 1)
+                        return;
+
+                    if (prev != null) {
+
+
+
+                        j = 0;
+                        while (j < jlen) {
+                            //noeach = 0;
+                            jd = cd.children[j];
+                            tmp = trMaps[jd.nodeIndex];
+                            if (tmp.dimession != deepth) {
+                                j++;
+                                continue;
+                            }
+
+
+                            /*
+                            if (filter[jd.nodeIndex]) {
+
+                                noeach = 1;
+                                //j++;
+                                //continue;
+                            }*/
+
+
+
+                            dimessionCount[tmp.dimession]++;
+
+                            brh = { name: tmp.name, children: [], _rawItems: tmp };
+                            filter[jd.nodeIndex] = brh;
+                            prev.children.push(brh);
+                            //filter[node.nodeIndex] = brh;
+                            //if(!noeach)
+                            eachChildren(tmp, brh, deepth + 1);
+                            totalEles++;
+                            j++;
+                        }
+                    } else {
+
+                        j = 0;
+                        while (j < jlen) {
+                            jd = cd.children[j];
+                            tmp = trMaps[jd.nodeIndex];
+
+                            if (tmp.dimession != deepth) {
+                                j++;
+                                continue;
+                            }
+
+                            prev = filter[jd.nodeIndex];
+                            if (prev) {
+
+                                brh = { name: cd.name, children: [], direction: 1, _rawItems: tmp };
+                                dimessionCount[tmp.dimession]++;
+                                //filter[jd.nodeIndex] = brh;
+                                prev.children.push(brh);
+                                if (j < 1)
+                                    filter[cd.nodeIndex] = brh;
+                                eachChildren(tmp, brh, deepth + 1);
+
+                            }
+                            totalEles++;
+                            j++;
+                        }
+                        //
+
+                    }
+
+                }
+                var tmpFilter = {}, prev, cd, j, jlen, brh, tmp;
+
+                if (len) {
+                    node = nodes[0];
+                    prev = broot = { name: node.name, children: [], _rawItems: node };
+                    dimessionCount[node.dimession]++;
+                    totalEles++;
+                    eachChildren(node, prev, 1);
+                    filter[node.nodeIndex] = broot;
+                }
+
+                /*
+                while (i < len) {
+
+                    node = nodes[i];
+                    prev = filter[node.nodeIndex];
+
+
+                    if (prev) {
+                        //cd = trMaps[node.nodeIndex];
+                        //eachChildren(node, prev);
+                        i++;
+                        continue;
+
+                    } else {
+                        cd = node;
+                        if (broot.name) {
+                            //prev = null;
+                            if (!onlyInvest) {
+                                eachChildren(node, prev, 1);
+                                totalEles++;
+                            }
+                            //broot.children.push(prev);
+                            i++;
+                            continue;
+
+                        } else {
+                            prev = broot = { name: node.name, children: [], _rawItems: node };
+                            //dimessionCount[node.dimession]++;
+                            dimessionCount[node.dimession]++;
+                            totalEles++;
+                            eachChildren(node, prev, 1);
+                            filter[node.nodeIndex] = broot;
+                        }
+
+
+                    }
+
+                    i++;
+                }*/
+
+
+            },
+            getPath = function (d) {
+
+                var rawItem = gMap[d.nodeIndex],
+                    croot = gMap[0],
+                    ret = [],
+                    tmp = [],
+                    curr, pa, tmpDim;
+
+
+                //trace to end
+
+                var
+                    arrayCpy = function (raw) {
+                        var cpy = [];
+                        for (var n in raw)
+                            cpy.push(raw[n]);
+                        return cpy;
+                    },
+                    arrayContains = function (raw, item) {
+                        for (var n in raw) {
+                            if (raw[n] == item)
+                                return true;
+                        }
+                        return false;
+
+                    },
+                    allPath = [],
+                    minSteps = 99999,
+                    trace = function (d, ret) {
+
+                        if (!d.nodeIndex)
+                            return;
+                        //if (allPath.length > 15)
+                        //    return [];
+
+                        if (arrayContains(ret, d.nodeIndex))
+                            return;
+                        if (ret.length >= minSteps)
+                            return;
+                        ret.push(d.nodeIndex);
+                        var pa = pMap[d.nodeIndex];
+                        if (pa) {
+                            var len = pa.length, i = 0, found;
+
+                            while (i < len) {
+
+                                found = false;
+
+                                if (pa[i].dimession >= d.dimession) {
+                                    i++;
+                                    continue;
+                                }
+
+                                if (!pa[i].nodeIndex) {
+                                    allPath.push(ret);
+                                    if (ret.length < minSteps)
+                                        minSteps = ret.length;
+                                    found = true;
+                                }
+                                if (!found)
+                                    trace(pa[i], arrayCpy(ret));
+
+                                i++;
+                            }
+
+                        }
+
+                        pa = d.children;
+                        if (pa) {
+                            var len = pa.length, i = 0, found;
+                            while (i < len) {
+                                found = false;
+                                if (!pa[i].nodeIndex) {
+
+                                    allPath.push(ret);
+                                    if (ret.length < minSteps)
+                                        minSteps = ret.length;
+                                    found = true;
+                                }
+                                if (!found)
+                                    trace(gMap[pa[i].nodeIndex], arrayCpy(ret));
+                                i++;
+                            }
+                        }
+
+
+                        return;
+                    };
+
+                curr = rawItem;
+                trace(curr, tmp);
+                var pathes = [];
+                if (allPath.length > 0) {
+
+                    for (var n in allPath) {
+                        tmp = allPath[n];
+                        var cp = [];
+                        for (var k in tmp) {
+                            cp.push(gMap[tmp[k]]);
+                        }
+                        cp.push(croot);
+                        pathes.push(cp);
+                        console.log(cp);
+
+
+                    }
+                }
+
+
+                return pathes;
+
+                //floow rawItem to Up
+
+            },
+            minPathes = function (pathes, msgFn) {
+
+                var min = 255, map = {}, msg = '[';
+                pathes.forEach(function (arr) {
+                    if (arr.length < min)
+                        min = arr.length;
+                });
+                pathes.forEach(function (arr) {
+                    if (arr.length == min) {
+                        var m = "";
+                        arr.forEach(function (d) {
+                            m += d.nodeIndex + '_';
+                        });
+                        if (map[m])
+                            return;
+                        map[m] = 1;
+                        msg += getArrayString(arr, -1, msgFn) + ',';
+                    }
+                });
+                if (msg.length > 1)
+                    msg = msg.substring(0, msg.length - 1);
+                return msg + ']';
+
+            },
+            getChildren = function (d) {
+
+                var ret = [],
+                    children = d._rawItems ? d._rawItems.children : d.children;
+                for (var n in children) {
+                    ret.push(gMap[children[n].nodeIndex]);
+                }
+                return ret;
+
+            },
+            getArrayString = function (arr, curr, msgFn) {
+
+                if (!arr) {
+                    return '[]';
+                }
+
+                var i = 0,
+                    len = arr.length,
+                    msg = '[';
+
+                while (i < len) {
+
+                    if (arr[i].nodeIndex == curr) {
+                        i++;
+                        continue;
+                    }
+
+                    if (i != len - 1) {
+
+                        msg += (msgFn(arr[i]) + ',');
+                    } else {
+                        msg += msgFn(arr[i]);
+                    }
+
+                    i++;
+                }
+                msg += ']';
+                return msg;
+
+            };
+
+
+
+        buildRoot(root.nodes);
+        var calcSize = getSize(totalEles + 2),
+         diameter = calcSize[0];
+
+        var tree = d3.layout.tree()
+            .size([360, diameter / 2 - 120])
+            .separation(function (a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+        var diagonal = d3.svg.diagonal.radial()
+            .projection(function (d) { return [d.y, d.x / 180 * Math.PI]; });
+
+        var svg = d3.select("div").append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+          .append("g")
+            .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+
+        var nodes = tree.nodes(broot),
+               links = tree.links(nodes);
+
+        if (nodes.length == 2) {
+            for (var n in nodes) {
+                if (!nodes[n].x)
+                    nodes[n].x = parseInt(n) * 360;
+            }
+        }
+
+        var link = svg.selectAll(".link")
+            .data(links)
+          .enter().append("path")
+            .attr("class", "link")
+            .attr("d", diagonal);
+
+        var node = svg.selectAll(".node")
+            .data(nodes)
+          .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+        .on("click", function (d) {
+            onNodeClick(d._rawItems);
+        });
+
+        node.append("circle")
+            .attr("r", 4.5);
+
+        node.append("text")
+            .attr("dy", ".31em")
+            .attr("text-anchor", function (d) { return d.x < 180 ? "start" : "end"; })
+            .attr("transform", function (d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+            .text(function (d) { return d.name; });
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+        d3.select('body').attr("style", "width:" + diameter * 1.5 + "px;" + "height:" + diameter * 1.5 + "px");
+        /*
+节点点击事件
+*/
+        window.onNodeClick = function (d) {
+
+            if (!d)
+                return;
+
+            var obj2JsonStr = function (item) {
+
+                var replace = function (n) {
+                    if (n) {
+                        return n.replace(/\\/g, '/');
+                    }
+                    return n;
+                }
+
+                var obj = {
+                    code: item.code,
+                    nodeIndex: item.nodeIndex,
+                    area: item.area,
+                    areaName: item.areaName,
+                    id: item.id,
+                    name: replace(item.name),
+                    longName: replace(item.longName),
+                    sgName: item.sgName,
+                    trade: item.trade,
+                    type: item.type,
+                    dimession: item.dimession,
+                    relationType: d.relationType,
+                    weight: item.weight || 0,
+                    children: []
+                };
+
+                var jstr = [], type;
+                //var str = "{";
+                for (var n in obj) {
+                    type = typeof (obj[n]);
+                    if (type == "object")
+                        continue;
+                    else if (type == 'number')
+                        jstr.push("\"" + n + "\":" + obj[n]);
+                    else
+                        jstr.push("\"" + n + "\":" + "\"" + obj[n] + "\"");
+                    //str = str + "\"" + n + "\":" + "\"" + d[n] + "\"";
+                }
+
+                var cstr = ",".concat(jstr);
+                return "{" + cstr.substring(1, cstr.length) + "}";
+            }
+
+            var pathes = minPathes(getPath(d), obj2JsonStr);
+
+
+
+            var msg = "{\n"
+                     + "\t\"item\":" + obj2JsonStr(d) + ",\n"
+                     + "\t\"investors\":" + getArrayString(pMap[d.nodeIndex], d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"investments\":" + getArrayString(getChildren(d), d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"pathes\":" + pathes + "\n"
+                    + "\n}";
+
+            console.log(msg);
+
+            var brg;
+            if (iosBridge || window.WebViewJavascriptBridge) {
+                //ios
+                brg = window.WebViewJavascriptBridge;
+                brg.send(msg, function (e) { });
+
+            } else if (window.forwardAndroidBridge) {
+                brg = window.forwardAndroidBridge;
+                brg.nodeClickJsCallBack(msg);
+
+            }
+
+
+        };
+
+
+    </script>
+</body>
+
+</html>

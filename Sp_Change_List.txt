@@ -1,0 +1,9 @@
+CompanyTeiziTopic                ctt_tag    field_add
+Proc_CompanyTeiziTopic_Insert               modified
+
+2016-09-11
+USE [QZBrand]
+CREATE Procedure [dbo].[Proc_OrgCompanyBrandExt_FromRegClass_Select]
+
+USE [QZPatent]
+CREATE PROCEDURE [dbo].[Proc_CompanyPatent_FromNoCat_Select]

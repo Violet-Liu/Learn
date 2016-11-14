@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="5095b36f-ba79-4c41-a1f9-d3aaa73aae07" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.2.200:8936/TradeAnalysisService" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="TradeAnalysisService.wsdl" MetadataType="Wsdl" ID="7ab5cf16-1d3a-4d30-93a1-e465b2934270" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService" />
+    <MetadataFile FileName="TradeAnalysisService.xsd" MetadataType="Schema" ID="2324c223-e4fe-4a12-a670-0c19f0fe612c" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd1" />
+    <MetadataFile FileName="TradeAnalysisService1.wsdl" MetadataType="Wsdl" ID="cf3f5e74-2806-4e2f-bbfa-429e68d677ce" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?wsdl=wsdl0" />
+    <MetadataFile FileName="TradeAnalysisService1.xsd" MetadataType="Schema" ID="c722b02d-6f2f-43d2-be08-c9778e25447b" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd4" />
+    <MetadataFile FileName="TradeAnalysisService2.xsd" MetadataType="Schema" ID="bda4d454-e03d-4583-85e4-5c7f6e05f4b7" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd2" />
+    <MetadataFile FileName="TradeAnalysisService3.xsd" MetadataType="Schema" ID="631fe578-0580-4c68-a0db-33ed9ff1324b" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd3" />
+    <MetadataFile FileName="TradeAnalysisService4.xsd" MetadataType="Schema" ID="656ff381-4072-4c4e-bd1f-164c3301674c" SourceId="1" SourceUrl="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

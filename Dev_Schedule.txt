@@ -1,0 +1,2 @@
+Next step:
+finish the logic of updating the view info of company changing trace in company-detail-query

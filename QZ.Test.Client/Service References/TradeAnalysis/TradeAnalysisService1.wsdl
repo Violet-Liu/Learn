@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://entprise.qianzhan.com/TradeAnalysisService" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://entprise.qianzhan.com/TradeAnalysisService" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://entprise.qianzhan.com/TradeAnalysisService/Imports">
+      <xsd:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd0" namespace="http://entprise.qianzhan.com/TradeAnalysisService" />
+      <xsd:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/System.Collections.Generic" />
+      <xsd:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="TradeAnalysisService_AnalysisForwardTrade_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisForwardTrade" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisForwardTrade_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisForwardTradeResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisForwardTradeList_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisForwardTradeList" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisForwardTradeList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisForwardTradeListResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisExhibitionTrade_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisExhibitionTrade" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisExhibitionTrade_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisExhibitionTradeResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisExhibitionTradeList_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisExhibitionTradeList" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisExhibitionTradeList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisExhibitionTradeListResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisProductAndTrade_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisProductAndTrade" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisProductAndTrade_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisProductAndTradeResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisProductAndTradeList_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisProductAndTradeList" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisProductAndTradeList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisProductAndTradeListResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisAllTrade_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisAllTrade" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisAllTrade_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisAllTradeResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisAllTradeList_InputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisAllTradeList" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_AnalysisAllTradeList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AnalysisAllTradeListResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_GetAllForwardTradeCategory_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllForwardTradeCategory" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_GetAllForwardTradeCategory_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllForwardTradeCategoryResponse" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_GetAllExhibitionCategory_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllExhibitionCategory" />
+  </wsdl:message>
+  <wsdl:message name="TradeAnalysisService_GetAllExhibitionCategory_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllExhibitionCategoryResponse" />
+  </wsdl:message>
+  <wsdl:portType name="TradeAnalysisService">
+    <wsdl:operation name="AnalysisForwardTrade">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisForwardTrade" message="tns:TradeAnalysisService_AnalysisForwardTrade_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisForwardTradeResponse" message="tns:TradeAnalysisService_AnalysisForwardTrade_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisForwardTradeList">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisForwardTradeList" message="tns:TradeAnalysisService_AnalysisForwardTradeList_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisForwardTradeListResponse" message="tns:TradeAnalysisService_AnalysisForwardTradeList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisExhibitionTrade">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisExhibitionTrade" message="tns:TradeAnalysisService_AnalysisExhibitionTrade_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisExhibitionTradeResponse" message="tns:TradeAnalysisService_AnalysisExhibitionTrade_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisExhibitionTradeList">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisExhibitionTradeList" message="tns:TradeAnalysisService_AnalysisExhibitionTradeList_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisExhibitionTradeListResponse" message="tns:TradeAnalysisService_AnalysisExhibitionTradeList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisProductAndTrade">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisProductAndTrade" message="tns:TradeAnalysisService_AnalysisProductAndTrade_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisProductAndTradeResponse" message="tns:TradeAnalysisService_AnalysisProductAndTrade_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisProductAndTradeList">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisProductAndTradeList" message="tns:TradeAnalysisService_AnalysisProductAndTradeList_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisProductAndTradeListResponse" message="tns:TradeAnalysisService_AnalysisProductAndTradeList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisAllTrade">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisAllTrade" message="tns:TradeAnalysisService_AnalysisAllTrade_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisAllTradeResponse" message="tns:TradeAnalysisService_AnalysisAllTrade_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AnalysisAllTradeList">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisAllTradeList" message="tns:TradeAnalysisService_AnalysisAllTradeList_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/AnalysisAllTradeListResponse" message="tns:TradeAnalysisService_AnalysisAllTradeList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllForwardTradeCategory">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/GetAllForwardTradeCategory" message="tns:TradeAnalysisService_GetAllForwardTradeCategory_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/GetAllForwardTradeCategoryResponse" message="tns:TradeAnalysisService_GetAllForwardTradeCategory_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllExhibitionCategory">
+      <wsdl:input wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/GetAllExhibitionCategory" message="tns:TradeAnalysisService_GetAllExhibitionCategory_InputMessage" />
+      <wsdl:output wsaw:Action="http://entprise.qianzhan.com/TradeAnalysisService/TradeAnalysisService/GetAllExhibitionCategoryResponse" message="tns:TradeAnalysisService_GetAllExhibitionCategory_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

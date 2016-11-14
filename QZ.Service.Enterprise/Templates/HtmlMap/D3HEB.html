@@ -1,0 +1,589 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes, target-densitydpi=device-dpi" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Hierarchical Edge Bundling</title>
+    <style type="text/css">
+        .node {
+            font-family: "微软雅黑";
+            font-size: 12px;
+            fill: #37bac2;
+        }
+
+            .node:hover {
+                fill: #FF9C00;
+            }
+
+        .link {
+            stroke: #81E5E6;
+            stroke-opacity: .6;
+            fill: none;
+            pointer-events: none;
+        }
+
+        .node:hover,
+        .node--source,
+        .node--target {
+            font-weight: 700;
+        }
+
+        .node--source {
+            fill: #2ca02c;
+        }
+
+        .node--target {
+            fill: #d62728;
+        }
+
+        .link--source,
+        .link--target {
+            stroke-opacity: 1;
+            stroke-width: 2px;
+        }
+
+        .link--source {
+            stroke: #d62728;
+        }
+
+        .link--target {
+            stroke: #2ca02c;
+        }
+        html, body, div, svg {
+            overflow:visible;
+        }
+		body{
+			background: #F1F5F8
+		}
+        div {
+            margin:5%;
+        }
+    </style>
+    <script type="text/javascript" src="http://img1.qiye.qianzhan.com/scripts/d3.min.js"></script>
+
+</head>
+<body>
+    <div></div>
+    <script type="text/javascript">
+
+
+        var root = {
+            nodes:
+
+            [[[]]]
+
+
+            , links: []
+        };
+
+
+        var
+
+            iosBridge,
+        bridgeReady = function () {
+
+            if (!window.WebViewJavascriptBridge) {
+                document.addEventListener('WebViewJavascriptBridgeReady', function (e) {
+                    //alert('WebViewJavascriptBridge ready');
+                    iosBridge = WebViewJavascriptBridge;
+                }, false)
+            }
+        },
+        isIOS = /iphone|ipad/.test(navigator.userAgent.toLowerCase()),
+            getSize = function (length) {
+
+                console.log('trying to calculating map size');
+
+                window.width
+
+                var w = isIOS ? window.screen.availWidth : window.innerWidth, h = isIOS ? window.screen.availHeight : window.innerHeight, e = Math.E, dr = window.devicePixelRatio || 1;
+
+                console.log('device width: ' + w + ', device height:' + h);
+
+                console.log("window.devicePixelRatio: " + window.devicePixelRatio);
+
+
+
+                var min = Math.min(w, h);
+
+                //if (length <= 32)
+                //    return [min];
+
+
+
+                var size = [(length * 18 / Math.PI)];
+                if (size[0] < min)
+                    size[0] = min;
+
+                console.log('calculated result : ' + size[0]);
+
+
+                return size;
+            };
+
+
+        bridgeReady();
+
+
+        var
+            calcSize = getSize(root.nodes.length),
+            diameter = calcSize[0],
+    radius = diameter / 2,
+    innerRadius = radius - 120;
+
+        var cluster = d3.layout.cluster()
+            .size([360, innerRadius])
+            .sort(null)
+            .value(function (d) { return d.size; }),
+            trMaps,
+            gMap = [],
+            pMap = [],
+            getLinks = function (nodes) {
+
+                if (!nodes || !nodes.length)
+                    return [];
+
+                var i = 0, len = nodes.length;
+                var newRoots = [], nd;
+                newRoots.push({ name: "", key: "", children: [] });
+                trMaps = new Array(len);
+                while (i < len) {
+                    node = nodes[i];
+                    nd = { name: node.name, key: node.name, children: [], _rawItems: node };
+                    trMaps[node.nodeIndex] = nd;
+                    node.key = node.name;
+                    newRoots.push(nd);
+                    newRoots[0].children.push(nd);
+                    i++;
+                }
+
+                i = 0;
+
+                var links = [], d, prev = newRoots[0], cd, jd, j, jlen, brh, tmp;
+                while (i < len) {
+                    d = nodes[i];
+                    gMap[d.nodeIndex] = d;
+                    tmp = trMaps[d.nodeIndex];
+                    if (d.children && d.children.length) {
+                        j = 0; jlen = d.children.length;
+                        while (j < jlen) {
+                            jd = d.children[j];
+                            cd = trMaps[jd.nodeIndex];
+                            var pa = pMap[jd.nodeIndex];
+                            if (pa) {
+                                pa.push(d);
+                            } else {
+                                pMap[jd.nodeIndex] = [d];
+                            }
+
+                            links.push({ source: cd, target: tmp });
+                            j++;
+                        }
+
+
+                    }
+
+                    i++;
+                }
+
+                root.nodes = newRoots;
+                return links;
+            },
+                getPath = function (d) {
+
+                    var rawItem = gMap[d.nodeIndex],
+                        croot = gMap[0],
+                        ret = [],
+                        tmp = [],
+                        curr, pa, tmpDim;
+
+
+                    //trace to end
+
+                    var
+                        arrayCpy = function (raw) {
+                            var cpy = [];
+                            for (var n in raw)
+                                cpy.push(raw[n]);
+                            return cpy;
+                        },
+                        arrayContains = function (raw, item) {
+                            for (var n in raw) {
+                                if (raw[n] == item)
+                                    return true;
+                            }
+                            return false;
+
+                        },
+                        allPath = [],
+                        minSteps = 99999,
+                        trace = function (d, ret) {
+
+                            if (!d.nodeIndex)
+                                return;
+                            //if (allPath.length > 15)
+                            //    return [];
+
+                            if (arrayContains(ret, d.nodeIndex))
+                                return;
+                            if (ret.length >= minSteps)
+                                return;
+                            ret.push(d.nodeIndex);
+                            var pa = pMap[d.nodeIndex];
+                            if (pa) {
+                                var len = pa.length, i = 0, found;
+
+                                while (i < len) {
+
+                                    found = false;
+
+                                    if (pa[i].dimession >= d.dimession) {
+                                        i++;
+                                        continue;
+                                    }
+
+                                    if (!pa[i].nodeIndex) {
+                                        allPath.push(ret);
+                                        if (ret.length < minSteps)
+                                            minSteps = ret.length;
+                                        found = true;
+                                    }
+                                    if (!found)
+                                        trace(pa[i], arrayCpy(ret));
+
+                                    i++;
+                                }
+
+                            }
+
+                            pa = d.children;
+                            if (pa) {
+                                var len = pa.length, i = 0, found;
+                                while (i < len) {
+                                    found = false;
+                                    if (!pa[i].nodeIndex) {
+
+                                        allPath.push(ret);
+                                        if (ret.length < minSteps)
+                                            minSteps = ret.length;
+                                        found = true;
+                                    }
+                                    if (!found)
+                                        trace(gMap[pa[i].nodeIndex], arrayCpy(ret));
+                                    i++;
+                                }
+                            }
+
+
+                            return;
+                        };
+
+                    curr = rawItem;
+                    trace(curr, tmp);
+                    var pathes = [];
+                    if (allPath.length > 0) {
+
+                        for (var n in allPath) {
+                            tmp = allPath[n];
+                            var cp = [];
+                            for (var k in tmp) {
+                                cp.push(gMap[tmp[k]]);
+                            }
+                            cp.push(croot);
+                            pathes.push(cp);
+                            console.log(cp);
+
+
+                        }
+                    }
+
+
+                    return pathes;
+
+                    //floow rawItem to Up
+
+                },
+                minPathes = function (pathes, msgFn) {
+
+                    var min = 255, map = {}, msg = '[';
+                    pathes.forEach(function (arr) {
+                        if (arr.length < min)
+                            min = arr.length;
+                    });
+                    pathes.forEach(function (arr) {
+                        if (arr.length == min) {
+                            var m = "";
+                            arr.forEach(function (d) {
+                                m += d.nodeIndex + '_';
+                            });
+                            if (map[m])
+                                return;
+                            map[m] = 1;
+                            msg += getArrayString(arr, -1, msgFn) + ',';
+                        }
+                    });
+                    if (msg.length > 1)
+                        msg = msg.substring(0, msg.length - 1);
+                    return msg + ']';
+
+                },
+                getChildren = function (d) {
+
+                    var ret = [],
+                        children = d._rawItems ? d._rawItems.children : d.children;
+                    for (var n in children) {
+                        ret.push(gMap[children[n].nodeIndex]);
+                    }
+                    return ret;
+
+                },
+                getArrayString = function (arr, curr, msgFn) {
+
+                    if (!arr) {
+                        return '[]';
+                    }
+
+                    var i = 0,
+                        len = arr.length,
+                        msg = '[';
+
+                    while (i < len) {
+
+                        if (arr[i].nodeIndex == curr) {
+                            i++;
+                            continue;
+                        }
+
+                        if (i != len - 1) {
+
+                            msg += (msgFn(arr[i]) + ',');
+                        } else {
+                            msg += msgFn(arr[i]);
+                        }
+
+                        i++;
+                    }
+                    msg += ']';
+                    return msg;
+
+                };
+        root.links = getLinks(root.nodes);
+
+
+        var bundle = d3.layout.bundle();
+
+        var line = d3.svg.line.radial()
+            .interpolate("bundle")
+            .tension(.85)
+            .radius(function (d) { return d.y; })
+            .angle(function (d) { return d.x / 180 * Math.PI; });
+
+        var svg = d3.select("div").append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+          .append("g")
+            .attr("transform", "translate(" + radius + "," + radius + ")");
+
+
+
+        var link = svg.append("g").selectAll(".link"),
+            node = svg.append("g").selectAll(".node");
+
+
+
+        var nodes = cluster.nodes(root.nodes[0]),
+            links = root.links;//packageImports(nodes);
+
+        link = link
+            .data(bundle(links))
+          .enter().append("path")
+            .each(function (d) { d.source = d[0], d.target = d[d.length - 1]; })
+            .attr("class", "link")
+            .attr("d", line);
+
+        node = node
+            .data(nodes.filter(function (n) { return !n.children; }))
+          .enter().append("text")
+            .attr("class", "node")
+            .attr("dy", ".31em")
+            .attr("transform", function (d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
+            .style("text-anchor", function (d) { return d.x < 180 ? "start" : "end"; })
+            .text(function (d) { return d.key; })
+            .style("fill", function (d) {
+                if (d._rawItems && !d._rawItems.nodeIndex)
+                    return "#a33";
+            })
+            //.on("mouseover", mouseovered)
+            .on("mouseout", mouseouted)
+              .on("click", function (d) {
+                  //mouseouted(d);
+                  mouseovered(d);
+                  onNodeClick(d._rawItems);
+              });
+        ;
+
+
+        /*
+      节点点击事件
+      */
+        window.onNodeClick = function (d) {
+
+            if (!d)
+                return;
+
+            var obj2JsonStr = function (item) {
+
+                var replace = function (n) {
+                    if (n) {
+                        return n.replace(/\\/g, '/');
+                    }
+                    return n;
+                }
+
+                var obj = {
+                    code: item.code,
+                    nodeIndex: item.nodeIndex,
+                    area: item.area,
+                    areaName: item.areaName,
+                    id: item.id,
+                    name: replace(item.name),
+                    longName: replace(item.longName),
+                    sgName: item.sgName,
+                    trade: item.trade,
+                    type: item.type,
+                    dimession: item.dimession,
+                    relationType: d.relationType,
+                    weight: item.weight || 0,
+                    children: []
+                };
+
+                var jstr = [], type;
+                //var str = "{";
+                for (var n in obj) {
+                    type = typeof (obj[n]);
+                    if (type == "object")
+                        continue;
+                    else if (type == 'number')
+                        jstr.push("\"" + n + "\":" + obj[n]);
+                    else
+                        jstr.push("\"" + n + "\":" + "\"" + obj[n] + "\"");
+                    //str = str + "\"" + n + "\":" + "\"" + d[n] + "\"";
+                }
+
+                var cstr = ",".concat(jstr);
+                return "{" + cstr.substring(1, cstr.length) + "}";
+            }
+
+            var pathes = minPathes(getPath(d), obj2JsonStr);
+
+
+
+            var msg = "{\n"
+                     + "\t\"item\":" + obj2JsonStr(d) + ",\n"
+                     + "\t\"investors\":" + getArrayString(pMap[d.nodeIndex], d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"investments\":" + getArrayString(getChildren(d), d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"pathes\":" + pathes + "\n"
+                    + "\n}";
+
+            console.log(msg);
+
+            //alert("node clicked.");
+            var brg;
+            if (iosBridge || window.WebViewJavascriptBridge) {
+                //ios
+                try {
+                    //alert('trying to send message :'+msg);
+                    brg = window.WebViewJavascriptBridge;
+                    brg.send(msg, function (e) { });
+                    //alert('send completed success');
+                } catch (e) {
+                    //alert(e.message);
+                }
+
+            } else if (window.forwardAndroidBridge) {
+                brg = window.forwardAndroidBridge;
+                brg.nodeClickJsCallBack(msg);
+
+            }
+
+
+        };
+
+
+        function mouseovered(d) {
+            node
+                .each(function (n) { n.target = n.source = false; });
+
+            link
+                .classed("link--target", function (l) { if (l.target === d) return l.source.source = true; })
+                .classed("link--source", function (l) { if (l.source === d) return l.target.target = true; })
+              .filter(function (l) { return l.target === d || l.source === d; })
+                .each(function () { this.parentNode.appendChild(this); });
+
+            node
+                .classed("node--target", function (n) { return n.target; })
+                .classed("node--source", function (n) { return n.source; });
+        }
+
+        function mouseouted(d) {
+            link
+                .classed("link--target", false)
+                .classed("link--source", false);
+
+            node
+                .classed("node--target", false)
+                .classed("node--source", false);
+        }
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+        //d3.select('body').attr("style", "width:" + diameter * 1.5 + "px;" + "height:" + diameter * 1.5 + "px");
+        window.scrollTo((diameter - window.screen.width) / Math.E, 0);
+
+        // Lazily construct the package hierarchy from class names.
+        function packageHierarchy(classes) {
+            var map = {};
+
+            function find(name, data) {
+                var node = map[name], i;
+                if (!node) {
+                    node = map[name] = data || { name: name, children: [] };
+                    if (name.length) {
+                        node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+                        node.parent.children.push(node);
+                        node.key = name.substring(i + 1);
+                    }
+                }
+                return node;
+            }
+
+            classes.forEach(function (d) {
+                find(d.name, d);
+            });
+
+            return map[""];
+        }
+
+        // Return a list of imports for the given array of nodes.
+        function packageImports(nodes) {
+            var map = {},
+                imports = [];
+
+            // Compute a map from name to node.
+            nodes.forEach(function (d) {
+                map[d.name] = d;
+            });
+
+            // For each import, construct a link from the source to target node.
+            nodes.forEach(function (d) {
+                if (d.imports) d.imports.forEach(function (i) {
+                    imports.push({ source: map[d.name], target: map[i] });
+                });
+            });
+
+            return imports;
+        }
+
+</script>
+</body>
+</html>

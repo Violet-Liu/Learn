@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes, target-densitydpi=device-dpi" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>D3 Force Layout</title>
+    <script type="text/javascript" src="http://img1.qiye.qianzhan.com/scripts/d3.min.js"></script>
+    <style type="text/css">
+        circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+
+        .link {
+            stroke: #81E5E6;
+            stroke-opacity: .6;
+        }
+
+        .master {
+            color: #566;
+        }
+
+        text {
+            fill: #37bac2;
+            font-family: "微软雅黑";
+            font-size: 12px;
+        }
+        html, body, div, svg {
+            overflow:visible;
+        }
+		body{
+			background: #F1F5F8
+		}
+        div {
+            margin:5%;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div></div>
+
+    <script type="text/javascript">
+        var graph =
+        {
+            "nodes":
+
+                [[[]]]
+             ,
+            "links": []
+        };
+
+        var
+            iosBridge,
+            bridgeReady = function () {
+
+                if (!window.WebViewJavascriptBridge) {
+                    document.addEventListener('WebViewJavascriptBridgeReady', function (e) {
+                        iosBridge = WebViewJavascriptBridge;
+                    }, false)
+                }
+            },
+            isIOS = /iphone|ipad/.test(navigator.userAgent.toLowerCase()),
+            getSize = function (length) {
+                var
+
+                    w = isIOS ? window.screen.availWidth : window.innerWidth, h = isIOS ? window.screen.availHeight : window.innerHeight, pi = Math.PI, dr = window.devicePixelRatio || 1;
+                //if (w > 1000)
+                //    w = 320;
+                //if (h > 1000)
+                //    h = 480;
+
+                var size,
+                    hperw = h / w;
+                if (length <= 15) {
+                    size = [w, h];
+                } else {
+
+                    size = [(length * Math.E) * 2, (length * Math.PI) * 2 * hperw];
+                    size[0] += size[0] * (Math.PI - Math.E);
+                    size[1] += size[1] * (Math.PI - Math.E);
+                }
+                if (size[0] < w)
+                    size[0] = w;
+                if (size[1] < h)
+                    size[1] = h;
+
+
+                console.log('calculated result w: ' + size[0] + ' h:' + size[1]);
+
+                return size;
+            };
+
+        bridgeReady();
+
+        var
+            calcSize = getSize(graph.nodes.length),
+                width = calcSize[0],
+            height = calcSize[1],
+            firstId = graph.nodes[0].id;
+
+        var color = d3.scale.category20(),
+            gMap = [],
+            pMap = [],
+            getLinks = function (nodes) {
+                var i = 0, len = nodes.length, pa;
+                gMap = new Array(len);
+                pMap = new Array(len);
+                var links = [], d;
+                while (i < len) {
+                    d = nodes[i];
+                    //d.index=d.nodeIndex;
+                    if (d.children && d.children.length) {
+                        var j = 0, jlen = d.children.length, jd;
+                        while (j < jlen) {
+                            jd = d.children[j];
+                            //jd.index=jd.nodeIndex;
+                            links.push({ source: d.nodeIndex, target: jd.nodeIndex });
+                            var pa = pMap[jd.nodeIndex];
+                            if (pa) {
+                                pa.push(d);
+                            } else {
+                                pMap[jd.nodeIndex] = [d];
+                            }
+                            j++;
+                        }
+                    }
+                    gMap[d.nodeIndex] = d;
+                    i++;
+                }
+                //alert(links);
+                //console.log(links);
+                return links;
+            },
+            getPath = function (d) {
+
+                var rawItem = gMap[d.nodeIndex],
+                    croot = gMap[0],
+                    ret = [],
+                    tmp = [],
+                    curr, pa, tmpDim;
+
+
+                //trace to end
+
+                var
+                    arrayCpy = function (raw) {
+                        var cpy = [];
+                        for (var n in raw)
+                            cpy.push(raw[n]);
+                        return cpy;
+                    },
+                    arrayContains = function (raw, item) {
+                        for (var n in raw) {
+                            if (raw[n] == item)
+                                return true;
+                        }
+                        return false;
+
+                    },
+                    allPath = [],
+                    minSteps = 99999,
+                    trace = function (d, ret) {
+
+                        if (!d.nodeIndex)
+                            return;
+                        //if (allPath.length > 15)
+                        //    return [];
+
+                        if (arrayContains(ret, d.nodeIndex))
+                            return;
+                        if (ret.length >= minSteps)
+                            return;
+                        ret.push(d.nodeIndex);
+                        var pa = pMap[d.nodeIndex];
+                        if (pa) {
+                            var len = pa.length, i = 0, found;
+
+                            while (i < len) {
+
+                                found = false;
+
+                                if (pa[i].dimession >= d.dimession) {
+                                    i++;
+                                    continue;
+                                }
+
+                                if (!pa[i].nodeIndex) {
+                                    allPath.push(ret);
+                                    if (ret.length < minSteps)
+                                        minSteps = ret.length;
+                                    found = true;
+                                }
+                                if (!found)
+                                    trace(pa[i], arrayCpy(ret));
+
+                                i++;
+                            }
+
+                        }
+
+                        pa = d.children;
+                        if (pa) {
+                            var len = pa.length, i = 0, found;
+                            while (i < len) {
+                                found = false;
+                                if (!pa[i].nodeIndex) {
+
+                                    allPath.push(ret);
+                                    if (ret.length < minSteps)
+                                        minSteps = ret.length;
+                                    found = true;
+                                }
+                                if (!found)
+                                    trace(gMap[pa[i].nodeIndex], arrayCpy(ret));
+                                i++;
+                            }
+                        }
+
+
+                        return;
+                    };
+
+                curr = rawItem;
+                trace(curr, tmp);
+                var pathes = [];
+                if (allPath.length > 0) {
+
+                    for (var n in allPath) {
+                        tmp = allPath[n];
+                        var cp = [];
+                        for (var k in tmp) {
+                            cp.push(gMap[tmp[k]]);
+                        }
+                        cp.push(croot);
+                        pathes.push(cp);
+                        console.log(cp);
+
+
+                    }
+                }
+
+
+                return pathes;
+
+                //floow rawItem to Up
+
+            },
+            minPathes = function (pathes, msgFn) {
+
+                var min = 255, map = {}, msg = '[';
+                pathes.forEach(function (arr) {
+                    if (arr.length < min)
+                        min = arr.length;
+                });
+                pathes.forEach(function (arr) {
+                    if (arr.length == min) {
+                        var m = "";
+                        arr.forEach(function (d) {
+                            m += d.nodeIndex + '_';
+                        });
+                        if (map[m])
+                            return;
+                        map[m] = 1;
+                        msg += getArrayString(arr, -1, msgFn) + ',';
+                    }
+                });
+                if (msg.length > 1)
+                    msg = msg.substring(0, msg.length - 1);
+                return msg + ']';
+
+            },
+            getChildren = function (d) {
+
+                var ret = [],
+                    children = d._rawItems ? d._rawItems.children : d.children;
+                for (var n in children) {
+                    ret.push(gMap[children[n].nodeIndex]);
+                }
+                return ret;
+
+            },
+            getArrayString = function (arr, curr, msgFn) {
+
+                if (!arr) {
+                    return '[]';
+                }
+
+                var i = 0,
+                    len = arr.length,
+                    msg = '[';
+
+                while (i < len) {
+
+                    if (arr[i].nodeIndex == curr) {
+                        i++;
+                        continue;
+                    }
+
+                    if (i != len - 1) {
+
+                        msg += (msgFn(arr[i]) + ',');
+                    } else {
+                        msg += msgFn(arr[i]);
+                    }
+
+                    i++;
+                }
+                msg += ']';
+                return msg;
+
+            };
+
+        var gnLen = graph.nodes.length;
+        graph.nodes.forEach(function (d, i) {
+            d.x = d.y = width / gnLen * i;
+
+        });
+
+        graph.links = getLinks(graph.nodes);
+
+
+        var force = d3.layout.force()
+            .charge(-256)
+            .linkDistance(180)
+            //.chargeDistance(-1024)
+            //.alpha(0.3)
+            //.linkStrength(0.2)
+            .theta(0.9)
+            .size([width, height]);
+
+        var svg = d3.select("div").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        window.scrollTo((document.body.scrollWidth - window.innerWidth) / 2, (document.body.scrollHeight - window.innerHeight) / 2 + window.innerHeight * 0.1);
+
+        force
+            .nodes(graph.nodes)
+            .links(graph.links)
+            .start();
+
+
+        var link = svg.selectAll("line")
+            .data(graph.links)
+            .enter()
+              .append("line")
+              .attr("class", "link")
+              .style("stroke-width", function (d) { return 1; });
+
+
+
+        var nodesGroup = svg.selectAll("circle")
+            .data(graph.nodes)
+              .enter();
+
+
+
+        var circles = nodesGroup.append("circle")
+                        .attr("r", 5)
+                        .style("fill", function (d) { if (d.nodeIndex) return color(d.type); return "#a33"; });
+
+        var labels = nodesGroup.append("text")
+                        .text(function (d) { return d.name })
+                        .style("fill", function (d) {
+                            if (!d.nodeIndex) { return "#a33"; }
+                        }).call(force.drag);
+
+
+
+        labels.on('click', function (d) {
+
+            window.onNodeClick(d);
+
+        });
+
+
+        /*
+        节点点击事件
+        */
+        window.onNodeClick = function (d) {
+
+            if (!d)
+                return;
+
+
+            var obj2JsonStr = function (item) {
+
+                var replace = function (n) {
+                    if (n) {
+                        return n.replace(/\\/g, '/');
+                    }
+                    return n;
+                }
+
+                var obj = {
+                    code: item.code,
+                    nodeIndex: item.nodeIndex,
+                    area: item.area,
+                    areaName: item.areaName,
+                    id: item.id,
+                    name: replace(item.name),
+                    longName: replace(item.longName),
+                    sgName: item.sgName,
+                    trade: item.trade,
+                    type: item.type,
+                    dimession: item.dimession,
+                    relationType: d.relationType,
+                    weight: item.weight || 0,
+                    children: []
+                };
+
+                var jstr = [], type;
+                //var str = "{";
+                for (var n in obj) {
+                    type = typeof (obj[n]);
+                    if (type == "object")
+                        continue;
+                    else if (type == 'number')
+                        jstr.push("\"" + n + "\":" + obj[n]);
+                    else
+                        jstr.push("\"" + n + "\":" + "\"" + obj[n] + "\"");
+                }
+
+                var cstr = ",".concat(jstr);
+                return "{" + cstr.substring(1, cstr.length) + "}";
+            }
+
+            var pathes = minPathes(getPath(d), obj2JsonStr);
+
+
+
+            var msg = "{\n"
+                     + "\t\"item\":" + obj2JsonStr(d) + ",\n"
+                     + "\t\"investors\":" + getArrayString(pMap[d.nodeIndex], d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"investments\":" + getArrayString(getChildren(d), d.nodeIndex, obj2JsonStr) + ",\n"
+                     + "\t\"pathes\":" + pathes + "\n"
+                    + "\n}";
+
+            console.log(msg);
+
+
+
+
+
+
+            var brg;
+            if (iosBridge) {
+
+                iosBridge.send(msg, function (e) { });
+
+            } else if (window.forwardAndroidBridge) {
+                brg = window.forwardAndroidBridge;
+                brg.nodeClickJsCallBack(msg);
+
+            }
+
+
+
+        };
+
+
+        var step = function () {
+
+            link.attr("x1", function (d) { return d.source.x; })
+              .attr("y1", function (d) { return d.source.y; })
+              .attr("x2", function (d) { return d.target.x; })
+              .attr("y2", function (d) { return d.target.y; });
+
+            circles.attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
+
+            labels.attr("x", function (d) { return d.x; })
+               .attr("y", function (d) { return d.y; });
+        };
+
+        force.on("tick", step);
+
+    </script>
+</body>
+
+</html>

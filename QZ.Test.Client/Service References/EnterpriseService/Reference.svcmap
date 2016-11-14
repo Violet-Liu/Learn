@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="7cbd9d02-1abe-421d-af6f-8923c8fb2a25" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:9081/Enterprise.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Enterprise.xsd" MetadataType="Schema" ID="28eabfc6-9aab-4e19-971d-f2d47e505212" SourceId="1" SourceUrl="http://localhost:9081/Enterprise.svc?xsd=xsd2" />
+    <MetadataFile FileName="Enterprise.disco" MetadataType="Disco" ID="8dc0c422-88bc-4003-926d-7d3ddec7cbc0" SourceId="1" SourceUrl="http://localhost:9081/Enterprise.svc?disco" />
+    <MetadataFile FileName="Enterprise1.xsd" MetadataType="Schema" ID="5416b561-3573-4144-ab59-f77240d6b7c9" SourceId="1" SourceUrl="http://localhost:9081/Enterprise.svc?xsd=xsd0" />
+    <MetadataFile FileName="Enterprise2.xsd" MetadataType="Schema" ID="eb203984-d906-4f8f-bd2f-e33bc3b1c6be" SourceId="1" SourceUrl="http://localhost:9081/Enterprise.svc?xsd=xsd1" />
+    <MetadataFile FileName="Enterprise.wsdl" MetadataType="Wsdl" ID="e0fe26d4-03c1-4a58-9ff2-caf5682b7f1f" SourceId="1" SourceUrl="http://localhost:9081/Enterprise.svc?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

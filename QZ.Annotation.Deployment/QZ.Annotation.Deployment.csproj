@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B6A85108-5760-4D8A-B285-8EBB4D3F57FE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QZ.Annotation.Deployment</RootNamespace>
+    <AssemblyName>QZ.Annotation.Deployment</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Remarks\ES_Script.txt" />
+    <Content Include="sp_scripts\CommentTipOff.sql" />
+    <Content Include="sp_scripts\QZOrgCompanyApp.sql" />
+    <Content Include="sp_scripts\JudgementDoc_SelectById.sql" />
+    <Content Include="sp_scripts\Proc_AppTeiziReplyGroupByTidUid_PageSelect.sql" />
+    <Content Include="sp_scripts\Proc_AppTeiziReply_Count_Get.sql" />
+    <Content Include="sp_scripts\Proc_AppTeiziReply_GroupByTidSelect.sql" />
+    <Content Include="sp_scripts\Proc_AppTeiziTopic_Insert.sql" />
+    <Content Include="sp_scripts\Proc_BrowseLog_Fresh_Select.sql" />
+    <Content Include="sp_scripts\Proc_BrowseLog_Slave_Deletebyocname_uid.sql" />
+    <Content Include="sp_scripts\Proc_CompanyTeiziReply_Count_Get.sql" />
+    <Content Include="sp_scripts\Proc_CompanyTeiziTopic_Insert.sql" />
+    <Content Include="sp_scripts\Proc_OrgCompanyBrand_SelectByCode.sql" />
+    <Content Include="sp_scripts\Proc_OrgCompanyPatent_SelectByCode.sql" />
+    <Content Include="sp_scripts\Proc_SearchHistoryExt_Deletebyuid.sql" />
+    <Content Include="sp_scripts\Proc_SearchHistoryExt_Insert.sql" />
+    <Content Include="sp_scripts\Proc_SearchHistoryExt_Slave_Insert.sql" />
+    <Content Include="sp_scripts\Proc_SearchHistory_Slave_Deletebyocname_uid.sql" />
+    <Content Include="sp_scripts\Proc_UserAppendInf_Selectbyuid.sql" />
+    <Content Include="sp_scripts\Proc_UserAppendInf_Update.sql" />
+    <Content Include="sp_scripts\QZCourt.sql" />
+    <Content Include="sp_scripts\QZBrand.sql" />
+    <Content Include="sp_scripts\QZPatent.sql" />
+    <Content Include="sp_scripts\SearchHistoryExt_Table_BulkCreate.sql" />
+    <Content Include="sp_scripts\Shixin_SelectById.sql" />
+    <Content Include="sp_scripts\Table_AppTeiziTopic_Create.sql" />
+    <Content Include="sp_scripts\Table_CompanyTeiziTopic_Create.sql" />
+    <Content Include="sp_scripts\Proc_BaseBetween_DeRedundent_Select.sql" />
+    <Content Include="sp_scripts\TieziImage_Selectbytidtype.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1 @@
+﻿This project acts as a utility tool and provides it's functions to others(project) in the same solution folder. "Utility" can only reference projects comes from foundation solution folder.

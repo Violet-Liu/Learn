@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration
+END
+SocketPoolElement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/SocketPoolElement.cs
+END
+MemcachedClientConfiguration.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/MemcachedClientConfiguration.cs
+END
+ISocketPoolConfiguration.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/ISocketPoolConfiguration.cs
+END
+EndPointElementCollection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/EndPointElementCollection.cs
+END
+IMemcachedClientConfiguration.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/IMemcachedClientConfiguration.cs
+END
+InterfaceValidator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/InterfaceValidator.cs
+END
+ConfigurationHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/ConfigurationHelper.cs
+END
+EndPointElement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/EndPointElement.cs
+END
+MemcachedClientSection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Configuration/MemcachedClientSection.cs
+END

@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached
+END
+IMemcachedKeyTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/IMemcachedKeyTransformer.cs
+END
+SingleNodeLocator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/SingleNodeLocator.cs
+END
+PooledSocket.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/PooledSocket.cs
+END
+MemcachedNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/MemcachedNode.cs
+END
+DefaultNodeLocator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/DefaultNodeLocator.cs
+END
+ServerPool.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/ServerPool.cs
+END
+StoreMode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/StoreMode.cs
+END
+ThrowHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/ThrowHelper.cs
+END
+CommandNotSupportedException.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/CommandNotSupportedException.cs
+END
+MemcachedClientException.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/MemcachedClientException.cs
+END
+MemcachedException.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/MemcachedException.cs
+END
+ServerStats.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/ServerStats.cs
+END
+IMemcachedNodeLocator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/IMemcachedNodeLocator.cs
+END
+StatItem.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/StatItem.cs
+END

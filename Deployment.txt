@@ -1,0 +1,10 @@
+Req_Ext类的Brand_Page_Select函数中，OrgCompanyBrandTemp 需要改成 OrgCompanyBrand
+
+QZCourt表的JudgeDocCombine的oc_code字段需要建立index
+____________________________________________________________________________________________________________
+1. 执行 sp_scripts/AllSp_Scripts.sql中的存储过程，注意每个存储过程对应的数据库所在的host，如果host上不存在某数据库，则执行这个存储过程失败。AllSp_Scripts.sql中的存储过程包含了sp_scripts目录下所有的其他存储过程
+2. 为table `AppTeiziTopic`，`CompanyTeiziTopic`分别添加字段 `att_tag`和`ctt_tag`（[att_tag] [int] NOT NULL，[ctt_tag] [varchar](100) NULL ,''）
+3. OrgCompanyBrand的相关的存储过程，表名 `OrgCompanyBrand_temp` 需要改为 `OrgCompanyBrand`， `OrgCompanyBrandExtension_temp` 改为 `OrgCompanyBrandExtension`
+
+_____________________________________________________
+增加SQL脚本：CommentTipOff.sql

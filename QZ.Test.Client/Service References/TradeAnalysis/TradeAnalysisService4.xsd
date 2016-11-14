@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://entprise.qianzhan.com/TradeAnalysisService" elementFormDefault="qualified" targetNamespace="http://entprise.qianzhan.com/TradeAnalysisService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/System.Collections.Generic" />
+  <xs:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://192.168.2.200:8936/TradeAnalysisService?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" />
+  <xs:element name="AnalysisForwardTrade">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="doc" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisForwardTradeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="AnalysisForwardTradeResult" nillable="true" type="q1:ArrayOfKeyValuePairOfstringdouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisForwardTradeList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="docList" nillable="true" type="q2:ArrayOfstring" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisForwardTradeListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisForwardTradeListResult" nillable="true" type="q3:ArrayOfAnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisExhibitionTrade">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="doc" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisExhibitionTradeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="AnalysisExhibitionTradeResult" nillable="true" type="q4:ArrayOfKeyValuePairOfstringdouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisExhibitionTradeList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="docList" nillable="true" type="q5:ArrayOfstring" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisExhibitionTradeListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisExhibitionTradeListResult" nillable="true" type="q6:ArrayOfAnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisProductAndTrade">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="doc" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisProductAndTradeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisProductAndTradeResult" nillable="true" type="q7:AnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisProductAndTradeList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="docList" nillable="true" type="q8:ArrayOfstring" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisProductAndTradeListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisProductAndTradeListResult" nillable="true" type="q9:ArrayOfAnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisAllTrade">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="doc" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisAllTradeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisAllTradeResult" nillable="true" type="q10:AnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisAllTradeList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="docList" nillable="true" type="q11:ArrayOfstring" />
+        <xs:element minOccurs="0" name="top" type="xs:int" />
+        <xs:element minOccurs="0" name="allowFormattingInput" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalysisAllTradeListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/QZ.N2E.ClassifierService" minOccurs="0" name="AnalysisAllTradeListResult" nillable="true" type="q12:ArrayOfAnalysesResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllForwardTradeCategory">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllForwardTradeCategoryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="GetAllForwardTradeCategoryResult" nillable="true" type="q13:ArrayOfKeyValuePairOfstringdouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllExhibitionCategory">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllExhibitionCategoryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/System.Collections.Generic" minOccurs="0" name="GetAllExhibitionCategoryResult" nillable="true" type="q14:ArrayOfKeyValuePairOfstringdouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

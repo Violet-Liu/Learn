@@ -1,0 +1,241 @@
+﻿{
+    "from": 0,
+    "size": 10,
+    "highlight": {
+        "pre_tags": [
+            "<font color=\"red\">"
+        ],
+        "post_tags": [
+            "</font>"
+        ],
+        "fields": {
+            "oc_sites": {},
+            "oc_brands": {},
+            "oc_mails": {}
+        }
+    },
+    "aggs": {
+        "date": {
+            "date_histogram": {
+                "field": "oc_issuetime",
+                "interval": "year",
+                "min_doc_count": 1
+            }
+        },
+        "cat": {
+            "terms": {
+                "field": "gb_cat"
+            }
+        },
+        "area": {
+            "terms": {
+                "field": "prefix_area"
+            }
+        },
+        "type": {
+            "terms": {
+                "field": "oc_companytype"
+            }
+        },
+        "status": {
+            "terms": {
+                "field": "oc_status"
+            }
+        },
+        "regm": {
+            "range": {
+                "field": "od_regm",
+                "ranges": [
+                    {
+                        "to": 100
+                    },
+                    {
+                        "from": 100.1,
+                        "to": 500
+                    },
+                    {
+                        "from": 500.1,
+                        "to": 1000
+                    },
+                    {
+                        "from": 1000.1
+                    }
+                ]
+            }
+        }
+    },
+    "query": {
+        "function_score": {
+            "query": {
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "oc_sites": {
+                                    "type": "phrase",
+                                    "query": "qq.com"
+                                }
+                            }
+                        },
+                        {
+                            "match": {
+                                "oc_brands": {
+                                    "boost": 3,
+                                    "type": "phrase",
+                                    "query": "qq.com"
+                                }
+                            }
+                        },
+                        {
+                            "prefix": {
+                                "oc_name.py_oc_name": {
+                                    "value": "qq.com"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "functions": [
+                {
+                    "script_score": {
+                        "script": {
+                            "inline": "_score * doc['oc_weight'].value",
+                            "lang": "painless"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+{
+    "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "match": {
+                                "oc_name": {
+                                    "type": "phrase",
+                                    "query": "腾讯"
+                                }
+                            }
+                        },
+                       {
+                        "range" : {
+            "oc_weight" : {
+                "gte" : 1000
+            }
+        }}
+                    ]
+                }
+            }
+    
+    }
+
+
+
+
+
+
+	{
+    "from": 0,
+    "size": 10,
+    "sort": [
+        {
+            "od_regm": {
+                "order": "desc",
+                "unmapped_type": "float"
+            }
+        }
+    ],
+    "aggs": {
+        "date": {
+            "date_histogram": {
+                "field": "oc_issuetime",
+                "interval": "year",
+                "min_doc_count": 1
+            }
+        },
+        "cat": {
+            "terms": {
+                "field": "gb_cat"
+            }
+        },
+        "area": {
+            "terms": {
+                "field": "prefix_area"
+            }
+        },
+        "type": {
+            "terms": {
+                "field": "oc_companytype"
+            }
+        },
+        "status": {
+            "terms": {
+                "field": "oc_status"
+            }
+        },
+        "regm": {
+            "range": {
+                "field": "od_regm",
+                "ranges": [
+                    {
+                        "to": 10
+                    },
+                    {
+                        "from": 10.1,
+                        "to": 50
+                    },
+                    {
+                        "from": 50.1,
+                        "to": 500
+                    },
+                    {
+                        "from": 500.1,
+                        "to": 1000
+                    },
+                    {
+                        "from": 1000.1
+                    }
+                ]
+            }
+        }
+    },
+    "query": {
+        "function_score": {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "term": {
+                                "oc_status": {
+                                    "value": 0
+                                }
+                            }
+                        },
+                        {
+                            "term": {
+                                "oc_code": {
+                                    "value": "111111"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "functions": [
+                {
+                    "script_score": {
+                        "script": {
+                            "inline": "_score",
+                            "lang": "painless"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

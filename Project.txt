@@ -1,0 +1,43 @@
+Git http://qz.sm/QZ.NewSite.CorpInfoService.git
+push steps:
+1. Type 'git add .'
+2. Type 'git commit', and then input some commit comments
+3. Type 'git push origin master'
+
+
+new commit procedure:
+if just want to commit to develop branch to backup the source code:
+1. git add .
+2. git commit
+3. git push origin develop
+
+if want to commit to master branch to release a new version application
+1. git checkout master
+2. git merge --no-ff develop
+3. git push origin master
+
+
+pull steps:
+git fetch origin master # will not merge automatically
+git log -p master origin/master
+git merge origin/master
+or
+git pull origin master
+
+add a new branch: develop
+git checkout -b develop master
+
+# 切换到Master分支
+git checkout master
+# 对Develop分支进行合并
+git merge --no-ff develop
+
+功能分支
+它是为了开发某种特定功能，从Develop分支上面分出来的。开发完成后，要再并入Develop。
+创建一个功能分支：
+git checkout -b feature-x develop
+开发完成后，将功能分支合并到develop分支：
+git checkout develop
+git merge --no-ff feature-x
+删除feature分支：
+git branch -d feature-x

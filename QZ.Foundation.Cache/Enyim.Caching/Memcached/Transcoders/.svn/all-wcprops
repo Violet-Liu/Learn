@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Transcoders
+END
+ITranscoder.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Transcoders/ITranscoder.cs
+END
+CacheItem.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Transcoders/CacheItem.cs
+END
+DefaultTranscoder.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Transcoders/DefaultTranscoder.cs
+END

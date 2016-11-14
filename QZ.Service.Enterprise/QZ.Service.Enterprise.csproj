@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F36BC458-5D20-4C3E-9ECA-F7406DEE6910}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QZ.Service.Enterprise</RootNamespace>
+    <AssemblyName>QZ.Service.Enterprise</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.5.0.0-rc1\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="itextsharp, Version=5.5.9.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.9\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.5.0.0-beta1\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Community.svc" />
+    <Content Include="Enterprise.svc" />
+    <Content Include="Images\guoqi.png" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Images\qrcode.bak.png" />
+    <Content Include="Images\qrcode.png" />
+    <Content Include="Images\qrcode_weixin.jpg" />
+    <Content Include="News.svc" />
+    <Content Include="User.svc" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Agent\ICompanyMap.cs" />
+    <Compile Include="Agent\ICompanyTradeService.cs" />
+    <Compile Include="Agent\IShortMsg.cs" />
+    <Compile Include="Agent\Service_Proxy.cs" />
+    <Compile Include="Agent\ICompanyNameIndex.cs" />
+    <Compile Include="Agent\Upload.cs" />
+    <Compile Include="Classic\CacheMaker.cs" />
+    <Compile Include="Classic\DataAccess_News.cs" />
+    <Compile Include="Classic\DataAccess.cs" />
+    <Compile Include="Classic\DataAccess_O.cs" />
+    <Compile Include="Classic\Transform.cs" />
+    <Compile Include="Attribute\ErrorBehavior.cs" />
+    <Compile Include="Attribute\ErrorHandler.cs" />
+    <Compile Include="Attribute\VisitorCounter.cs" />
+    <Compile Include="Attribute\VisitorStaticticBehavior.cs" />
+    <Compile Include="Attribute\VisitorStatisticHandler.cs" />
+    <Compile Include="Community.svc.cs">
+      <DependentUpon>Community.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Global.cs" />
+    <Compile Include="ICommunity.cs" />
+    <Compile Include="Impl\CompanyImpl.cs" />
+    <Compile Include="Impl\Datas.cs" />
+    <Compile Include="Impl\ResponseAdaptor.cs" />
+    <Compile Include="Impl\ServiceImpl.cs" />
+    <Compile Include="INews.cs" />
+    <Compile Include="IUser.cs" />
+    <Compile Include="Model\Constants.cs" />
+    <Compile Include="Model\Enum.cs" />
+    <Compile Include="Model\ExceptionServer.cs" />
+    <Compile Include="Model\Message.cs" />
+    <Compile Include="Model\Request.cs" />
+    <Compile Include="Model\Req_User.cs" />
+    <Compile Include="Model\Response.cs" />
+    <Compile Include="Model\Internals.cs" />
+    <Compile Include="Model\Token.cs" />
+    <Compile Include="Enterprise.svc.cs">
+      <DependentUpon>Enterprise.svc</DependentUpon>
+    </Compile>
+    <Compile Include="IEnterprise.cs" />
+    <Compile Include="News.svc.cs">
+      <DependentUpon>News.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.svc.cs">
+      <DependentUpon>User.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\Company_Handle.cs" />
+    <Compile Include="Utility\Constructor.cs" />
+    <Compile Include="Utility\DbAccess.cs" />
+    <Compile Include="Utility\ExpUtil.cs" />
+    <Compile Include="Utility\Extension.cs" />
+    <Compile Include="Utility\MapHtmlCache.cs" />
+    <Compile Include="Utility\MapReader.cs" />
+    <Compile Include="Utility\Pdf_Reporter.cs" />
+    <Compile Include="Utility\Req_Ext.cs" />
+    <Compile Include="Utility\ServiceHandler.cs" />
+    <Compile Include="Utility\Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Service.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Uri_Metadata.json" />
+    <None Include="Properties\PublishProfiles\config.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QZ.Foundation.Cache\QZ.Foundation.Cache.csproj">
+      <Project>{bcd686cd-ff82-46f3-a275-554f6d7c33c1}</Project>
+      <Name>QZ.Foundation.Cache</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Foundation.Document\QZ.Foundation.Document.csproj">
+      <Project>{509ec34b-13c4-49f2-a87a-1d1321c9a666}</Project>
+      <Name>QZ.Foundation.Document</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Foundation.Model\QZ.Foundation.Model.csproj">
+      <Project>{e2334851-6c46-4ec0-ab62-f499e830845d}</Project>
+      <Name>QZ.Foundation.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Foundation.Monad\QZ.Foundation.Monad.csproj">
+      <Project>{4c7b018b-0c86-45f9-877b-ae539589a7eb}</Project>
+      <Name>QZ.Foundation.Monad</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Foundation.Utility\QZ.Foundation.Utility.csproj">
+      <Project>{43f30ad8-4d4a-4a7f-a9ed-79a64930ebc0}</Project>
+      <Name>QZ.Foundation.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Client\QZ.Instrument.Client.csproj">
+      <Project>{d90b4929-f494-4eb0-b14d-6342b034fc0a}</Project>
+      <Name>QZ.Instrument.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Common\QZ.Instrument.Common.csproj">
+      <Project>{33090b85-1a2e-4cde-a041-fc915b7d6964}</Project>
+      <Name>QZ.Instrument.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.DataAccess\QZ.Instrument.DataAccess.csproj">
+      <Project>{8f65ec06-f353-49f4-a891-d5cb96c42146}</Project>
+      <Name>QZ.Instrument.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Experiments\QZ.Instrument.Experiments.fsproj">
+      <Project>{3e1e4a01-bc61-4870-980c-7fffe7c01708}</Project>
+      <Name>QZ.Instrument.Experiments</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Global\QZ.Instrument.Global.csproj">
+      <Project>{ca447225-8fcf-4f08-9b8e-a03f1727c745}</Project>
+      <Name>QZ.Instrument.Global</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.LogClient\QZ.Instrument.LogClient.csproj">
+      <Project>{cafef55c-cff5-47ff-bf2a-cd879345357c}</Project>
+      <Name>QZ.Instrument.LogClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Model\QZ.Instrument.Model.csproj">
+      <Project>{6cd04b1b-f2fe-4422-b70a-e542e5f8b50a}</Project>
+      <Name>QZ.Instrument.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Instrument.Utility\QZ.Instrument.Utility.csproj">
+      <Project>{50463455-5ece-46d8-a776-dc1b2fa3c05b}</Project>
+      <Name>QZ.Instrument.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations
+END
+MultiGetOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/MultiGetOperation.cs
+END
+StoreOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/StoreOperation.cs
+END
+GetHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/GetHelper.cs
+END
+ItemOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/ItemOperation.cs
+END
+StatsOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/StatsOperation.cs
+END
+GetOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/GetOperation.cs
+END
+Operation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/Operation.cs
+END
+FlushOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/16830/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/FlushOperation.cs
+END
+DeleteOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/DeleteOperation.cs
+END
+IncrementOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/IncrementOperation.cs
+END
+DecrementOperation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/qzdata/!svn/ver/2/trunk/Common/SoDao.CachePublic/Enyim.Caching/Memcached/Operations/DecrementOperation.cs
+END
