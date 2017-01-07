@@ -32,8 +32,10 @@ namespace QZ.Service.Enterprise
         public const string QZBase159_Db_Key = "QZBase159";
         public const string QZOrgCompany_Db_Key = "QZOrgCompany";
         public const string QZOrgCompanyApp_Db_Key = "QZOrgCompanyApp";
+        public const string CompanyStatisticsInfoTwo = "CompanyStatisticsInfoTwo";
         public const string QZOrgCompanyAppLog_Db_Key = "QZOrgCompanyAppLog";
         public const string QZOrgCompanyGsxt_Db_Key = "QZOrgCompanyGsxt";
+        public const string QZOrgCompanyExtension = "QZOrgCompanyExtension";
         public const string QZBrand_Db_Key = "QZBrand";
         public const string QZProperty_Db_Key = "QZProperty";
         public const string QZNewSite_User_Db_Key = "QZNewSite_User";
@@ -44,6 +46,11 @@ namespace QZ.Service.Enterprise
         public const string QZNewSite_News_Db_Key = "QZNewSite_News";
         public const string QZPatent = "QZPatent";
         public const string QZCourt = "QZCourt";
+        public const string QZOrgCertificate = "QZOrgCertificate";
+        public const string QZOrgGS1 = "QZOrgGS1";
+        public const string FavoriteGroup = "FavoriteGroup";
+        public const string QZEmploy = "QZEmploy";
+        public const string QZProperty = "QZProperty";
         #endregion
 
         #region user operation
@@ -74,6 +81,12 @@ namespace QZ.Service.Enterprise
         public const string Op_Exhibit_List = "获取公司参展列表";
         [Obsolete]
         public const string Op_Company_Score_Mark = "";
+        public const string Favorite_Group_Insert = "添加收藏分组";
+        public const string Favorite_Group_Del = "删除用户分组";
+        public const string Favorite_Group_Update = "修改分组名";
+        public const string op_AliPay_VipOrder_Submit = "提交支付宝订单信息返回预付单及签名";
+        public const string op_WX_VipOrder_Submit = "提交微信订单信息返回预付单及签名";
+        public const string op_Alipay_VipOrder_Notify = "提交订单信息支付成功同步回调修改订单状态";
         #endregion
 
         #region servcie config name
@@ -89,6 +102,10 @@ namespace QZ.Service.Enterprise
         public const string CN_CMSBlocks = "CMSBlocks"; // CMSBlock
         public const string CMSItems_n_id = "CMSItems_n_id"; // 后台推送某条新闻的ID
 
+        #endregion
+
+        #region vip 
+        public const string vipUser_uid_key = "orgCompanyMvc_vipUser_uid_all";
         #endregion
         public const string Trades_Cache_Id = "Trades_Cache_Id";
 

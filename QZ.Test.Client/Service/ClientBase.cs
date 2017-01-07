@@ -97,7 +97,9 @@ namespace QZ.Test.Client
         {
             using (var client = new WebClient())
             {
-                client.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                //client.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                
+                client.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
                 var bytes = client.UploadData(uri, "POST", Encoding.UTF8.GetBytes(request));
                 return Encoding.UTF8.GetString(bytes);
             }

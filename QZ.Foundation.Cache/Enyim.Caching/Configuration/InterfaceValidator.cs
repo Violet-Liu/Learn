@@ -51,7 +51,7 @@ namespace Enyim.Caching.Configuration
 #region [ License information          ]
 /* ************************************************************
  *
- * Copyright (c) Attila Kiskó, enyim.com, 2007
+ * Copyright (c) Attila Kisk? enyim.com, 2007
  *
  * This source code is subject to terms and conditions of 
  * Microsoft Permissive License (Ms-PL).

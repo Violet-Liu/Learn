@@ -183,16 +183,17 @@ namespace QZ.Instrument.Client
         private static QueryContainer General_UnicodeSearch_Compose(string oc_name, QueryContainerDescriptor<ES_Company> q) =>
             q.Term(t => t.Field("oc_name.oc_name_raw").Value(oc_name).Boost(1000))
             //| q.MatchPhrase(m => m.Field("oc_sites").Query(oc_name).Strict())
-            | q.Term(t => t.Field("od_faren").Value(oc_name).Boost(600))
-            | (q.MatchPhrase(m => m.Field("oc_brands").Query(oc_name).Strict().MinimumShouldMatch(MinimumShouldMatch.Percentage(100)).Boost(400)) | q.MatchPhrase(m => m.Field("oc_brands").Query(oc_name).Strict().Boost(5)))
-            | q.MatchPhrase(m => m.Field("oc_members").Query(oc_name).Strict().Boost(400))
-            | q.MatchPhrase(m => m.Field("od_gds").Query(oc_name).Strict().Boost(400))
+            | q.Term(t => t.Field("od_faren").Value(oc_name).Boost(250))
+            | (q.MatchPhrase(m => m.Field("oc_brands").Query(oc_name).Strict().MinimumShouldMatch(MinimumShouldMatch.Percentage(100)).Boost(300)) | q.MatchPhrase(m => m.Field("oc_brands").Query(oc_name).Strict().Boost(5)))
+            | q.MatchPhrase(m => m.Field("oc_members").Query(oc_name).Strict().Boost(200))
+            | q.MatchPhrase(m => m.Field("od_gds").Query(oc_name).Strict().Boost(200))
             | q.MatchPhrase(m => m.Field("oc_areaname").Query(oc_name).Strict().Boost(30))
-            | (q.MatchPhrasePrefix(m => m.Field("oc_name").Query(oc_name).MinimumShouldMatch(MinimumShouldMatch.Percentage(100)).Boost(400)) | q.Match(m => m.Field("oc_name").Query(oc_name).Boost(0.1)))
+            | (q.MatchPhrase(m => m.Field("oc_name").Query(oc_name).MinimumShouldMatch(MinimumShouldMatch.Percentage(100)).Boost(300)) 
+                | q.Match(m => m.Field("oc_name").Query(oc_name).Boost(0.1).MinimumShouldMatch(MinimumShouldMatch.Percentage(90))))
             //| (oc_name.Length < 5
             //    ? q.MatchPhrase(m => m.Field("oc_name").Query(oc_name).Strict().Boost(40))
             //    : q.Match(m => m.Field("oc_name").Query(oc_name).Slop(1).MinimumShouldMatch(MinimumShouldMatch.Percentage(90)).CutoffFrequency(0.08d)))
-            | q.Match(m => m.Field("oc_business").Query(oc_name))
+            //| q.Match(m => m.Field("oc_business").Query(oc_name))
             | q.MatchPhrase(m => m.Field("oc_address").Query(oc_name).Slop(2).MinimumShouldMatch(MinimumShouldMatch.Percentage(85)).CutoffFrequency(0.08d))
             ;
 
@@ -265,6 +266,10 @@ namespace QZ.Instrument.Client
             {
                 fields.Add(f => f.Field("oc_members"));
                 fields.Add(f => f.Field("od_gds"));
+            }
+            if(!string.IsNullOrEmpty(com.oc_tel))
+            {
+                fields.Add(f => f.Field("oc_tels"));
             }
             if(!string.IsNullOrEmpty(com.oc_addr))
             {
@@ -394,6 +399,17 @@ namespace QZ.Instrument.Client
         public static ISearchResponse<ES_Company> Company_General_UnicodeSearch(Company com) => Company_General_Template(com, false);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fieldName">name of the field that must has non-null value</param>
+        /// <returns></returns>
+        public static ISearchResponse<ES_Company> Company_ExistsSearch(string fieldName) =>
+            Client_Get().Search<ES_Company>(s => s
+                .Index(ES_Meta.Company_Index)
+                .Type(ES_Meta.Company_Type)
+                .Query(q => q.Exists(e => e.Field(fieldName))));
+
+        /// <summary>
         /// General search(e.g. given a unique input box)
         /// Supposing the user input are all Ascii chars, search through this method
         /// </summary>
@@ -456,6 +472,7 @@ namespace QZ.Instrument.Client
                .DoWhen(q => !string.IsNullOrEmpty(q.oc_stock_holder), q => qcs.Add(qcd.Match(p => p.Field("od_gds").Query(q.oc_stock_holder))))
                .DoWhen(q => !string.IsNullOrEmpty(q.oc_site), q => qcs.Add(qcd.MatchPhrase(m => m.Field("oc_sites").Query(com.oc_name).Strict())))
                .DoWhen(q => !string.IsNullOrEmpty(q.oc_member), q => qcs.Add(qcd.Match(p => p.Field("oc_members").Query(q.oc_member))))
+               .DoWhen(q => !string.IsNullOrEmpty(q.oc_tel), q => qcs.Add(qcd.Match(p => p.Field("oc_tels").Query(q.oc_tel))))
                .DoWhen(q => !string.IsNullOrEmpty(q.oc_name), q => qcs.Add(qcd.Term(p => p.Field("oc_name.oc_name_raw").Value(q.oc_name)) |
                                                                            qcd.Prefix(m => m.Field("oc_name.py_oc_name").Value(q.oc_name)) |
                                                                            qcd.MatchPhrase(p => p.Field("oc_name").Query(q.oc_name).CutoffFrequency(0.08d).Slop(2).MinimumShouldMatch(MinimumShouldMatch.Percentage(90)))))
@@ -612,12 +629,31 @@ namespace QZ.Instrument.Client
         public static ISearchResponse<ES_Company> Company_TradeUniversalSearch(Req_Trade_UniversalSearch ts)
         {
             var response =
-            Client_Get().Search<ES_Company>(s => s.Index(Es_Consts.Company_Index).Type(Es_Consts.Company_Type).From((ts.pg_index - 1) * ts.pg_size).Take(ts.pg_size)
-                .Query(qq => qq
-                    .FunctionScore(c => c
-                        .Functions(f => f.ScriptScore(ss => ss.Script(sc => sc.Lang("painless").Inline("_score + doc['oc_weight'].value * 5"))))
-                        .Query(q => UniversalTradeSearch_Compose(ts, q)))
-                                    ));
+            Client_Get().Search<ES_Company>(s =>
+            {
+                s.Index(Es_Consts.Company_Index).Type(Es_Consts.Company_Type).From((ts.pg_index - 1) * ts.pg_size).Take(ts.pg_size)
+                    .Query(qq => qq
+                        .FunctionScore(c => c
+                            .Functions(f => f.ScriptScore(ss => ss.Script(sc => sc.Lang("painless").Inline("_score + doc['oc_weight'].value * 5"))))
+                            .Query(q => UniversalTradeSearch_Compose(ts, q)))
+                                        ).Aggregations(agg => agg.DateHistogram("date", t => t.Field("oc_issuetime").Interval(DateInterval.Year).MinimumDocumentCount(1))
+                                            .Terms("cat", t => t.Field("gb_cat"))
+                                            .Terms("area", t => t.Field("prefix_area"))
+                                            .Terms("type", t => t.Field("oc_companytype"))
+                                            .Terms("status", t => t.Field("oc_status"))
+                                            .Range("regm", r => r.Field("od_regm").Ranges(rs => rs.To(10), rs => rs.From(10.1).To(50), rs => rs.From(50.1).To(500), rs => rs.From(500.1).To(1000),
+                                                rs => rs.From(1000.1))));
+
+                if (ts.oc_sort == oc_sort.oc_reg_capital)
+                {
+                    s.Sort(st => st.Field(sfd => sfd.Field("od_regm").UnmappedType(FieldType.Float).Order(SortOrder.Descending)));
+                }
+                else if (ts.oc_sort == oc_sort.oc_issue_time)
+                {
+                    s.Sort(st => st.Field(sfd => sfd.Field("oc_issuetime").UnmappedType(FieldType.Float).Order(SortOrder.Descending)));
+                }
+                return s;
+            });
             return response;
         }
 
@@ -639,9 +675,19 @@ namespace QZ.Instrument.Client
                     ? Exhibit_AsciiQueryCompose(q.query_str, qcd)
                     : Exhibit_UnicodeQueryCompose(q.query_str, qcd)));
 
+                if (query.pg_index == 1)
+                {
+                    s.Aggregations(agg => agg.Terms("date", t => t.Field("e_year").Size(20))
+                                            .Terms("trade", t => t.Field("e_trade").Size(45))
+                                            .Terms("province", t => t.Field("e_province").Size(30))
+                                            );
+
+                }
+
                 s.Index(Es_Consts.Company_Ext_Type).Type(Es_Consts.Exhibit_Type).From((query.pg_index - 1) * query.pg_size).Take(query.pg_size)
                     .Query(q => qcs.Aggregate((a, b) => a & b))
                     .Highlight(hl => Exhibit_HL_Compose(hl));
+
 
                 if (query.q_sort == 2)
                 {
@@ -679,6 +725,8 @@ namespace QZ.Instrument.Client
             var response = Client_Get().Search<ES_Exhibit>(ss => s);
             return response;
         }
+
+        
 
         private static HighlightDescriptor<ES_Exhibit> Exhibit_HL_Compose(HighlightDescriptor<ES_Exhibit> hl) => hl
             .PreTags("<font color=\"red\">")
@@ -741,7 +789,39 @@ namespace QZ.Instrument.Client
                     qcs.Add(q.Prefix(p => p.Field("gb_codes").Value(s)));
                 }
             }
-            return qcs.Aggregate((a, b) => a | b);
+            double floor = 0;
+            double ceiling = 0;
+            if (!string.IsNullOrEmpty(ts.oc_regm))
+            {
+                var vals = ts.oc_regm.Split('-');
+                if (vals.Length == 2)
+                {
+                    floor = vals[0].ToDouble();
+                    ceiling = vals[1].ToDouble();
+                }
+            }
+            if(floor > 0 || ceiling > 0)
+            {
+                qcs.Add(q.Range(p => p.Field("od_regm").GreaterThan(floor).LessThanOrEquals(ceiling <= 0 ? Int32.MaxValue : ceiling)));
+            }
+            if(ts.oc_status.ToInt()>0)
+            {
+                qcs.Add(q.Term(t => t.Field("oc_status").Value(ts.oc_status.ToInt())));
+            }
+            if(!string.IsNullOrEmpty(ts.oc_type))
+            {
+                qcs.Add(q.Term(p => p.Field("oc_companytype").Value(ts.oc_type)));
+            }
+            if(!string.IsNullOrEmpty(ts.oc_area) && !ts.oc_area.Equals("00"))
+            {
+                qcs.Add(q.Prefix(d => d.Field("oc_area").Value(ts.oc_area)));
+            }
+            if(!string.IsNullOrEmpty(ts.oc_trade))
+            {
+                qcs.Add(ts.oc_trade.Length == 1 ? q.Term(t => t.Field("gb_cat").Value(ts.oc_trade)) : q.Prefix(qp => qp.Field("gb_codes").Value(ts.oc_trade)));
+            }
+          
+            return qcs.Aggregate((a, b) => a & b);
         }
         #endregion
 
@@ -811,6 +891,23 @@ namespace QZ.Instrument.Client
             var response = Client_Get().Search<ES_Dishonest>(ss => s);
             return response;
         }
+        #endregion
+
+        #region judge
+        public static long Judge_AllCompany()
+        {
+            var resp = Client_Get().Count<ES_Judge>(c => c.Index("ext_new").Type("judge")
+                .Query(q => q.Bool(b => b.MustNot(mn => mn.Match(m => m.Field("jd_oc_code").Query("000000000"))))));
+            return resp.Count;
+        }
+
+        public static long RemoteJudge_AllCompany()
+        {
+            var resp = Client_Get().Count<ES_Judge>(c => c.Index("company_ext").Type("judge")
+                .Query(q => q.Bool(b => b.MustNot(mn => mn.Term(m => m.Field("jd_oc_code").Value("000000000"))))));
+            return resp.Count;
+        }
+
         #endregion
 
         #region brand

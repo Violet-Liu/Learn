@@ -35,6 +35,13 @@ namespace QZ.Service.Enterprise
             var body = string.Empty;
             return new Response(head.ToJson().ToEncryption(EncryptType.PT), body.ToJson().ToEncryption(EncryptType.PT));
         }
+
+        public static Response Create_BlackErr_Response()
+        {
+            var head = new Response_Head(Message_Action.Login);
+            var body = "你的账号异常，已被列入黑名单，如有疑问请联系我们客服QQ1713694365";
+            return new Response(head.ToJson().ToEncryption(EncryptType.PT), body.ToJson().ToEncryption(EncryptType.PT));
+        }
         #endregion
 
 

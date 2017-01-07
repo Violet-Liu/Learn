@@ -450,6 +450,7 @@ namespace QZ.Instrument.Model
         }
         #endregion
 
+        public string DistanceNow { get; set; }
 
     }
 }

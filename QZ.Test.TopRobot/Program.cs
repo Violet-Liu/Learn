@@ -94,16 +94,17 @@ namespace QZ.Test.TopRobot
             //return;
             Init();
             //_action(() => _simulator.Index());
-            _action(() => _simulator.CompanyTrade_IntelliTips());
+            _action(() => _simulator.test());
+            //_action(() => _simulator.Company_Icpl());
             //_action(() => _simulator.ExtQuery_History());
-            return;
+
             //var list = ES_Search.Advanced_Query();
             //foreach(var l in list)
             //{
             //    Console.WriteLine(l.oc_name + " | " + l.oc_weight);
             //}
             //return;
-            
+
 
             //Console.WriteLine("\nsearch by PinYin:");
             //var set1 = ES_Search.Dishonest_Search(new Req_Info_Query() { query_str = "dys", pg_index = 1, pg_size = 5 });
@@ -119,6 +120,93 @@ namespace QZ.Test.TopRobot
             //CompanyTrade_IntelliTips();
 
             //CompanyTrade_UniversalSearch();
+
+            //#region brands test
+            //_action(() => _simulator.Brand_Query());
+            //var Greq = new Req_Info_Query() { query_str = "华为", pg_size = 20, u_id = "30740", u_name = "gaoshoufenmu" };
+            //_action(() => _simulator.Brand_NewQuery(Greq));
+            //var freq = new Req_Info_Query() { query_str = "华为", pg_index=1,pg_size = 10,year=0, u_id = "30920", u_name = "gaoshoufenmu", status = "", cat_s = "" };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "商标已注册" };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", year = 2004 };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "商标已注册", cat_s = "25" };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "商标已注册", year = 2004 };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", cat_s = "25", year = 2004 };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "商标已注册", cat_s = "25", year = 2004 };
+            //_action(() => _simulator.Brand_NewQuery(freq));
+
+            //#endregion
+
+
+            //#region patents test
+            //_action(() => _simulator.Patent_Query());
+            //_action(() => _simulator.Patent_NewQuery(Greq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "授权" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", area = "江苏" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", status = "授权" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏", status = "授权" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "授权", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", area = "江苏", status = "授权" };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", area = "江苏", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", p_type = "发明", status = "授权", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏", status = "授权", year = 2004 };
+            //_action(() => _simulator.Patent_NewQuery(freq));
+
+            //#endregion
+
+
+            //#region judge test
+            //_action(() => _simulator.Judge_NewQuery(Greq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "一审" };
+            //_action(() => _simulator.Judge_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", year = 2009 };
+            //_action(() => _simulator.Judge_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", year = 2009, status = "一审" };
+            //_action(() => _simulator.Judge_NewQuery(freq));
+
+            //#endregion
+
+
+            //#region dishonest test
+            //_action(() => _simulator.Dishonest_NewQuery(Greq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "全部未履行" };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏" };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", year = 2010 };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "全部未履行", area = "江苏" };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", status = "全部未履行", year = 2010 };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+            //freq = new Req_Info_Query() { query_str = "华为", pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", area = "江苏", year = 2010 };
+            //_action(() => _simulator.Dishonest_NewQuery(freq));
+
+            //#endregion
+            return;
         }
 
 

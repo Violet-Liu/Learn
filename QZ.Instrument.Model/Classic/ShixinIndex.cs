@@ -73,5 +73,9 @@ namespace QZ.Instrument.Model
         /// 发布时间
         /// </summary>
         public DateTime sx_publishDate { get; set; }
+
+        public string sx_gistUnit { get; set; }
+
+        public string sx_duty { get; set; }
     }
 }

@@ -41,8 +41,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elasticsearch.Net.5.0.0-rc1\lib\net45\Elasticsearch.Net.dll</HintPath>
+    <Reference Include="Elasticsearch.Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.2.4.1\lib\net45\Elasticsearch.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -51,14 +51,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEST.5.0.0-beta1\lib\net45\Nest.dll</HintPath>
+    <Reference Include="Nest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.2.3.1\lib\net45\Nest.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -86,6 +87,7 @@
     <Content Include="Images\qrcode.png" />
     <Content Include="Images\qrcode_weixin.jpg" />
     <Content Include="News.svc" />
+    <Content Include="RealTimeLog.svc" />
     <Content Include="User.svc" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -98,6 +100,7 @@
     <Compile Include="Agent\Service_Proxy.cs" />
     <Compile Include="Agent\ICompanyNameIndex.cs" />
     <Compile Include="Agent\Upload.cs" />
+    <Compile Include="Attribute\XmlBaseReaderExt.cs" />
     <Compile Include="Classic\CacheMaker.cs" />
     <Compile Include="Classic\DataAccess_News.cs" />
     <Compile Include="Classic\DataAccess.cs" />
@@ -113,6 +116,8 @@
     </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="ICommunity.cs" />
+    <Compile Include="Impl\AlipayHandler.cs" />
+    <Compile Include="Impl\AlipayReturnData.cs" />
     <Compile Include="Impl\CompanyImpl.cs" />
     <Compile Include="Impl\Datas.cs" />
     <Compile Include="Impl\ResponseAdaptor.cs" />
@@ -149,6 +154,8 @@
     <Compile Include="Utility\Pdf_Reporter.cs" />
     <Compile Include="Utility\Req_Ext.cs" />
     <Compile Include="Utility\ServiceHandler.cs" />
+    <Compile Include="Utility\SiteConfig.cs" />
+    <Compile Include="Utility\SiteConfigHelper.cs" />
     <Compile Include="Utility\Util.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +176,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QZ.FormCommon\QZ.FormCommon.csproj">
+      <Project>{86ffa238-0702-4dc7-a791-1f24d3824b5b}</Project>
+      <Name>QZ.FormCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QZ.Foundation.Cache\QZ.Foundation.Cache.csproj">
       <Project>{bcd686cd-ff82-46f3-a275-554f6d7c33c1}</Project>
       <Name>QZ.Foundation.Cache</Name>
@@ -220,6 +231,18 @@
     <ProjectReference Include="..\QZ.Instrument.Utility\QZ.Instrument.Utility.csproj">
       <Project>{50463455-5ece-46d8-a776-dc1b2fa3c05b}</Project>
       <Name>QZ.Instrument.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.RealTimeRequestLogService\QZ.RealTimeRequestLogService.csproj">
+      <Project>{ac885e79-b9a0-4436-8f7e-cab599241496}</Project>
+      <Name>QZ.RealTimeRequestLogService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Service.Getui\QZ.Service.Getui.csproj">
+      <Project>{56008980-42ab-4574-b99d-a794cb1c4fdd}</Project>
+      <Name>QZ.Service.Getui</Name>
+    </ProjectReference>
+    <ProjectReference Include="F:\download\SDK_NET\AopSdk.csproj">
+      <Project>{9c11cae5-5188-4e71-825b-68fc3135728a}</Project>
+      <Name>AopSdk</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

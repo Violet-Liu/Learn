@@ -20,6 +20,8 @@ namespace QZ.Instrument.Model
         public int u_id { get; set; }
         public string u_name { get; set; }
         public string tel { get; set; }
+        public string u_idfa { get; set; }
+        public string u_clientID { get; set; }
     }
 
     public class Company
@@ -75,7 +77,11 @@ namespace QZ.Instrument.Model
         public string oc_trade { get; set; }
         public string oc_tel { get; set; }
         public string oc_mail { get; set; }
-        
+        public string pay_type { get; set; }  
+        public int end { get; set; }
+        public int start { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
         /// <summary>
         /// whether jump to company detail page directly and quickly
         /// </summary>
@@ -146,6 +152,8 @@ namespace QZ.Instrument.Model
                 return false;
             if (!string.IsNullOrWhiteSpace(c.oc_reg_capital_floor) || !string.IsNullOrWhiteSpace(c.oc_reg_capital_ceiling))
                 return false;
+            if (!string.IsNullOrEmpty(c.oc_tel))
+                return false;
             return true;
         }
 
@@ -167,8 +175,9 @@ namespace QZ.Instrument.Model
             {
                 return new List<Company>()
                 {
+                    new Company() { q_type=q_type.q_advanced,oc_tel="28780808",pg_index=1,pg_size=10, u_id = "30740", u_name = "来咯哦哦",v=1 },
                     new Company() {oc_area = "4403", q_type = q_type.q_general, oc_name = "前瞻资讯股份有限公司", oc_sort = oc_sort.none},
-                    new Company() {oc_name = "中视天脉（北京）科技有限公司", q_type =q_type.q_general, u_id = "30740", u_name = "来咯哦哦", pg_index = 1, pg_size = 10, v = 1 },
+                    new Company() {oc_name = "腾讯", q_type =q_type.q_advanced, u_id = "30740", u_name = "来咯哦哦", pg_index = 1, pg_size = 10,v=1,oc_sort=oc_sort.none },
                     new Company() {  oc_name= "qq.com", q_type = q_type.q_general, u_id = "30533", u_name = "来咯哦哦"},
                     new Company() {  oc_art_person = "张启波", q_type = q_type.q_general, u_id = "30533", u_name = "来咯哦哦"},
                     new Company() {oc_name="华为", q_type = q_type.q_advanced, oc_area = "4403", u_id = "30533", u_name = "来咯哦哦"},
@@ -187,7 +196,7 @@ namespace QZ.Instrument.Model
             {
                 return new List<Company>()
                 {
-                    new Company {oc_name = "招商银行股份有限公司", /*oc_code = "10001686X",*/ oc_area = "4403" },
+                    new Company {oc_name = "腾讯科技（深圳）有限公司", oc_code = "71526726X", oc_area = "4403" },
                     new Company {oc_name =  "四川省峨眉山竹叶青茶业有限公司", oc_area = "5101", oc_code = "1000003QZ"}
                 };
             }
@@ -287,7 +296,7 @@ namespace QZ.Instrument.Model
             {
                 return new List<Req_Oc_Mini>()
                 {
-                    new Req_Oc_Mini() { oc_name = "招商银行股份有限公司", oc_code = "10001686X", oc_area = "4403", u_id = "30740", u_name = "来咯哦哦", pg_index = 1, pg_size = 10 },
+                    new Req_Oc_Mini() { oc_name = "腾讯科技（深圳）有限公司", oc_code = "71526726X", oc_area = "4403", u_id = "30740", u_name = "来咯哦哦", pg_index = 1, pg_size = 10 },
                     new Req_Oc_Mini() { oc_area="3101", oc_code="MA1GKCKD9", oc_name = "上海瞻赢贸易有限公司", u_id = "30533", u_name = "来咯哦哦", pg_index = 1, pg_size = 10 },
                     new Req_Oc_Mini() { pg_index = 1, pg_size = 3 },     /* company_fresh_topic */
                     new Req_Oc_Mini() { pg_index = 1, pg_size = 10, u_id = "30533"},    /* company_topic_query */
@@ -295,7 +304,7 @@ namespace QZ.Instrument.Model
                 };
             }
         }
-        public static Req_Oc_Mini Oc_Brand_Get { get { return new Req_Oc_Mini() { oc_code = "708461136", pg_index = 1, pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", }; } }
+        public static Req_Oc_Mini Oc_Brand_Get { get { return new Req_Oc_Mini() { oc_code = "71526726X", pg_index = 1, pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", }; } }
         public static Req_Oc_Mini Oc_Patent_Get { get { return new Req_Oc_Mini() { oc_code = "", pg_index = 1, pg_size = 10, u_id = "30740", u_name = "gaoshoufenmu", }; } }
         
         public static Req_Oc_Mini Oc_Dishonest_Get { get { return new Req_Oc_Mini() { oc_code = "67877662X", pg_index = 1, pg_size = 10, u_id = "30740" }; } }
@@ -575,12 +584,14 @@ namespace QZ.Instrument.Model
     public class Req_Cm_Topic
     {
         public string u_id { get; set; }
+        public string u_name { get; set; }
         /// <summary>
         /// 0 -> all topics; 1 -> topics which were post by myself; 2 -> topics on which i had replied
         /// </summary>
         public int op_type { get; set; }
         public int pg_index { get; set; }
         public int pg_size { get; set; }
+        public int group_id { get; set; }
 
         public static List<Req_Cm_Topic> Defaults
         {
@@ -588,7 +599,7 @@ namespace QZ.Instrument.Model
             {
                 return new List<Req_Cm_Topic>()
                 {
-                    new Req_Cm_Topic() { u_id = "30533", pg_index = 1, pg_size = 10 },
+                    new Req_Cm_Topic() { u_id = "33999", pg_index = 1, pg_size = 10 },
                     new Req_Cm_Topic() {u_id = "30533", pg_index = 1, pg_size = 10, op_type = 1 },
                     new Req_Cm_Topic() {u_id = "30533", pg_index = 1, pg_size = 10, op_type = 2 }
                 };
@@ -676,7 +687,7 @@ namespace QZ.Instrument.Model
         public string oc_code { get; set; }
         public int pg_index { get; set; }
         public int pg_size { get; set; }
-        public int status { get; set; }
+        public string status { get; set; }
         /// <summary>
         /// 行业
         /// </summary>
@@ -714,7 +725,7 @@ namespace QZ.Instrument.Model
             get
             {
                 return new List<Req_Info_Query>() {
-                    new Req_Info_Query() { query_str = "华为", u_id = "30740", u_name = "gaoshoufenmu", pg_index = 1, pg_size = 20, cat_s = "21" },
+                    new Req_Info_Query() { query_str = "华为", u_id = "30740", u_name = "gaoshoufenmu", pg_index = 1, pg_size = 20, cat_s = "25" },
                     new Req_Info_Query() {query_str = "血栓", u_id = "30740", u_name = "gaoshoufenmu", pg_index = 1, pg_size = 15, year = 2016 },
                     new Req_Info_Query() {query_str = "华为",  u_id = "30740", u_name = "gaoshoufenmu", pg_index = 1, pg_size = 15/*, p_type = "发明"*/ },
                     new Req_Info_Query() { query_str = "交通"/*"财产保险公司"*/, u_id = "30740", u_name = "gaoshoufenmu", pg_index = 1, pg_size = 15 },
@@ -831,5 +842,159 @@ namespace QZ.Instrument.Model
         /// </summary>
         public int cmt_id { get; set; }
     }
+
+    public class Req_Business_State
+    {
+        public string oc_code { get; set; }
+        public int pg_index { get; set; }
+        public int pg_size { get; set; }
+
+        public static List<Req_Business_State> Defaults
+        {
+            get
+            {
+                return new List<Req_Business_State>
+                {
+                    
+                };
+            }
+        }
+    }
+
+    public class Req_Favorite_Add
+    {
+        public string oc_code { get; set; }
+        public string oc_name { get; set; }
+        public string g_id { get; set; }
+        public string g_name { get; set; }
+        public string oc_area { get; set; }
+        public string u_id { get; set; }
+        public string u_name { get; set; }
+        /// <summary>
+        /// 0 -> move to exists group ; 1 -> move to new group;
+        /// </summary>
+        public int q_action { get; set; }
+
+        public static Req_Favorite_Add group_add { get { return new Req_Favorite_Add { g_name = "测试添加", u_id = "30740" }; } }
+    }
+
+    public class Req_FavoriteIntoGroup
+    {
+        public string g_id { get; set; }
+        public string u_id { get; set; }
+
+        public List<int> fl_ids { get; set; }
+    }
+
+    public class Req_FavoriteNote
+    {
+        public string n_id { get; set; }
+        public string note { get; set; }
+        public string fl_id { get; set; }
+        public int pg_index { get; set; }
+        public int pg_size { get; set; }
+    }
+
+
+    public class Req_Exhibition
+    {
+        public string ee_named { get; set; }
+        public int pg_index { get; set; }
+
+        public int pg_size { get; set; }
+    }
+
+    public class Req_Favorite_Group
+    {
+        public string g_id { get; set; }
+        public string u_id { get; set; }
+        public string oc_code { get; set; }
+        public string g_name { get; set; }
+        public int pg_index { get; set; }
+        public int pg_size { get; set; }
+
+    }
+
+    public class statistic
+    {
+        public string key { get; set; }
+
+        public long count { get; set; }
+    }
+
+    public class req_sysnotice
+    {
+        public string u_id { get; set; }
+
+        public string s_id { get; set; }
+
+    }
+
+    public enum MessageType
+    {
+        CommunityReply = 1,
+        CompanyReply,
+        CommunityUp,
+        CommunityDown,
+        CompanyUp,
+        CompanyDown,
+        SystemNotice
+    }
+
+    public class MessageInfo
+    {
+
+        public MessageType type { get; set; }
+        public string title { get; set; }
+        public string content { get; set; }
+        public string replycontent { get; set; }
+        public string u_name { get; set; }
+        public string u_id { get; set; }
+        public string topicid { get; set; }
+    }
+
+    public class Req_myClaim
+    {
+        public string u_id { get; set; }
+        public string u_name { get; set; }
+        public int pg_index { get; set; }
+        public int pg_size { get; set; }
+        public int type { get; set; }
+    }
+
+    public class Req_VipOrder
+    {
+        public string u_id { get; set; }
+        public string u_name { get; set; }
+        public string trade_no { get; set; }
+        public string out_trade_no { get; set; }
+        public int type { get; set; }
+        public string mobile { get; set; }
+        public int pay_type { get; set; }
+    }
+
+    public class Req_InvoiceInfo
+    {
+        public string u_id { get; set; }
+        public string u_name { get; set; }
+        public string proName { get; set; }
+
+        public int type { get; set; }
+
+        public string name { get; set; }
+
+        public decimal money { get; set; }
+
+        public string contacts { get; set; }
+
+        public string mobile { get; set; }
+
+        public string desc { get; set; }
+
+        public string code { get; set; }
+
+        public string address { get; set; }
+    }
+
 
 }

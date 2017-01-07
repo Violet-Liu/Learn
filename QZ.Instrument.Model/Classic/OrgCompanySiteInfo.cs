@@ -12,35 +12,8 @@ using System.Threading.Tasks;
 
 namespace QZ.Instrument.Model
 {
-    public class OrgCompanySiteInfo : IDisposable
+    public class OrgCompanySiteInfo
     {
-        #region IDisposable 接口实现
-        /// <summary>
-        /// 终结器, 调用虚拟的Dispose方法
-        /// </summary>
-        ~OrgCompanySiteInfo()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// 调用虚拟的Dispose方法, 禁止Finalization（终结操作）
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// 虚拟的Dispose方法
-        /// </summary>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing)
-                return;
-        }
-        #endregion
 
         #region 自增 ID[ocs_id]
         int _ocs_id;

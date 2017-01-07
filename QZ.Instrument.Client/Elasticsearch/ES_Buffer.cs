@@ -24,16 +24,23 @@ namespace QZ.Instrument.Client
     public class ES_Buffer
     {
         #region auxiliary methods
-        private static HighlightDescriptor<T> HL_Create<T>(HighlightDescriptor<T> hl, IEnumerable<string> names) where T : ES_Model => hl
+        private static HighlightDescriptor<T> HL_Create<T>(HighlightDescriptor<T> hl, IEnumerable<string> names) where T : class => hl
             .PreTags("<font color=\"red\">")
             .PostTags("</font>")
             .Fields(names.Select<string, Func<HighlightFieldDescriptor<T>, IHighlightField>>(n => f => f.Field(n)).ToArray());
 
         #endregion
 
-        #region in researching
+        #region company
         public const string Company_FunScript = "_score * (Math.log(doc['oc_weight'].value + 1) * 100 + 1)";
-
+        private static Func<AggregationContainerDescriptor<ES_Brand>, IAggregationContainer> Company_Agg =
+            agg => agg.DateHistogram("date", t => t.Field("oc_issuetime").Interval(DateInterval.Year).MinimumDocumentCount(1))
+                        .Terms("cat", t => t.Field("gb_cat").Size(22))
+                        .Terms("area", t => t.Field("prefix_area").Size(32))
+                        .Terms("type", t => t.Field("oc_companytype").Size(12))
+                        .Terms("status", t => t.Field("oc_status"))
+                        .Range("regm", r => r.Field("od_regm").Ranges(rs => rs.To(100), rs => rs.From(100.1).To(500), rs => rs.From(500.1).To(1000),
+                                                rs => rs.From(1000.1)));
         /// <summary>
         /// Initial descriptor of general search
         /// </summary>
@@ -60,31 +67,32 @@ namespace QZ.Instrument.Client
         private static Func<AggregationContainerDescriptor<ES_Brand>, IAggregationContainer> Brand_Agg =
             agg => agg.DateHistogram("date", t => t.Field("ob_date").Interval(DateInterval.Year).MinimumDocumentCount(1))
                       .Terms("type", t => t.Field("ob_classno").Size(45))
-                      //.Terms("status", t => t.Field("ob_status").Size(30))
+                      .Terms("status", t => t.Field("ob_status").Size(30))
                       ;
 
         public static SearchDescriptor<ES_Brand> Brand_GA_Ini = new SearchDescriptor<ES_Brand>()
-            .Index(ES_Meta.Company_Ext_Index).Type(ES_Meta.Brand_Type)
+            .Index(ES_Meta.Brand_Index).Type(ES_Meta.Brand_Type)
             .Highlight(hl => HL_Create(hl, Brand_Meta.A_Fields.Select(f => f.name.Split('.')[0])))
             .Aggregations(Brand_Agg);
 
         public static SearchDescriptor<ES_Brand> Brand_GU_Ini = new SearchDescriptor<ES_Brand>()
-            .Index(ES_Meta.Company_Ext_Index).Type(ES_Meta.Brand_Type)
+            .Index(ES_Meta.Brand_Index).Type(ES_Meta.Brand_Type)
             .Highlight(hl => HL_Create(hl, Brand_Meta.U_Fields.Where(f => !f.name.Contains('.')).Select(f => f.name)))
             .Aggregations(Brand_Agg);
 
         public static SearchDescriptor<ES_Brand> Brand_GA_NonIni = new SearchDescriptor<ES_Brand>()
-            .Index(ES_Meta.Company_Ext_Index).Type(ES_Meta.Brand_Type)
+            .Index(ES_Meta.Brand_Index).Type(ES_Meta.Brand_Type)
             .Highlight(hl => HL_Create(hl, Brand_Meta.A_Fields.Select(f => f.name.Split('.')[0])));
 
         public static SearchDescriptor<ES_Brand> Brand_GU_NonIni = new SearchDescriptor<ES_Brand>()
-            .Index(ES_Meta.Company_Ext_Index).Type(ES_Meta.Brand_Type)
+            .Index(ES_Meta.Brand_Index).Type(ES_Meta.Brand_Type)
             .Highlight(hl => HL_Create(hl, Brand_Meta.U_Fields.Where(f => !f.name.Contains('.')).Select(f => f.name)));
+
         #endregion
 
         #region patent
         private static Func<AggregationContainerDescriptor<ES_Patent>, IAggregationContainer> Patent_Agg =
-            agg => agg.Terms("date", t => t.Field("patent_year").Size(30))
+            agg => agg.Terms("date.int", t => t.Field("patent_year").Size(30))
                       .Terms("status", t => t.Field("patent_status"))
                       .Terms("type", t => t.Field("patent_type"))
                       .Terms("area", t => t.Field("patent_area"));

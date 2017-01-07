@@ -20,6 +20,7 @@ namespace QZ.Instrument.Client
         public const string Company_Index = "company_nextgen";
         public const string Company_Type = "company";
 
+        public const string Brand_Index = "company_ext";
         public const string Company_Ext_Index = "company_ext";
         public const string Exhibit_Type = "exhibit";
         public const string Dishonest_Type = "dishonest";
@@ -29,10 +30,25 @@ namespace QZ.Instrument.Client
         #endregion
     }
 
-    public class ES_Company_MD
+    public class Company_Meta
     {
-        public static IList<ES_Field> A_Fields { get; private set; }
-        public static IList<ES_Field> U_Fields { get; private set; }
+        public static readonly IList<ES_Field> A_Fields = new List<ES_Field>
+        {
+            new ES_Field("oc_code", boost: 20),
+            new ES_Field("oc_number", boost: 20),
+            new ES_Field("oc_creditcode", boost: 20),
+            new ES_Field("oc_sites", Analyzer.Url),
+            new ES_Field("oc_tels", Analyzer.Char),
+            new ES_Field("oc_mails", Analyzer.Mail),
+        };
+
+        public static readonly IList<ES_Field> U_Fields = new List<ES_Field>
+        {
+            new ES_Field("oc_name.oc_name_raw", boost: 500),
+            new ES_Field("oc_areaname", Analyzer.IK),
+            //new ES_Field("oc_")
+            new ES_Field("oc_name", Analyzer.IK, boost: 100),
+        };
 
         public static IList<string> Agg_Fields { get; private set; }
     }
@@ -45,6 +61,7 @@ namespace QZ.Instrument.Client
             new ES_Field("ob_regno"),               // term
             new ES_Field("ob_name.ob_name_raw"),    // term
             new ES_Field("ob_classno"),             // term
+            new ES_Field("ob_img"),                 //term
             new ES_Field("ob_oc_code")              // term
         };
 
@@ -58,7 +75,6 @@ namespace QZ.Instrument.Client
             new ES_Field("ob_name", Analyzer.IK, boost: 20),
             new ES_Field("ob_proposeraddr", Analyzer.IK)
         };
-        public static readonly ES_Field Name = new ES_Field("ob_name");
     }
 
     public class Patent_Meta
@@ -88,7 +104,6 @@ namespace QZ.Instrument.Client
             new ES_Field("patent_dljg.patent_dljg_raw", boost: 60)
 
         };
-        public static readonly ES_Field Name = new ES_Field("patent_name");
     }
 
     public class Judge_Meta
@@ -103,12 +118,11 @@ namespace QZ.Instrument.Client
         {
             new ES_Field("jd_program", boost: 60),
             new ES_Field("jd_title.name_raw", boost: 100),
-            new ES_Field("jd_title", boost: 10),
+            new ES_Field("jd_title", Analyzer.IK, boost: 10),
             new ES_Field("jd_court", Analyzer.IK, 5),
             new ES_Field("jd_num", Analyzer.IK)
         };
 
-        public static readonly ES_Field Name = new ES_Field("jd_title");
     }
 
     public class Dishonest_Meta
@@ -127,6 +141,8 @@ namespace QZ.Instrument.Client
         };
         public static readonly ES_Field Name = new ES_Field("sx_oc_name");
     }
+
+
 
     public class ES_Field
     {

@@ -1,0 +1,49 @@
+
+时间:2017-01-05 19:57:09,929 
+日志内容:异步通知验证签名成功
+-----------------------------------------
+
+时间:2017-01-05 20:03:42,508 
+日志内容:System.Runtime.Serialization.SerializationException: 程序集“QZ.Instrument.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null”中的类型“QZ.Instrument.Model.NewsCateInfo”未标记为可序列化。
+   在 System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   在 System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   在 Enyim.Caching.Memcached.DefaultTranscoder.Enyim.Caching.Memcached.ITranscoder.Serialize(Object value) 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Transcoders\DefaultTranscoder.cs:行号 126
+   在 Enyim.Caching.Memcached.StoreOperation.ExecuteAction() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\StoreOperation.cs:行号 62
+   在 Enyim.Caching.Memcached.Operation.Execute() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\Operation.cs:行号 30
+-----------------------------------------
+
+时间:2017-01-05 20:04:02,773 
+日志内容:System.Runtime.Serialization.SerializationException: 程序集“QZ.Instrument.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null”中的类型“QZ.Instrument.Model.NewsCateInfo”未标记为可序列化。
+   在 System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   在 System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   在 Enyim.Caching.Memcached.DefaultTranscoder.Enyim.Caching.Memcached.ITranscoder.Serialize(Object value) 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Transcoders\DefaultTranscoder.cs:行号 126
+   在 Enyim.Caching.Memcached.StoreOperation.ExecuteAction() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\StoreOperation.cs:行号 62
+   在 Enyim.Caching.Memcached.Operation.Execute() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\Operation.cs:行号 30
+-----------------------------------------
+
+时间:2017-01-05 20:04:04,690 
+日志内容:System.Runtime.Serialization.SerializationException: 程序集“QZ.Instrument.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null”中的类型“QZ.Instrument.Model.NewsCateInfo”未标记为可序列化。
+   在 System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   在 System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   在 System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   在 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   在 Enyim.Caching.Memcached.DefaultTranscoder.Enyim.Caching.Memcached.ITranscoder.Serialize(Object value) 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Transcoders\DefaultTranscoder.cs:行号 126
+   在 Enyim.Caching.Memcached.StoreOperation.ExecuteAction() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\StoreOperation.cs:行号 62
+   在 Enyim.Caching.Memcached.Operation.Execute() 位置 E:\企业宝后端\QZ.NewSite.CorpInfoService\QZ.Foundation.Cache\Enyim.Caching\Memcached\Operations\Operation.cs:行号 30
+-----------------------------------------

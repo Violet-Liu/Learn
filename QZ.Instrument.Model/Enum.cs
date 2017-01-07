@@ -76,6 +76,7 @@ namespace QZ.Instrument.Model
         Name_Err,   /* 用户名错误 */
         Pwd_Err,    /* 密码错误 */
         State_Err,  /* 用户帐号异常 */
+        ADBlack_Err /* 广告黑名单 */
     }
 
     public enum Users_State
@@ -83,7 +84,8 @@ namespace QZ.Instrument.Model
         Register=0,
         Normal=1,
         Prohibit=2,
-        Closed=3
+        Closed=3,
+        ADBlack= 4  /* 广告黑名单 */
     }
     public enum User_Level
     {

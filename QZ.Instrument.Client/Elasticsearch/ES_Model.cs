@@ -13,9 +13,120 @@ using System.Threading.Tasks;
 
 namespace QZ.Instrument.Client
 {
-    public abstract class ES_Model { }
+    public class ES_Company
+    {
+        /// <summary>
+        /// 机构代码
+        /// </summary>
+        public string oc_code { get; set; }
+        public string oc_creditcode { get; set; } = string.Empty;
+        /// <summary>
+        /// 登记号
+        /// </summary>
+        public string oc_number { get; set; }
+        /// <summary>
+        /// 区域代码
+        /// </summary>
+        public string oc_area { get; set; }
+        /// <summary>
+        /// 区域名
+        /// </summary>
+        public string oc_areaname { get; set; }
+        /// <summary>
+        /// 登记注册机构名
+        /// </summary>
+        public string oc_regorgname { get; set; }
+        public string oc_name { get; set; }
+        /// <summary>
+        /// 公司地址
+        /// </summary>
+        public string oc_address { get; set; }
+        /// <summary>
+        /// 机构类型
+        /// </summary>
+        public string oc_companytype { get; set; }
+        /// <summary>
+        /// 公司权重值
+        /// </summary>
+        public double oc_weight { get; set; }
 
-    public class ES_Patent : ES_Model
+        /// <summary>
+        /// 修改时间
+        /// </summary>
+        public DateTime oc_changetime { get; set; }
+        /// <summary>
+        /// 证书有效期开始时间
+        /// </summary>
+        public DateTime oc_issuetime { get; set; }
+        /// <summary>
+        /// 证书过期开始时间
+        /// </summary>
+        public DateTime oc_invalidtime { get; set; }
+        /// <summary>
+        /// 股东
+        /// </summary>
+        public IList<string> od_gds { get; set; }
+        /// <summary>
+        /// 成员
+        /// </summary>
+        public IList<string> oc_members { get; set; }
+        /// <summary>
+        /// 法人
+        /// </summary>
+        public string od_faren { get; set; } = string.Empty;
+        /// <summary>
+        /// 注册资本
+        /// </summary>
+        public decimal od_regm { get; set; } = 0;
+        /// <summary>
+        /// 注册资本
+        /// </summary>
+        public string od_regmoney { get; set; } = string.Empty;
+        /// <summary>
+        /// 注册类型
+        /// </summary>
+        public string od_regtype { get; set; } = string.Empty;
+        /// <summary>
+        /// ext备注
+        /// </summary>
+        public string od_ext { get; set; } = string.Empty;
+        /// <summary>
+        /// 公司状态,1 -> 正常，9 -> 非正常，0 -> 未知
+        /// </summary>
+        public byte oc_status { get; set; }
+        /// <summary>
+        /// 公司业务
+        /// </summary>
+        public string od_bussiness { get; set; } = string.Empty;
+        public DateTime od_createtime { get; set; } = DateTime.MinValue;
+
+        ///// <summary>
+        ///// 公司商标，以 '|' 分隔
+        ///// </summary>
+        //public string oc_brands { get; set; } = string.Empty;
+        ///// <summary>
+        ///// 公司专利，以 '|' 分隔
+        ///// </summary>
+        //public string oc_patents { get; set; } = string.Empty;
+
+        public IList<string> oc_brands { get; set; }
+        public IList<string> oc_patents { get; set; }
+        public IList<string> oc_sites { get; set; }
+        public IList<string> gb_codes { get; set; }
+        public IList<string> pro_codes { get; set; }
+        public IList<string> fwd_names { get; set; }
+        public IList<string> exh_names { get; set; }
+        /// <summary>
+        /// 国标主分类
+        /// </summary>
+        public string gb_cat { get; set; }
+
+        public IList<string> oc_tels { get; set; }
+        public IList<string> oc_mails { get; set; }
+        //public List<Comtrade> trades { get; set; }
+    }
+
+    public class ES_Patent
     {
         /// <summary>
         /// 唯一标识，patent_no + '|' + patent_gkh
@@ -87,7 +198,7 @@ namespace QZ.Instrument.Client
         public string patent_postcode { get; set; }
     }
 
-    public class ES_Judge : ES_Model
+    public class ES_Judge
     {
         public string jd_id { get; set; }
         ///// <summary>
@@ -131,7 +242,7 @@ namespace QZ.Instrument.Client
         public Aggs aggs { get; set; }
     }
 
-    public class ES_Dishonest : ES_Model
+    public class ES_Dishonest
     {
         public int sx_id { get; set; }
         /// <summary>
@@ -184,8 +295,9 @@ namespace QZ.Instrument.Client
         public DateTime sx_pubdate { get; set; }
     }
 
-    public class ES_Brand : ES_Model
+    public class ES_Brand
     {
+        public string ob_id { get; set; }
         /// <summary>
         /// Composed by ob_regno|ob_classno
         /// </summary>
@@ -250,18 +362,53 @@ namespace QZ.Instrument.Client
 
     public class Agg
     {
-        /// <summary>
-        /// 标签，用户UI控件显示
-        /// </summary>
-        public string label { get; set; }
+        ///// <summary>
+        ///// 标签，用户UI控件显示
+        ///// </summary>
+        //public string label { get; set; }
         /// <summary>
         /// 某分类对应的值，用于筛选查询
         /// </summary>
         public string value { get; set; }
-        public Agg(string label, string value)
+        /// <summary>
+        /// 某分类对应的统计数量
+        /// </summary>
+        public long count { get; set; }
+        public Agg(string value, long count)
         {
-            this.label = label;
             this.value = value;
+            this.count = count;
         }
+    }
+
+    public class Company_Parts
+    {
+        public string area;
+        public string key;
+        public string trade;
+        public string type;
+
+        //public static IDictionary<ComType, IList<ComType>> Stock
+        public static IDictionary<ComType, IList<ComType>> Limit;
+    }
+
+    public enum ComType
+    {
+        /// <summary>
+        /// None
+        /// </summary>
+        N,
+        /// <summary>
+        /// Stock
+        /// </summary>
+        S,
+        /// <summary>
+        /// Limit
+        /// </summary>
+        L,
+        /// <summary>
+        /// Company
+        /// </summary>
+        C
     }
 }

@@ -159,5 +159,8 @@ namespace QZ.Instrument.Model
             get;
             set;
         }
+
+        public string DistanceNow { get; set; }
+
     }
 }

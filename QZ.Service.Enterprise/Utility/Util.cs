@@ -40,6 +40,7 @@ namespace QZ.Service.Enterprise
             return endpoint.Address;
         }
 
+
         /// <summary>
         /// Set web operation context
         /// </summary>
@@ -351,7 +352,7 @@ namespace QZ.Service.Enterprise
             if (cache != null)
             {
                 cacheTimes = int.Parse(((object[])cache)[0].ToString());
-                cacheContent = ((object[])cache)[1].ToString();
+                cacheContent = ((object[])cache)[1].IsNotNull()? ((object[])cache)[1].ToString():"";
                 decimal similarity = TextDiff.Similar(content, cacheContent);
                 if (similarity == 1M)
                 {
@@ -376,7 +377,11 @@ namespace QZ.Service.Enterprise
 
         public static string BusinessStatus_Get(string od_ext)
         {
-            string BusinessStatus = null;
+            string BusinessStatus = "在业";
+            if (string.IsNullOrEmpty(od_ext) || od_ext.Contains("在业") || od_ext.Contains("迁入") || od_ext.Contains("确立") || od_ext.Contains("登记成立"))
+            {
+                BusinessStatus = "在业";
+            }
             if (od_ext.Contains("吊销"))
             {
                 BusinessStatus = "吊销";
@@ -407,7 +412,7 @@ namespace QZ.Service.Enterprise
             }
             else
             {
-                BusinessStatus = "正常";
+                BusinessStatus = "在业";
             }
             return BusinessStatus;
         }
@@ -417,5 +422,79 @@ namespace QZ.Service.Enterprise
 
         public static Response Normal_Resp_Create(string head, string body, EncryptType en_type = EncryptType.AES) =>
             new Response(head.ToEncryption(EncryptType.PT), body.ToEncryption(en_type));//.ToJson();
+
+        private static string DecimalHandle(string temp)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (temp.Contains("."))
+            {
+                temp = temp.TrimEnd('0').Replace(",", "").Replace("，","");
+
+                string[] temparr = temp.Split('.');
+
+                if (temparr[0].Length > 3)
+                {
+                    sb.Append(temparr[0].Substring(0, temparr[0].Length - 3));
+                    sb.Append(",");
+                    sb.Append(temparr[0].Substring(temparr[0].Length - 3, 3));
+                }
+                else
+                {
+                    sb.Append(temparr[0]);
+                }
+                if (temparr.Length == 2 && !string.IsNullOrEmpty(temparr[1]))
+                {
+                    sb.Append(".");
+                    sb.Append(temparr[1]);
+                }
+            }
+            else
+            {
+                temp = temp.Replace("，", ",");
+                if (temp.Length > 3 && !temp.Contains(","))
+                {
+                    sb.Append(temp.Substring(0, temp.Length - 3));
+                    sb.Append(",");
+                    sb.Append(temp.Substring(temp.Length - 3, 3));
+                }
+                else
+                {
+                    sb.Append(temp);
+                }
+            }
+            return sb.ToString();
+        }
+
+
+        public static string InvestMoneyHandle(string amount)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            string[] arr = null;
+            bool flag = false;
+            if (amount.Contains("("))
+            {
+                flag = true;
+                arr = amount.Split('(');
+            }
+            if (amount.Contains("（"))
+                arr = amount.Split('（');
+            if (arr != null && arr.Length == 2)
+            {
+                sb.Append(Util.DecimalHandle(arr[0]));
+                if (flag)
+                    sb.Append("(");
+                else
+                    sb.Append("（");
+                sb.Append(arr[1]);
+            }
+            else
+            {
+                sb.Append(Util.DecimalHandle(amount));
+            }
+
+            return sb.ToString();
+
+        }
     }
 }

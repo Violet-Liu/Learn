@@ -27,7 +27,7 @@ namespace QZ.Instrument.DataAccess
         #region Initlize DataAccess
         private string _key_0;
         private string _key_1;
-        
+
         /// <summary>
         /// 数据库连接
         /// </summary>
@@ -48,7 +48,7 @@ namespace QZ.Instrument.DataAccess
             {
                 if (_key_1 == null)
                     throw new ArgumentNullException("_key_1");
-                if(_db_1 == null)
+                if (_db_1 == null)
                     _db_1 = DatabaseFactory.CreateDatabase(_key_1);
                 return _db_1;
             }
@@ -101,7 +101,7 @@ namespace QZ.Instrument.DataAccess
 
         private void createSysLog(string table)
         {
-            
+
             DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand($"SELECT 1 FROM sysobjects WHERE id = OBJECT_ID('{table}') AND type = 'U'");
 
             object rtn = Db_0.ExecuteScalar(dbCommandWrapper);
@@ -207,8 +207,8 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddOutParameter(cmd, "@sh_id", DbType.Int32, 4);
             Db_0.AddInParameter(cmd, "@sh_oc_name", DbType.String, c.oc_name.To_Sql_Safe());
             Db_0.AddInParameter(cmd, "@sh_oc_area", DbType.String, c.oc_area.To_Sql_Safe());
-            Db_0.AddInParameter(cmd, "@sh_od_regMLower", DbType.Currency, string.IsNullOrEmpty(c.oc_reg_capital_floor)? 0 : decimal.Parse(c.oc_reg_capital_floor));
-            Db_0.AddInParameter(cmd, "@sh_od_regMUpper", DbType.Currency, string.IsNullOrEmpty(c.oc_reg_capital_ceiling) ? 0: decimal.Parse(c.oc_reg_capital_ceiling));
+            Db_0.AddInParameter(cmd, "@sh_od_regMLower", DbType.Currency, string.IsNullOrEmpty(c.oc_reg_capital_floor) ? 0 : decimal.Parse(c.oc_reg_capital_floor));
+            Db_0.AddInParameter(cmd, "@sh_od_regMUpper", DbType.Currency, string.IsNullOrEmpty(c.oc_reg_capital_ceiling) ? 0 : decimal.Parse(c.oc_reg_capital_ceiling));
             Db_0.AddInParameter(cmd, "@sh_od_regType", DbType.String, c.oc_reg_type.To_Sql_Safe());
             Db_0.AddInParameter(cmd, "@sh_oc_code", DbType.String, c.oc_code.To_Sql_Safe());
             Db_0.AddInParameter(cmd, "@sh_oc_number", DbType.String, c.oc_number.To_Sql_Safe());
@@ -405,7 +405,7 @@ namespace QZ.Instrument.DataAccess
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
                 var list = new List<string>();
-                while(reader.Read())
+                while (reader.Read())
                 {
                     list.Add(reader["bl_oc_code"].ToString());
                 }
@@ -459,7 +459,7 @@ namespace QZ.Instrument.DataAccess
             var list = new List<TradeEntity>(1000);
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     var id = reader["ts_id"].ToString();
                     if (!id.Contains("Q"))
@@ -491,7 +491,7 @@ namespace QZ.Instrument.DataAccess
             var list = new List<ProductEntity>(1000);
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     var p = new ProductEntity();
                     p.pc_name = reader["pc_name"].ToString();
@@ -640,7 +640,7 @@ namespace QZ.Instrument.DataAccess
             obj.oc_createUser = reader["oc_createUser"].ToString();
             obj.oc_createTime = (DateTime)reader["oc_createTime"];
             obj.oc_status = (bool)reader["oc_status"];
-
+            obj.oc_creditcode = reader["oc_creditcode"].ToString();
             object ut = reader["oc_updatetime"];
             if (ut != DBNull.Value)
                 obj.oc_updatetime = (DateTime)ut;
@@ -755,7 +755,7 @@ namespace QZ.Instrument.DataAccess
                 }
                 return lst;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -800,12 +800,12 @@ namespace QZ.Instrument.DataAccess
             var cmd = Db_0.GetStoredProcCommand(sp_Name);
             Db_0.AddInParameter(cmd, "@oc_code", DbType.String, string.Empty);
             var list = new List<Resp_Oc_Abs>();
-            foreach(var c in codes)
+            foreach (var c in codes)
             {
                 Db_0.SetParameterValue(cmd, "@oc_code", c);
                 using (IDataReader reader = Db_0.ExecuteReader(cmd))
                 {
-                    if(reader.Read())
+                    if (reader.Read())
                     {
                         var o = new Resp_Oc_Abs();
                         o.oc_addr = reader["oc_address"].ToString();
@@ -841,25 +841,31 @@ namespace QZ.Instrument.DataAccess
         }
         public List<OrgCompanyBrand> OrgCompanyBrand_Page_Select(DatabaseSearchModel s, string sp_Name)
         {
-            DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
-            Db_0.AddInParameter(cmd, "@Columns", DbType.String, s.Column);
-            Db_0.AddInParameter(cmd, "@Where", DbType.String, s.Where);
-            Db_0.AddInParameter(cmd, "@Order", DbType.String, s.Order);
-            Db_0.AddInParameter(cmd, "@Page", DbType.Int32, s.PageIndex);
-            Db_0.AddInParameter(cmd, "@PageSize", DbType.Int32, s.PageSize);
-            Db_0.AddInParameter(cmd, "@tableName", DbType.String, s.Table);
-            Db_0.AddOutParameter(cmd, "@rowCount", DbType.Int32, 4);
-            List<OrgCompanyBrand> lst = new List<OrgCompanyBrand>();
-            using (IDataReader reader = Db_0.ExecuteReader(cmd))
+            try
             {
-                while (reader.Read())
+                DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
+                Db_0.AddInParameter(cmd, "@Columns", DbType.String, s.Column);
+                Db_0.AddInParameter(cmd, "@Where", DbType.String, s.Where);
+                Db_0.AddInParameter(cmd, "@Order", DbType.String, s.Order);
+                Db_0.AddInParameter(cmd, "@Page", DbType.Int32, s.PageIndex);
+                Db_0.AddInParameter(cmd, "@PageSize", DbType.Int32, s.PageSize);
+                Db_0.AddInParameter(cmd, "@tableName", DbType.String, s.Table);
+                Db_0.AddOutParameter(cmd, "@rowCount", DbType.Int32, 4);
+                List<OrgCompanyBrand> lst = new List<OrgCompanyBrand>();
+                using (IDataReader reader = Db_0.ExecuteReader(cmd))
                 {
-                    var obj = OrgCompanyBrand_Map(reader);
-                    lst.Add(obj);
+                    while (reader.Read())
+                    {
+                        var obj = OrgCompanyBrand_Map(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
                 }
-                reader.NextResult();
+                return lst;
+            }catch(Exception ex)
+            {
+                throw ex;
             }
-            return lst;
         }
         public OrgCompanyBrand OrgCompanyBrand_Map(IDataReader reader)
         {
@@ -873,7 +879,7 @@ namespace QZ.Instrument.DataAccess
             //o.oe_brandProcess = reader["oe_brandProcess"].ToString();
             //o.oe_service = reader["oe_service"].ToString();
             //o.oe_serviceCode = reader["oe_serviceCode"].ToString();
-            
+
             o.ob_oc_code = reader["ob_oc_code"].ToString();
             o.ob_name = reader["ob_name"].ToString();
             o.ob_dlrmc = reader["ob_dlrmc"].ToString();
@@ -894,7 +900,7 @@ namespace QZ.Instrument.DataAccess
 
         public string BrandProcess_Get(string reg_no, string class_no)
         {
-            DbCommand cmd = Db_0.GetStoredProcCommand("Proc_OrgCompanyBrandExt_SelectByRegClassNo");
+            DbCommand cmd = Db_0.GetStoredProcCommand("Proc_OrgCompanyBrandExt_FromRegClass_Select");
             Db_0.AddInParameter(cmd, "@oe_ob_regNo", DbType.String, reg_no);
             Db_0.AddInParameter(cmd, "@oe_ob_classNo", DbType.String, class_no);
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
@@ -964,6 +970,16 @@ namespace QZ.Instrument.DataAccess
             return lst;
         }
 
+        public int OrgCompanyPatent_GetByoccode(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM OrgCompanyPatent WHERE oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
         public Tuple<List<Software_Abs>, int> Software_Page_Select(DatabaseSearchModel s, string sp_Name)
         {
             DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
@@ -978,7 +994,7 @@ namespace QZ.Instrument.DataAccess
             var list = new List<Software_Abs>();
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     var o = new Software_Abs();
                     //o.id = (int)reader["sc_id"];
@@ -988,6 +1004,8 @@ namespace QZ.Instrument.DataAccess
                     o.reg_date = ((DateTime)reader["sc_successDate"]).ToString("yyyy-MM-dd");
                     o.author = reader["sc_softAuthor"].ToString();
                     o.cat_no = reader["sc_typeNum"].ToString();
+                    o.version= reader["sc_version"].ToString();
+                    o.first_date = ((DateTime)reader["sc_firstDate"]).ToString("yyyy-MM-dd");
                     list.Add(o);
                 }
                 reader.NextResult();
@@ -1027,6 +1045,26 @@ namespace QZ.Instrument.DataAccess
                 int count = (int)cmd.Parameters["@rowCount"].Value;
                 return new Tuple<List<Product_Abs>, int>(list, count);
             }
+        }
+
+        public int Software_GetByoccode(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM SoftwareCopyright WHERE sc_oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
+        public int Product_GetByoccode(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM ProductCopyright WHERE pc_oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
         }
 
         public CompanyPatent OrgCompanyPatent_Map(IDataReader reader)
@@ -1071,6 +1109,17 @@ namespace QZ.Instrument.DataAccess
             }
             return lst;
         }
+
+        public int OrgCompanyDishonestt_GetByoccode(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM Shixin WHERE oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
         public List<ShixinIndex> OrgCompanyDishonest_Page_Select(DatabaseSearchModel s, string sp_Name)
         {
             DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
@@ -1103,6 +1152,8 @@ namespace QZ.Instrument.DataAccess
             x.sx_caseCode = reader["sx_caseCode"].ToString();
             x.sx_courtName = reader["sx_courtName"].ToString();
             x.sx_areaName = reader["sx_areaName"].ToString();
+            x.sx_gistUnit = reader["sx_gistUnit"].ToString();
+            x.sx_duty = reader["sx_duty"].ToString();
             return x;
         }
 
@@ -1203,7 +1254,7 @@ namespace QZ.Instrument.DataAccess
             var list = new List<Company_Sh>();
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     list.Add(Company_Sh_Map_0(reader));
                 }
@@ -1310,7 +1361,7 @@ namespace QZ.Instrument.DataAccess
             }
         }
 
-        public Dictionary<string, string> OrgCompany_Tel_Get(DatabaseSearchModel s, string sp_Name)
+        public Tuple<Dictionary<string, string>, Dictionary<string, string>> OrgCompany_Tel_Get(DatabaseSearchModel s, string sp_Name)
         {
             DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
             Db_0.AddInParameter(dbCommandWrapper, "@Columns", DbType.String, s.Column);
@@ -1321,20 +1372,29 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
             Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, s.Table);
 
-            var dict = new Dictionary<string, string>();
+            var dictPhone = new Dictionary<string, string>();
+            var dictemail = new Dictionary<string, string>();
             using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
             {
                 while (reader.Read())
                 {
                     string year = reader["year"].ToString();
-                    if (!dict.ContainsKey(year))
+                    if (!dictPhone.ContainsKey(year))
                     {
                         string tel = reader["phone"].ToString();
-                        dict.Add(year, tel);
+                        if (!string.IsNullOrEmpty(tel))
+                            dictPhone.Add(year, tel);
+                    }
+
+                    if(!dictemail.ContainsKey(year))
+                    {
+                        string email = reader["mail"].ToString();
+                        if (!string.IsNullOrEmpty(email))
+                            dictemail.Add(year, email);
                     }
                 }
 
-                return dict;
+                return new Tuple<Dictionary<string, string>, Dictionary<string, string>>(dictPhone, dictemail);
             }
         }
 
@@ -1345,6 +1405,7 @@ namespace QZ.Instrument.DataAccess
             sh.sh_name = reader["og_name"].ToString();
             sh.sh_money = (decimal)reader["og_subscribeAccount"];
             sh.sh_money_ratio = 0;
+            sh.sh_money_percent="";
             sh.sh_money_unit = reader["og_unit"].ToString();
             sh.sh_cat = reader["og_type"].ToString();
             //sh.sh_type = reader["og_type"].ToString();
@@ -1357,7 +1418,8 @@ namespace QZ.Instrument.DataAccess
             sh.oc_code = reader["og_oc_code"].ToString();
             sh.sh_name = reader["og_name"].ToString();
             sh.sh_money = (decimal)reader["og_money"];
-            sh.sh_money_ratio = Math.Round((decimal)reader["og_BL"]/100, 2);
+            sh.sh_money_ratio = Math.Round((decimal)reader["og_BL"]/100,2);
+            sh.sh_money_percent= (Math.Round((decimal)reader["og_BL"], 0)).ToString() + "%";
             sh.sh_money_unit = reader["og_unit"].ToString();
             sh.sh_cat = reader["og_pro"].ToString();
             sh.sh_type = reader["og_type"].ToString();
@@ -1378,13 +1440,26 @@ namespace QZ.Instrument.DataAccess
             var list = new List<OrgCompanyDtl_EvtInfo>();
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     list.Add(OrgCompanyDtl_Evt_Get(reader));
                 }
             }
             return list;
         }
+
+        public int OregCompanyDtl_Evt_GetByoccode(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM OrgCompanyDtl_Evt WHERE oe_oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
+
+
         private OrgCompanyDtl_EvtInfo OrgCompanyDtl_Evt_Get(IDataReader reader)
         {
             var info = new OrgCompanyDtl_EvtInfo();
@@ -1429,6 +1504,16 @@ namespace QZ.Instrument.DataAccess
             return lst;
         }
 
+        public int OrgCompanyGsxtBgsx_GetByoccode(string oc_code, string areaprefix)
+        {
+            string SQL = $"SELECT COUNT(*) FROM OrgCompanyGsxtBgsx_{areaprefix} WHERE oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
         public List<Company_Icpl> Company_Icpl_Select(string column, string where, string order, int pg_index, int pg_size, string sp_Name)
         {
             DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
@@ -1444,7 +1529,7 @@ namespace QZ.Instrument.DataAccess
             {
                 while (reader.Read())
                 {
-                    
+
                     lst.Add(Company_Icpl_Map(reader));
                 }
                 reader.NextResult();
@@ -1452,6 +1537,17 @@ namespace QZ.Instrument.DataAccess
 
             return lst;
         }
+
+        public int Company_Icpl_Count(string oc_code)
+        {
+            string SQL = $"SELECT COUNT(*) FROM OrgCompanySite WHERE ocs_oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
         public List<OrgCompanySiteInfo> OrgCompanySite_SelectPaged(DatabaseSearchModel s, string sp_Name)
         {
             DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
@@ -1500,7 +1596,7 @@ namespace QZ.Instrument.DataAccess
             obj.icpl_number = reader["ocs_number"].ToString();
             obj.icpl_name = reader["ocs_siteName"].ToString();
             obj.icpl_uri = reader["ocs_siteHomePage"].ToString();
-            obj.icpl_operate_status = (byte)reader["ocs_status"] == 0 ? "正常":"注销";
+            obj.icpl_operate_status = (byte)reader["ocs_status"] == 0 ? "正常" : "注销";
             obj.icpl_check_time = (DateTime)reader["ocs_checkTime"];
             obj.icpl_create_time = (DateTime)reader["ocs_createTime"];
             obj.icpl_ext = reader["ocs_ext"].ToString();
@@ -1534,6 +1630,15 @@ namespace QZ.Instrument.DataAccess
             return lst;
         }
 
+        public int Company_Annual_Abs_Count(string oc_code, string oc_areaprefix)
+        {
+            string SQL = $"SELECT COUNT(*) FROM OrgCompanyGsxtNb_{oc_areaprefix} where oc_code='{oc_code}'";
+            DbCommand command = Db_0.GetSqlStringCommand(SQL);
+            object obj = Db_0.ExecuteScalar(command);
+            int result = 0;
+            return int.TryParse(obj.ToString(), out result) ? result : 0;
+        }
+
         private Company_Annual_Abs Company_Annual_Abs_Map(IDataReader reader)
         {
             var obj = new Company_Annual_Abs();
@@ -1552,8 +1657,8 @@ namespace QZ.Instrument.DataAccess
 
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                
-                if(reader.Read())
+
+                if (reader.Read())
                 {
                     var d = Company_Annual_Dtl.Candidate;
                     d.annual = Annual_Company_Map(reader);
@@ -1584,7 +1689,7 @@ namespace QZ.Instrument.DataAccess
                 }
             }
         }
-        
+
         private Annual_Company Annual_Company_Map(IDataReader reader)
         {
             var a = new Annual_Company();
@@ -1595,8 +1700,9 @@ namespace QZ.Instrument.DataAccess
             a.oc_post = reader["postCode"].ToString();
             a.oc_addr = reader["address"].ToString();
             a.oc_email = reader["mail"].ToString();
-            a.flag_stock_transfer = (byte)reader["shareTransfer"]==1;
-            a.flag_other_stock = (byte)reader["otherShare"]==1;
+            a.flag_stock_transfer = (byte)reader["shareTransfer"] == 1;
+            a.numbers = reader["numbers"].ToString();
+            a.flag_other_stock = (byte)reader["otherShare"] == 1;
             a.flag_website = (byte)reader["webSite"] == 1;
             a.oc_status = reader["runStatus"].ToString();
             a.oc_assets = reader["totalAssets"].ToString();
@@ -1614,7 +1720,7 @@ namespace QZ.Instrument.DataAccess
         private List<Annual_Oc_Warranty> Annual_Oc_Warranty_Get(IDataReader reader)
         {
             var list = new List<Annual_Oc_Warranty>();
-            
+
             while (reader.Read())
             {
                 var w = new Annual_Oc_Warranty();
@@ -1635,8 +1741,8 @@ namespace QZ.Instrument.DataAccess
         private List<Annual_Oc_Invest> Annual_Oc_Invest_Get(IDataReader reader)
         {
             var list = new List<Annual_Oc_Invest>();
-            
-            while(reader.Read())
+
+            while (reader.Read())
             {
                 var i = new Annual_Oc_Invest();
                 i.oc_code = reader["oc_code"].ToString();
@@ -1650,7 +1756,7 @@ namespace QZ.Instrument.DataAccess
         private List<Annual_Sh_Contribute> Annual_Sh_Contribute_Get(IDataReader reader)
         {
             var list = new List<Annual_Sh_Contribute>();
-            while(reader.Read())
+            while (reader.Read())
             {
                 var c = new Annual_Sh_Contribute();
                 c.oc_code = reader["oc_code"].ToString();
@@ -1666,12 +1772,11 @@ namespace QZ.Instrument.DataAccess
             }
             return list;
         }
-
         private List<Annual_Stock_Change> Annual_Stock_Change_Get(IDataReader reader)
         {
             var list = new List<Annual_Stock_Change>();
-            
-            while(reader.Read())
+
+            while (reader.Read())
             {
                 var c = new Annual_Stock_Change();
                 c.oc_code = reader["oc_code"].ToString();
@@ -1684,12 +1789,11 @@ namespace QZ.Instrument.DataAccess
             }
             return list;
         }
-
         private List<Annual_Oc_Site> Annual_Oc_Site_Get(IDataReader reader)
         {
             var list = new List<Annual_Oc_Site>();
-            
-            while(reader.Read())
+
+            while (reader.Read())
             {
                 var s = new Annual_Oc_Site();
                 s.oc_code = reader["oc_code"].ToString();
@@ -1704,8 +1808,8 @@ namespace QZ.Instrument.DataAccess
         private List<Annual_Oc_Change> Annual_Oc_Change_Get(IDataReader reader)
         {
             var list = new List<Annual_Oc_Change>();
-            
-            while(reader.Read())
+
+            while (reader.Read())
             {
                 var c = new Annual_Oc_Change();
                 c.oc_code = reader["oc_code"].ToString();
@@ -1746,13 +1850,68 @@ namespace QZ.Instrument.DataAccess
 
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                if(reader.Read())
+                if (reader.Read())
                 {
                     return (int)reader["fl_valid"] == 1;
                 }
                 return false;
             }
         }
+        public int Company_Favorite_GetByUidAndOccode(int u_id, string oc_code, string sp_Name)
+        {
+            int g_gid = 0;
+            try
+            {
+                DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
+                Db_0.AddInParameter(cmd, "@fl_u_uid", DbType.Int32, u_id);
+                Db_0.AddInParameter(cmd, "@fl_oc_code", DbType.String, oc_code);
+
+                using (IDataReader reader = Db_0.ExecuteReader(cmd))
+                {
+                    if (reader.Read())
+                    {
+                        g_gid = (int)reader["fl_g_gid"];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return g_gid;
+        }
+
+        public List<Favorite_Log> Company_Favorite_GetByUidAndGid(int u_id, int g_id, string sp_Name, out int count)
+        {
+
+            DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(cmd, "@fl_u_uid", DbType.Int32, u_id);
+            Db_0.AddInParameter(cmd, "@fl_g_gid", DbType.String, g_id);
+
+            List<Favorite_Log> lst = new List<Favorite_Log>();
+            using (IDataReader reader = Db_0.ExecuteReader(cmd))
+            {
+                while (reader.Read())
+                {
+                    Favorite_Log obj = new Favorite_Log();
+                    obj.favorite_id = (int)reader["fl_id"];
+                    obj.oc_name = reader["fl_oc_name"].ToString();
+                    obj.oc_code = reader["fl_oc_code"].ToString();
+                    //obj.fl_u_name = reader["fl_u_name"].ToString();
+                    //obj.fl_u_uid = (int)reader["fl_u_uid"];
+                    obj.favorite_date = ((DateTime)reader["fl_date"]).ToString("yyyy-MM-dd");
+                    //obj.fl_valid = (int)reader["fl_valid"];
+                    obj.oc_area = reader["fl_oc_area"].ToString();
+                    obj.g_gid = (int)reader["fl_g_gid"];
+                    lst.Add(obj);
+                }
+                reader.NextResult();
+
+                count = (int)cmd.Parameters["@rowCount"].Value;
+            }
+            return lst;
+        }
+
         public FavoriteViewTraceInfo FavoriteViewTrace_Select(int u_id, string oc_code, string sp_Name)
         {
             DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
@@ -1784,7 +1943,7 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(cmd, "@fl_date", DbType.DateTime, obj.fl_date);
             Db_0.AddInParameter(cmd, "@fl_valid", DbType.Int32, obj.fl_valid);
             Db_0.AddInParameter(cmd, "@fl_oc_area", DbType.String, obj.fl_oc_area);
-
+            Db_0.AddInParameter(cmd, "@fl_g_gid", DbType.String, obj.fl_g_gid);
             Db_0.ExecuteNonQuery(cmd);
             int fl_id = (int)cmd.Parameters["@fl_id"].Value;
 
@@ -2021,7 +2180,7 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(cmd, "@ctt_tag", DbType.String, info.ctt_tag);
 
             int _returnValue = Db_0.ExecuteNonQuery(cmd);
-            return  (int)cmd.Parameters["@ctt_id"].Value;
+            return (int)cmd.Parameters["@ctt_id"].Value;
         }
         public int TopicUsersTrace_Insert(TopicUsersTraceInfo info, string sp_Name)
         {
@@ -2085,7 +2244,7 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(cmd, "@cti_url", DbType.String, info.cti_url);
 
             int count = 0;
-            foreach(var uri in uris)
+            foreach (var uri in uris)
             {
                 Db_0.SetParameterValue(cmd, "@cti_url", uri);
                 try
@@ -2106,7 +2265,7 @@ namespace QZ.Instrument.DataAccess
             var dtl = new Judge_Dtl();
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                if(reader.Read())
+                if (reader.Read())
                 {
                     dtl.content = reader["jd_docContent"].ToString();
                     dtl.jdg_oc_code = reader["oc_code"].ToString();
@@ -2201,7 +2360,7 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(cmd, "@ob_id", DbType.Int32, id);
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                if(reader.Read())
+                if (reader.Read())
                 {
                     var d = new Brand_Dtl();
                     d.agent = reader["ob_dlrmc"].ToString();
@@ -2262,7 +2421,7 @@ namespace QZ.Instrument.DataAccess
                 #region `brand_extension` table
                 if (reader.Read())
                 {
-                    
+
 
                     //d.oc_code = reader["ob_oc_code"].ToString();
                     var service = reader["oe_service"].ToString();
@@ -2274,7 +2433,7 @@ namespace QZ.Instrument.DataAccess
                         if (!string.IsNullOrEmpty(code))
                         {
                             var codes = code.Split(';');
-                            int len = services.Length > codes.Length ? code.Length : services.Length;
+                            int len = services.Length > codes.Length ? codes.Length : services.Length;
                             for (int i = 0; i < len; i++)
                             {
                                 services[i] = $"{services[i]} ({codes[i]})";
@@ -2303,11 +2462,11 @@ namespace QZ.Instrument.DataAccess
                     else
                         d.process_list = new List<Brand_Process>();
 
-                    
+
                 }
 
                 #endregion
-                if(reader.NextResult() && reader.Read())
+                if (reader.NextResult() && reader.Read())
                 {
                     d.agent = reader["ob_dlrmc"].ToString();
                     d.oc_code = reader["ob_oc_code"].ToString();
@@ -2338,9 +2497,9 @@ namespace QZ.Instrument.DataAccess
                     lst.Add(a);
                 }
             }
-            foreach(var l in lst)
+            foreach (var l in lst)
             {
-                Db_0.SetParameterValue(cmd, "@where",  $"where len([a_code])=4 and a_code like '{l.a_code}%'");
+                Db_0.SetParameterValue(cmd, "@where", $"where len([a_code])=4 and a_code like '{l.a_code}%'");
                 using (IDataReader reader = Db_0.ExecuteReader(cmd))
                 {
                     l.children = new List<City>();
@@ -2411,7 +2570,7 @@ namespace QZ.Instrument.DataAccess
                     obj.topic_date = (DateTime)reader["ctt_date"];
                     obj.oc_area = reader["ctt_oc_area"].ToString();
                     obj.u_face = reader["ctt_u_face"].ToString();
-                    obj.topic_tag = reader["ctt_tag"]?.ToString()??string.Empty;
+                    obj.topic_tag = reader["ctt_tag"]?.ToString() ?? string.Empty;
                     obj.topic_id = (int)reader["ctt_id"];
                     lst.Add(obj);
                 }
@@ -2746,9 +2905,9 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, search.PageSize);
             Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
             var list = new List<string>();
-            using(IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+            using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
                     list.Add(reader["sh_str"].ToString());
                 }
@@ -2759,7 +2918,7 @@ namespace QZ.Instrument.DataAccess
         {
             DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
             Db_0.AddInParameter(dbCommandWrapper, "@Columns", DbType.String, search.Column);
-            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, string.Format("SearchHistory_{0:D3}", u_id%256));
+            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, string.Format("SearchHistory_{0:D3}", u_id % 256));
             Db_0.AddInParameter(dbCommandWrapper, "@Where", DbType.String, search.Where);
             Db_0.AddInParameter(dbCommandWrapper, "@Order", DbType.String, search.Order);
             Db_0.AddInParameter(dbCommandWrapper, "@Page", DbType.Int32, search.PageIndex);
@@ -2848,9 +3007,10 @@ namespace QZ.Instrument.DataAccess
                     obj.oc_code = reader["fl_oc_code"].ToString();
                     //obj.fl_u_name = reader["fl_u_name"].ToString();
                     //obj.fl_u_uid = (int)reader["fl_u_uid"];
-                    obj.favorite_date = ((DateTime)reader["fl_date"]).ToString("yyyy-MM-dd:hh-mm-ss");
+                    obj.favorite_date = ((DateTime)reader["fl_date"]).ToString("yyyy-MM-dd");
                     //obj.fl_valid = (int)reader["fl_valid"];
                     obj.oc_area = reader["fl_oc_area"].ToString();
+                    obj.g_gid = (int)reader["fl_g_gid"];
                     lst.Add(obj);
                 }
                 reader.NextResult();
@@ -2861,6 +3021,13 @@ namespace QZ.Instrument.DataAccess
 
             return lst;
         }
+
+        public bool Favorite_Exsit_byUidAndOccode(string oc_code,int u_id)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($"select count(*) from favoritelog where fl_oc_code='{oc_code}' and fl_u_uid={u_id} and fl_valid=1 ");
+            return (int)Db_0.ExecuteScalar(command) > 0;
+        }
+
         public List<Oc_Notice> FavoriteTraces_Get(DatabaseSearchModel search, string sp_Name, out int count)
         {
             DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_Favorite_View_Trace_SelectPaged");
@@ -3071,6 +3238,12 @@ namespace QZ.Instrument.DataAccess
                 return reader.Read();
             }
         }
+        public string User_ClientID_Getbyu_id(int u_id)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($"SELECT top 1 u_clientID From users where u_id={u_id}");
+            return Db_0.ExecuteScalar(command) == null ? "" : Db_0.ExecuteScalar(command).ToString();
+        }
+
         public User_Mini_Info User_FromId_Select(int u_id)
         {
             DbCommand cmd = Db_0.GetStoredProcCommand("Proc_Users_Selectbyu_uid");
@@ -3275,6 +3448,22 @@ namespace QZ.Instrument.DataAccess
             int u_id = (int)cmd.Parameters["@u_id"].Value;
             return u_id;
         }
+
+        public void User_Ifda_Insert(string idfa)
+        {
+
+            string SQL = $"if not exists(SELECT * FROM User_Idfa where idfa='{idfa}') INSERT INTO User_idfa(idfa)values('{idfa}')";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int User_ClientID_Insert(int u_id, string u_clientID)
+        {
+            string SQL = $"UPDATE USERS SET u_clientID='{u_clientID}' WHERE u_id={u_id}";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
         private UserInfo GetUser(IDataReader reader)
         {
             UserInfo obj = new UserInfo();
@@ -3649,7 +3838,7 @@ namespace QZ.Instrument.DataAccess
 
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
-                if(reader.Read())
+                if (reader.Read())
                 {
                     var i = new User_Append_Info();
                     i.u_business = reader["uai_business"].ToString();
@@ -3828,7 +4017,7 @@ namespace QZ.Instrument.DataAccess
             using (IDataReader reader = Db_0.ExecuteReader(cmd))
             {
                 var list = new List<int>();
-                while(reader.Read())
+                while (reader.Read())
                 {
                     list.Add((int)reader["atr_teizi"]);
                 }
@@ -3924,7 +4113,7 @@ namespace QZ.Instrument.DataAccess
             Db_0.AddInParameter(dbCommandWrapper, "@all_u_uid", DbType.Int32, info.all_u_uid);
             Db_0.AddInParameter(dbCommandWrapper, "@all_type", DbType.Int32, 1);
 
-            if(Db_0.ExecuteNonQuery(dbCommandWrapper) > 0)  // succeed to cancel up, then vote down
+            if (Db_0.ExecuteNonQuery(dbCommandWrapper) > 0)  // succeed to cancel up, then vote down
             {
                 info.all_type = 2;
                 info.all_valid = 1;
@@ -4365,7 +4554,35 @@ namespace QZ.Instrument.DataAccess
                     //obj.ee_id = (int)reader["ee_id"];
                     //obj.ee_md = reader["ee_md"].ToString();
                     obj.oc_name = reader["ee_company"].ToString();
+                    if (obj.oc_name.Length < 5)
+                    {
+                        continue;
+                    }
+                    if (obj.oc_name.Contains(":") || obj.oc_name.Contains("："))
+                    {
+                        var segs = obj.oc_name.Split(new char[] { ':', '：' });
+                        if (segs.Length == 2 || segs[1].Length > 0)
+                        {
+                            obj.oc_name = segs[1];
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    if (obj.oc_name.StartsWith("公司"))
+                    {
+                        obj.oc_name = obj.oc_name.Substring(2);
+                        if (obj.oc_name.Length < 5)
+                        {
+                            continue;
+                        }
+                    }
                     obj.oc_code = reader["ee_oc_code"].ToString();
+                    if (obj.oc_code == null && obj.oc_code == "000000000")
+                    {
+                        continue;
+                    }
                     obj.oc_addr = reader["ee_address"].ToString();
                     //obj.ee_contact = reader["ee_contact"].ToString();
                     obj.oc_tel = reader["ee_phone"].ToString();
@@ -4427,6 +4644,2489 @@ namespace QZ.Instrument.DataAccess
             return new ExhibitDtl();
         }
 
+        public List<CertificationInfo> CertificateDtl_Get(int ci_id, string sp_Name)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@ci_id", DbType.String, ci_id);
 
+            try
+            {
+                List<CertificationInfo> lst = new List<CertificationInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        CertificationInfo obj = getCertificationInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        #region [CertificationInfo_SelectPaged]
+        public List<CertificationInfo> Certificatelst_Get(DatabaseSearchModel model, string sp_Name, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<CertificationInfo> lst = new List<CertificationInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        CertificationInfo obj = getCertificationInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private CertificationInfo getCertificationInfo(IDataReader reader)
+        {
+            CertificationInfo obj = new CertificationInfo();
+            obj.ci_id = (int)reader["ci_id"];
+            obj.ci_certNo = reader["ci_certNo"].ToString();
+            obj.ci_certStatus = reader["ci_certStatus"].ToString();
+            obj.ci_issuedCompanyName = reader["ci_issuedCompanyName"].ToString();
+            obj.ci_expiredDate = (DateTime)reader["ci_expiredDate"];
+            obj.ci_certificationProgram = reader["ci_certificationProgram"].ToString();
+            obj.ci_oc_name = reader["ci_oc_name"].ToString();
+            obj.ci_oc_code = reader["ci_oc_code"].ToString();
+            obj.ci_detailInfo = reader["ci_detailInfo"].ToString();
+            obj.ci_detailInfoUrl = reader["ci_detailInfoUrl"].ToString();
+            obj.ci_addTime = (DateTime)reader["ci_addTime"];
+            obj.ci_updateTime = (DateTime)reader["ci_updateTime"];
+
+            return obj;
+        }
+        #endregion
+
+        public List<OrgGS1RegListInfo> OrgGS1RegList_Get(DatabaseSearchModel model, string sp_Name, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<OrgGS1RegListInfo> lst = new List<OrgGS1RegListInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgGS1RegListInfo obj = new OrgGS1RegListInfo();
+                        obj.ori_id = (int)reader["ori_id"];
+                        obj.ori_oc_code = reader["ori_oc_code"].ToString();
+                        obj.ori_code = reader["ori_code"].ToString();
+                        //obj.ori_gsid = (int)reader["ori_gsid"];
+                        obj.ori_name = reader["ori_name"].ToString();
+                        obj.ori_address = reader["ori_address"].ToString();
+                        //obj.ori_contactMan = reader["ori_contactMan"].ToString();
+                        obj.ori_contactPhone = reader["ori_contactPhone"].ToString();
+                        //obj.ori_logoutDate = reader["ori_logoutDate"].ToString();
+                        obj.ori_status = reader["ori_status"].ToString();
+                        //obj.ori_validDate = (DateTime)reader["ori_validDate"];
+                        //obj.ori_updatetime = (DateTime)reader["ori_updatetime"];
+                        //obj.ori_createTime = (DateTime)reader["ori_createTime"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgGS1ItemInfo> OrgGS1InvList_Get(DatabaseSearchModel model, string sp_Name, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<OrgGS1ItemInfo> lst = new List<OrgGS1ItemInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgGS1ItemInfo obj = new OrgGS1ItemInfo();
+                        obj.ogs_id = (int)reader["ogs_id"];
+                        obj.ogs_ori_code = reader["ogs_ori_code"].ToString();
+                        obj.ogs_oc_code = reader["ogs_oc_code"].ToString();
+                        obj.ogs_code = reader["ogs_code"].ToString();
+                        obj.ogs_alermCount = (int)reader["ogs_alermCount"];
+                        obj.ogs_honestCount = (int)reader["ogs_honestCount"];
+                        obj.ogs_qualificationCount = (int)reader["ogs_qualificationCount"];
+                        obj.ogs_recallCount = (int)reader["ogs_recallCount"];
+                        obj.ogs_itemGrossWeight = reader["ogs_itemGrossWeight"].ToString();
+                        obj.ogs_itemNetContent = reader["ogs_itemNetContent"].ToString();
+                        obj.ogs_itemNetWeight = reader["ogs_itemNetWeight"].ToString();
+                        obj.ogs_itemClassCode = reader["ogs_itemClassCode"].ToString();
+                        obj.ogs_itemPackagingTypeCode = reader["ogs_itemPackagingTypeCode"].ToString();
+                        obj.ogs_itemDepth = reader["ogs_itemDepth"].ToString();
+                        obj.ogs_itemHeight = reader["ogs_itemHeight"].ToString();
+                        obj.ogs_itemWidth = reader["ogs_itemWidth"].ToString();
+                        obj.ogs_batch = reader["ogs_batch"].ToString();
+                        obj.ogs_itemPackagingMaterialCode = reader["ogs_itemPackagingMaterialCode"].ToString();
+                        obj.ogs_updateTime = (DateTime)reader["ogs_updateTime"];
+                        obj.ogs_createTime = (DateTime)reader["ogs_createTime"];
+                        obj.ogs_itemName = reader["ogs_itemName"].ToString();
+                        obj.ogs_brandName = reader["ogs_brandName"].ToString();
+                        obj.ogs_imagePath = reader["ogs_imagePath"].ToString();
+                        obj.ogs_originalImageUrl = reader["ogs_originalImageUrl"].ToString();
+                        obj.ogs_itemSpecification = reader["ogs_itemSpecification"].ToString();
+                        obj.ogs_imageDescription = reader["ogs_imageDescription"].ToString();
+                        obj.ogs_itemShortDescription = reader["ogs_itemShortDescription"].ToString();
+                        obj.ogs_itemDescription = reader["ogs_itemDescription"].ToString();
+                        obj.ogs_QS = reader["ogs_QS"].ToString();
+                        obj.ogs_productEx = reader["ogs_productEx"].ToString();
+                        obj.ogs_productFangWei = reader["ogs_productFangWei"].ToString();
+                        obj.ogs_keepOnRecord = reader["ogs_keepOnRecord"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// 商品详情 ogs_id
+        /// </summary>
+        /// <param name="ogs_id"></param>
+        /// <returns></returns>
+        public OrgGS1ItemInfo OrgGS1Item_Selectbyogs_id(int ogs_id)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgGS1Item_Selectbyogs_id");
+            Db_0.AddInParameter(dbCommandWrapper, "@ogs_id", DbType.Int32, ogs_id);
+
+            try
+            {
+
+                OrgGS1ItemInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+                        obj = new OrgGS1ItemInfo();
+                        obj.ogs_id = (int)reader["ogs_id"];
+                        obj.ogs_ori_code = reader["ogs_ori_code"].ToString();
+                        obj.ogs_oc_code = reader["ogs_oc_code"].ToString();
+                        obj.ogs_code = reader["ogs_code"].ToString();
+                        obj.ogs_alermCount = (int)reader["ogs_alermCount"];
+                        obj.ogs_honestCount = (int)reader["ogs_honestCount"];
+                        obj.ogs_qualificationCount = (int)reader["ogs_qualificationCount"];
+                        obj.ogs_recallCount = (int)reader["ogs_recallCount"];
+                        obj.ogs_itemGrossWeight = reader["ogs_itemGrossWeight"].ToString();
+                        obj.ogs_itemNetContent = reader["ogs_itemNetContent"].ToString();
+                        obj.ogs_itemNetWeight = reader["ogs_itemNetWeight"].ToString();
+                        obj.ogs_itemClassCode = reader["ogs_itemClassCode"].ToString();
+                        obj.ogs_itemPackagingTypeCode = reader["ogs_itemPackagingTypeCode"].ToString();
+                        obj.ogs_itemDepth = reader["ogs_itemDepth"].ToString();
+                        obj.ogs_itemHeight = reader["ogs_itemHeight"].ToString();
+                        obj.ogs_itemWidth = reader["ogs_itemWidth"].ToString();
+                        obj.ogs_batch = reader["ogs_batch"].ToString();
+                        obj.ogs_itemPackagingMaterialCode = reader["ogs_itemPackagingMaterialCode"].ToString();
+                        obj.ogs_updateTime = (DateTime)reader["ogs_updateTime"];
+                        obj.ogs_createTime = (DateTime)reader["ogs_createTime"];
+                        obj.ogs_itemName = reader["ogs_itemName"].ToString();
+                        obj.ogs_brandName = reader["ogs_brandName"].ToString();
+                        obj.ogs_imagePath = reader["ogs_imagePath"].ToString();
+                        obj.ogs_originalImageUrl = reader["ogs_originalImageUrl"].ToString();
+                        obj.ogs_itemSpecification = reader["ogs_itemSpecification"].ToString();
+                        obj.ogs_imageDescription = reader["ogs_imageDescription"].ToString();
+                        obj.ogs_itemShortDescription = reader["ogs_itemShortDescription"].ToString();
+                        obj.ogs_itemDescription = reader["ogs_itemDescription"].ToString();
+                        obj.ogs_QS = reader["ogs_QS"].ToString();
+                        obj.ogs_productEx = reader["ogs_productEx"].ToString();
+                        obj.ogs_productFangWei = reader["ogs_productFangWei"].ToString();
+                        obj.ogs_keepOnRecord = reader["ogs_keepOnRecord"].ToString();
+                    }
+                }
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<Favorite_Group> FavoriteGroups_Selectbyu_uid(int u_uid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_FavoriteGroup_Selectbyu_uid");
+            Db_0.AddInParameter(dbCommandWrapper, "@u_uid", DbType.Int64, u_uid);
+
+            List<Favorite_Group> lst = new List<Favorite_Group>();
+            using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+            {
+                while (reader.Read())
+                {
+                    Favorite_Group obj = new Favorite_Group();
+                    obj.g_gid = (int)reader["g_gid"];
+                    obj.u_uid = (int)reader["u_uid"];
+                    obj.g_name = reader["g_name"].ToString();
+                    obj.fl_count = (int)reader["fl_count"];
+                    lst.Add(obj);
+                }
+                reader.NextResult();
+            }
+            return lst;
+        }
+
+
+
+        public int FavoriteGroup_Insert(Favorite_Group obj, string sp_Name)
+        {
+
+            DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddOutParameter(cmd, "@g_gid", DbType.Int32, 4);
+            Db_0.AddInParameter(cmd, "@u_uid", DbType.Int32, obj.u_uid);
+            Db_0.AddInParameter(cmd, "@g_name", DbType.String, obj.g_name);
+            Db_0.AddInParameter(cmd, "@fl_count", DbType.String, obj.fl_count);
+
+            Db_0.ExecuteNonQuery(cmd);
+            int g_gid = (int)cmd.Parameters["@g_gid"].Value;
+
+            return g_gid;
+
+        }
+
+        public int FavoriteGroup_UpdateName(Favorite_Group obj)
+        {
+            try
+            {
+                var table = $"FavoriteGroup";
+
+                string SQL = string.Format(@"UPDATE {0} SET g_name=@g_name  WHERE g_gid=@g_gid ", table);
+
+                DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+                Db_0.AddInParameter(dbCommandWrapper, "@g_gid", DbType.String, obj.g_gid);
+                Db_0.AddInParameter(dbCommandWrapper, "@g_name", DbType.String, obj.g_name);
+                return Db_0.ExecuteNonQuery(dbCommandWrapper);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public int FavoriteGroup_UpdateCount(bool isAdd, int g_gid)
+        {
+            var table = $"FavoriteGroup";
+            string SQL = string.Empty;
+            if (isAdd)
+                SQL = string.Format(@"UPDATE {0} SET fl_count=fl_count+1  WHERE g_gid=@g_gid ", table);
+            else
+                SQL = string.Format(@"UPDATE {0} SET fl_count=fl_count-1  WHERE g_gid=@g_gid ", table);
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            Db_0.AddInParameter(dbCommandWrapper, "@g_gid", DbType.String, g_gid);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int FavoriteGroup_SetCount(int g_gid, int count)
+        {
+            string SQL = $"UPDATE FavoriteGroup SET fl_count={count} where g_gid={g_gid}";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int FavoriteGroup_SetCount(int g_gid)
+        {
+            string SQL = $"update favoritegroup set fl_count=(select count(fl_id) from favoritelog where fl_g_gid={g_gid}) where g_gid={g_gid}";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int Favorite_Into_Group(string fl_ids, int g_gid, int count)
+        {
+            string SQL = $"UPDATE favoritelog SET fl_g_gid={g_gid} where fl_id in ({fl_ids});Update favoritegroup set fl_count=fl_count+{count} where g_gid={g_gid} ";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int Favorite_Into_Group(int u_uid,string oc_code,int g_gid)
+        {
+            string SQL = $"UPDATE favoritelog set fl_g_gid={g_gid} where fl_u_uid={u_uid} and fl_oc_code='{oc_code}'";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public int FavoriteGroup_Del(int g_gid, string sp_Name)
+        {
+            DbCommand cmd = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(cmd, "@g_gid", DbType.Int32, g_gid);
+            return Db_0.ExecuteNonQuery(cmd);
+        }
+
+        public int Favorite_Note_Create(int fl_id, string note)
+        {
+            DbCommand cmd = Db_0.GetSqlStringCommand($"Insert into FavoriteNote values('{fl_id}','{note}',getdate())");
+            return Db_0.ExecuteNonQuery(cmd);
+        }
+
+        public int Favorite_Note_Update(long n_id, string note)
+        {
+            DbCommand cmd = Db_0.GetSqlStringCommand($"UPDATE FavoriteNote SET note='{note}',create_date=getdate() where id={n_id}");
+
+            return Db_0.ExecuteNonQuery(cmd);
+        }
+
+        public int Favorite_Note_Del(long n_id)
+        {
+            DbCommand cmd = Db_0.GetSqlStringCommand($"DELETE From FavoriteNote where id={n_id}");
+
+            return Db_0.ExecuteNonQuery(cmd);
+        }
+
+        public List<Favorite_Note> FavoriteNote_SelectPaged(DatabaseSearchModel model)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_FavoriteNote_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            List<Favorite_Note> lst = new List<Favorite_Note>();
+            using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+            {
+                while (reader.Read())
+                {
+                    Favorite_Note obj = new Favorite_Note();
+                    obj.n_id = (long)reader["id"];
+                    obj.fl_id = (int)reader["fl_id"];
+                    obj.note = reader["note"].ToString();
+                    lst.Add(obj);
+                }
+                reader.NextResult();
+            }
+            return lst;
+        }
+
+        public Favorite_Note FavoriteNote_top(int fl_id)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand($"SELECT TOP 1 * From FavoriteNote where id={fl_id} ORDER BY CREATE_date DESC");
+            List<Favorite_Note> lst = new List<Favorite_Note>();
+            using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+            {
+                while (reader.Read())
+                {
+                    Favorite_Note obj = new Favorite_Note();
+                    obj.n_id = (long)reader["id"];
+                    obj.fl_id = (int)reader["fl_id"];
+                    obj.note = reader["note"].ToString();
+                    lst.Add(obj);
+                }
+                reader.NextResult();
+            }
+            return lst.Count > 0 ? lst[0] : new Favorite_Note();
+        }
+        public int Favorite_Out_Group(int fl_id)
+        {
+            string SQL = $"UPDATE favoritelog SET fl_g_gid=0 where fl_id = {fl_id};UPDATE favoritegroup set fl_count=fl_count-1 where g_gid=(select fl_g_gid from favoritelog where fl_id={fl_id}) ";
+            DbCommand dbCommandWrapper = Db_0.GetSqlStringCommand(SQL);
+            return Db_0.ExecuteNonQuery(dbCommandWrapper);
+        }
+
+        public List<UNSPSC_CNInfo> UNSPSC_CN_SelectPaged(string columns, string where, string order, int page, int pagesize, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_UNSPSC_CN_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, columns);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, page);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, pagesize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<UNSPSC_CNInfo> lst = new List<UNSPSC_CNInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        UNSPSC_CNInfo obj = new UNSPSC_CNInfo();
+                        obj.id = (int)reader["id"];
+                        obj.cate = reader["cate"].ToString();
+                        obj.name_en = reader["name_en"].ToString();
+                        obj.name_cn = reader["name_cn"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<QZEmployInfo> QZEmploy_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_QZEmploy_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<QZEmployInfo> lst = new List<QZEmployInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        QZEmployInfo obj = getQZEmployInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private QZEmployInfo getQZEmployInfo(IDataReader reader)
+        {
+            QZEmployInfo obj = new QZEmployInfo();
+            obj.id = (int)reader["ID"];
+            obj.ep_code = reader["ep_code"].ToString();
+            obj.ep_CompanyName = reader["ep_CompanyName"].ToString();
+            obj.ep_Date = ((DateTime)reader["ep_Date"]).ToString("yyyy-MM-dd");
+            obj.ep_UpdateTime = ((DateTime)reader["ep_UpdateTime"]).ToString("yyyy-MM-dd");
+            obj.ep_Name = reader["ep_Name"].ToString();
+            obj.ep_Type = reader["ep_Type"].ToString();
+            obj.ep_Keys = reader["ep_Keys"].ToString();
+            obj.ep_PriceTxt = reader["ep_PriceTxt"].ToString();
+            obj.ep_PriceL = (int)reader["ep_PriceL"];
+            obj.ep_PriceH = (int)reader["ep_PriceH"];
+            obj.ep_Property = reader["ep_Property"].ToString();
+            obj.ep_Welfare = reader["ep_Welfare"].ToString();
+            obj.ep_YearsReq = reader["ep_YearsReq"].ToString();
+            obj.ep_EduReq = reader["ep_EduReq"].ToString();
+            obj.ep_Count = (int)reader["ep_Count"];
+            obj.ep_duty = reader["ep_duty"].ToString();
+            obj.ep_Des = reader["ep_Des"].ToString();
+            obj.ep_City = reader["ep_City"].ToString();
+            obj.ep_Area = reader["ep_Area"].ToString();
+            obj.ep_Addr = reader["ep_Addr"].ToString();
+            obj.ep_Link = reader["ep_Link"].ToString();
+            obj.ep_CLink = reader["ep_CLink"].ToString();
+            obj.ep_PlatformName = reader["ep_PlatformName"].ToString();
+            obj.ep_CollectTime = ((DateTime)reader["ep_CollectTime"]).ToString("yyyy-MM-dd");
+            obj.ep_CollectID = reader["ep_CollectID"].ToString();
+            obj.ep_Phone = reader["ep_Phone"].ToString();
+            obj.ep_SearchCity = reader["ep_SearchCity"].ToString();
+            obj.ep_SearchClass = reader["ep_SearchClass"].ToString();
+
+
+            return obj;
+        }
+
+        public List<ZhiXingInfo> ExecuteInfo_Get(int zx_id, string sp_Name)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@zx_id", DbType.String, zx_id);
+
+            try
+            {
+                List<ZhiXingInfo> lst = new List<ZhiXingInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ZhiXingInfo obj = getZhiXingInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<QZEmployInfo> EmployInfo_Get(int ci_id, string sp_Name)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand(sp_Name);
+            Db_0.AddInParameter(dbCommandWrapper, "@ID", DbType.String, ci_id);
+
+            try
+            {
+                List<QZEmployInfo> lst = new List<QZEmployInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        QZEmployInfo obj = getQZEmployInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanySiteInfo> OrgCompanySite_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanySite_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<OrgCompanySiteInfo> lst = new List<OrgCompanySiteInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanySiteInfo obj = new OrgCompanySiteInfo();
+                        obj.ocs_id = (int)reader["ocs_id"];
+                        obj.ocs_oc_code = reader["ocs_oc_code"].ToString();
+                        obj.ocs_domain = reader["ocs_domain"].ToString();
+                        obj.ocs_host = reader["ocs_host"].ToString();
+                        obj.ocs_hostType = reader["ocs_hostType"].ToString();
+                        obj.ocs_number = reader["ocs_number"].ToString();
+                        obj.ocs_siteName = reader["ocs_siteName"].ToString();
+                        obj.ocs_siteHomePage = reader["ocs_siteHomePage"].ToString();
+                        obj.ocs_status = (byte)reader["ocs_status"];
+                        obj.ocs_checkTime = (DateTime)reader["ocs_checkTime"];
+                        obj.ocs_createTime = (DateTime)reader["ocs_createTime"];
+                        obj.ocs_ext = reader["ocs_ext"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<ZhiXingInfo> ZhiXing_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ZhiXing_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<ZhiXingInfo> lst = new List<ZhiXingInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ZhiXingInfo obj = getZhiXingInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        private ZhiXingInfo getZhiXingInfo(IDataReader reader)
+        {
+            ZhiXingInfo obj = new ZhiXingInfo();
+            obj.id = (int)reader["id"];
+            obj.zx_id = (int)reader["zx_id"];
+            obj.zx_caseCode = reader["zx_caseCode"].ToString();
+            obj.zx_caseState = reader["zx_caseState"].ToString();
+            obj.zx_execCourtName = reader["zx_execCourtName"].ToString();
+            obj.zx_execMoney = reader["zx_execMoney"].ToString();
+            obj.zx_partyCardNum = reader["zx_partyCardNum"].ToString();
+            obj.zx_pname = reader["zx_pname"].ToString();
+            obj.zx_caseCreateTime = (DateTime)reader["zx_caseCreateTime"];
+            obj.createTime = (DateTime)reader["createTime"];
+            obj.updateTime = (DateTime)reader["updateTime"];
+            obj.status = (int)reader["status"];
+            obj.oc_code = reader["oc_code"].ToString();
+            return obj;
+        }
+
+        public List<ExhibitionEnterpriseInfo> ExhibitionEnterprise_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ExhibitionEnterprise_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<ExhibitionEnterpriseInfo> lst = new List<ExhibitionEnterpriseInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ExhibitionEnterpriseInfo obj = GetExhibitionEnterpriseInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public ExhibitionEnterpriseInfo GetExhibitionEnterpriseInfo(IDataReader reader)
+        {
+            ExhibitionEnterpriseInfo obj = new ExhibitionEnterpriseInfo();
+            obj.ee_id = (int)reader["ee_id"];
+            obj.ee_md = reader["ee_md"].ToString();
+            obj.ee_company = reader["ee_company"].ToString();
+            obj.ee_address = reader["ee_address"].ToString();
+            obj.ee_contact = reader["ee_contact"].ToString();
+            obj.ee_phone = reader["ee_phone"].ToString();
+            obj.ee_fax = reader["ee_fax"].ToString();
+            obj.ee_mail = reader["ee_mail"].ToString();
+            obj.ee_site = reader["ee_site"].ToString();
+            obj.ee_exhBooth = reader["ee_exhBooth"].ToString();
+            obj.ee_year = (int)reader["ee_year"];
+            obj.ee_exhStartTime = reader["ee_exhStartTime"].ToString();
+            obj.ee_exhName = reader["ee_exhName"].ToString();
+            obj.ee_exhTrade = reader["ee_exhTrade"].ToString();
+            obj.ee_exhArea = reader["ee_exhArea"].ToString();
+            obj.ee_exhHall = reader["ee_exhHall"].ToString();
+            obj.ee_exhEntCount = (int)reader["ee_exhEntCount"];
+            obj.ee_createUser = reader["ee_createUser"].ToString();
+            obj.ee_exhCreateTime = (DateTime)reader["ee_exhCreateTime"];
+            obj.ee_createTime = (DateTime)reader["ee_createTime"];
+            return obj;
+        }
+
+        public List<SystemNoticeInfo> SystemNotice_SelectPagedByUser(int userid, int startsize, int endsize, out int totalcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNotice_SelectPagedByUser");
+            Db_0.AddInParameter(dbCommandWrapper, "@userId", DbType.Int32, userid);
+            Db_0.AddInParameter(dbCommandWrapper, "@StartSize", DbType.Int32, startsize);
+            Db_0.AddInParameter(dbCommandWrapper, "@EndSize", DbType.Int32, endsize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@totalcount", DbType.Int32, 4);
+
+            try
+            {
+                List<SystemNoticeInfo> lst = new List<SystemNoticeInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        SystemNoticeInfo obj = new SystemNoticeInfo();
+                        obj.s_id = (int)reader["s_id"];
+                        obj.s_title = reader["s_title"].ToString();
+                        obj.s_content = reader["s_content"].ToString();
+                        obj.s_type = (int)reader["s_type"];
+                        obj.s_isblack = (bool)reader["s_isblack"];
+                        obj.s_date = (DateTime)reader["s_date"];
+                        obj.s_isvalid = (bool)reader["s_isvalid"];
+                        obj.isread = (bool)reader["isread"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    totalcount = (int)dbCommandWrapper.Parameters["@totalcount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<SystemNoticeByUserInfo> SystemNoticeByUser_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNoticeByUser_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<SystemNoticeByUserInfo> lst = new List<SystemNoticeByUserInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        SystemNoticeByUserInfo obj = new SystemNoticeByUserInfo();
+                        obj.id = (int)reader["id"];
+                        obj.s_id = (int)reader["s_id"];
+                        obj.userid = (int)reader["userid"];
+                        obj.isread = (bool)reader["isread"];
+                        obj.isdel = (bool)reader["isdel"];
+                        obj.createtime = (DateTime)reader["createtime"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        #region [SystemNotice_SelectPaged]
+        public List<SystemNoticeInfo> SystemNotice_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNotice_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<SystemNoticeInfo> lst = new List<SystemNoticeInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        SystemNoticeInfo obj = new SystemNoticeInfo();
+                        obj.s_id = (int)reader["s_id"];
+                        obj.s_title = reader["s_title"].ToString();
+                        obj.s_content = reader["s_content"].ToString();
+                        obj.s_type = (int)reader["s_type"];
+                        obj.s_isblack = (bool)reader["s_isblack"];
+                        obj.s_date = (DateTime)reader["s_date"];
+                        obj.s_isvalid = (bool)reader["s_isvalid"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        #endregion
+
+        public int SystemNoticeByUser_Insert(SystemNoticeByUserInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNoticeByUser_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@id", DbType.Int32, 4);
+            Db_0.AddInParameter(dbCommandWrapper, "@s_id", DbType.Int32, obj.s_id);
+            Db_0.AddInParameter(dbCommandWrapper, "@userid", DbType.Int32, obj.userid);
+            Db_0.AddInParameter(dbCommandWrapper, "@isread", DbType.Boolean, obj.isread);
+            Db_0.AddInParameter(dbCommandWrapper, "@isdel", DbType.Boolean, obj.isdel);
+            Db_0.AddInParameter(dbCommandWrapper, "@createtime", DbType.DateTime, obj.createtime);
+
+            try
+            {
+
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                int id = (int)dbCommandWrapper.Parameters["@id"].Value;
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+
+        public int SystemNoticeByUser_Update(SystemNoticeByUserInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNoticeByUser_Update");
+            Db_0.AddInParameter(dbCommandWrapper, "@s_id", DbType.Int32, obj.s_id);
+            Db_0.AddInParameter(dbCommandWrapper, "@userid", DbType.Int32, obj.userid);
+            Db_0.AddInParameter(dbCommandWrapper, "@isread", DbType.Boolean, obj.isread);
+            Db_0.AddInParameter(dbCommandWrapper, "@isdel", DbType.Boolean, obj.isdel);
+            Db_0.AddInParameter(dbCommandWrapper, "@createtime", DbType.DateTime, obj.createtime);
+
+            try
+            {
+
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int SystemNoticeAll_Del(int u_id)
+        {
+            int count = 0;
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_SystemNotice_AllDel");
+            Db_0.AddInParameter(dbCommandWrapper, "@u_id", DbType.Int32, u_id);
+            Db_0.AddOutParameter(dbCommandWrapper, "@upcount", DbType.Int32, 4);
+
+            using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+            {
+                count = (int)dbCommandWrapper.Parameters["@upcount"].Value;
+            }
+            return count;
+        }
+
+        public CompanyStatisticsInfo CompanyStatistics_Get(string oc_code)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($"SELECT * FROM CompanyStatisticsInfoTwo where oc_code='{oc_code}'");
+
+            CompanyStatisticsInfo info = new CompanyStatisticsInfo();
+
+            using (IDataReader reader = Db_0.ExecuteReader(command))
+            {
+                while (reader.Read())
+                {
+                    info.id = (int)reader["id"];
+                    info.oc_code = reader["oc_code"].ToString();
+                    info.gudongxinxi = (int)reader["GuDongXinXi"];
+                    info.zhuyaorenyuan = (int)reader["ZhuYaoRenYuan"];
+                    info.biangengxinxi = (int)reader["BianGengXinXi"];
+                    info.nianbao = (int)reader["NianBao"];
+                    info.shangbiaoxinxi = (int)reader["ShangBiaoXinXi"];
+                    info.zhuanlixinxi = (int)reader["ZhuanLiXinXi"];
+                    info.ruanjianzhuzuoquan = (int)reader["RuanJianZhuZuoQuan"];
+                    info.zuopinzhuzuoquan = (int)reader["ZuoPinZhuZuoQuan"];
+                    info.yuminbeian = (int)reader["YuMingBeiAn"];
+                    info.shangpintiaomaxinxi = (int)reader["ShangPinTiaoMaXinXi"];
+                    info.changshangbianmaxinxi = (int)reader["ChangShangBianMaXinXi"];
+                    info.renjianwei = (int)reader["RenJianWei"];
+                    info.xiaofangju = (int)reader["XiaoFangJu"];
+                    info.panjuewenshu = (int)reader["PanJueWenShu"];
+                    info.fayuangonggao = (int)reader["FaYuanGongGao"];
+                    info.beizhixingren = (int)reader["BeiZhiXingRen"];
+                    info.shixinren = (int)reader["ShiXinRen"];
+                    info.zhuanhuihuikan = (int)reader["ZhanHuiHuiKan"];
+                    info.zhaopin = (int)reader["ZhaoPin"];
+                    info.duiwaitouzi = (int)reader["DuiWaiTouZi"];
+                    info.fenzhi = (int)reader["FenZhi"];
+                    info.ext1 = (int)reader["Ext1"];
+                    info.ext2 = (int)reader["Ext2"];
+                    info.ext3 = (int)reader["Ext3"];
+                    info.ext4 = (int)reader["Ext4"];
+                    info.ext5 = (int)reader["Ext5"];
+                    info.ext6 = (int)reader["Ext6"];
+                    info.ext7 = (int)reader["Ext7"];
+                    info.ext8 = (int)reader["Ext8"];
+                    info.ext9 = (int)reader["Ext9"];
+                    info.ext10 = (int)reader["Ext10"];
+                    info.updatetime = reader["UpdateTime"].ToString();
+                }
+                reader.NextResult();
+            }
+
+            return info;
+        }
+
+        public List<string> TopicUserTrace_GetClientId(int tut_t_id, int tut_t_type)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($@"select u.u_clientid from dbo.TopicUsersTrace trace 
+                                                                inner join QZNewSite_User..users u on trace.tut_uid = u.u_id and u.u_clientid is not null
+                                                                where tut_t_id = {tut_t_id} and tut_status = 1 and tut_t_count > 0 and tut_t_type={tut_t_type}");
+
+            List<string> list = new List<string>();
+
+            using (IDataReader reader = Db_0.ExecuteReader(command))
+            {
+                while (reader.Read())
+                {
+                    list.Add(reader["u_clientid"].ToString());
+                }
+                reader.NextResult();
+            }
+            return list;
+        }
+
+        public string CommunityTopic_Content_GetByid(int id)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($"select att_content from dbo.AppTeiziTopic where att_id={id}");
+
+            object obj = Db_0.ExecuteScalar(command);
+
+            return obj != null ? obj.ToString() : "";
+        }
+
+        public string CompanyTopic_Content_Getbyid(int id)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($"select ctt_content from dbo.CompanyTeiziTopic where ctt_id={id}");
+
+            object obj = Db_0.ExecuteScalar(command);
+
+            return obj != null ? obj.ToString() : "";
+        }
+
+        public int Company_Report_Collect(Req_ReportsReq obj)
+        {
+            DbCommand command = Db_0.GetSqlStringCommand($@"INSERT INTO QZReportsRequest(req_company,req_position,req_contact,req_email,req_phone,req_content,req_status,
+                                                            req_completeTime, req_createTime, req_address, req_fax, req_remark, req_createUser)values('{obj.oc_name}', '{obj.position}', '{obj.contact}', '{obj.email}', '{obj.phone}', '{obj.content}', 0, getdate(), getdate(), '', '', '', '')");
+            return Db_0.ExecuteNonQuery(command);
+        }
+
+        #region claim company
+
+        public int Claim_Company_Insert(ClaimCompanyInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@cc_id", DbType.Int32, 4);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_u_uid", DbType.Int32, obj.cc_u_uid);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_oc_code", DbType.String, obj.cc_oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_oc_name", DbType.String, obj.cc_oc_name);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_contacts", DbType.String, obj.cc_contacts);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_mobile", DbType.String, obj.cc_mobile);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_e_mail", DbType.String, obj.cc_e_mail);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_zj_data", DbType.String, obj.cc_zj_data);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_status", DbType.Int32, obj.cc_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_checkUser", DbType.String, obj.cc_checkUser);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_checkTime", DbType.DateTime, obj.cc_checkTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_createUser", DbType.String, obj.cc_createUser);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_createTime", DbType.DateTime, obj.cc_createTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_isvalid", DbType.Boolean, obj.cc_isvalid);
+
+
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                int cc_id = (int)dbCommandWrapper.Parameters["@cc_id"].Value;
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int Claim_Company_Update(ClaimCompanyInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Update");
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_id", DbType.Int32, obj.cc_id);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_u_uid", DbType.Int32, obj.cc_u_uid);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_oc_code", DbType.String, obj.cc_oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_oc_name", DbType.String, obj.cc_oc_name);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_contacts", DbType.String, obj.cc_contacts);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_mobile", DbType.String, obj.cc_mobile);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_e_mail", DbType.String, obj.cc_e_mail);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_zj_data", DbType.String, obj.cc_zj_data);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_status", DbType.Int32, obj.cc_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_statusMsg", DbType.String, obj.cc_statusMsg);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_checkUser", DbType.String, obj.cc_checkUser);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_checkTime", DbType.DateTime, obj.cc_checkTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_createUser", DbType.String, obj.cc_createUser);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_createTime", DbType.DateTime, obj.cc_createTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_isvalid", DbType.Boolean, obj.cc_isvalid);
+
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int ClaimCompany_Deletebycc_id(int cc_id, bool cc_isvalid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Deletebycc_id");
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_id", DbType.Int32, cc_id);
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_isvalid", DbType.Boolean, cc_isvalid);
+
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public ClaimCompanyInfo ClaimCompany_Selectbycc_id(int cc_id)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Selectbycc_id");
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_id", DbType.Int32, cc_id);
+
+            try
+            {
+                ClaimCompanyInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+                        obj = new ClaimCompanyInfo();
+                        obj.cc_id = (int)reader["cc_id"];
+                        obj.cc_u_uid = (int)reader["cc_u_uid"];
+                        obj.cc_oc_code = reader["cc_oc_code"].ToString();
+                        obj.cc_oc_name = reader["cc_oc_name"].ToString();
+                        obj.cc_contacts = reader["cc_contacts"].ToString();
+                        obj.cc_mobile = reader["cc_mobile"].ToString();
+                        obj.cc_e_mail = reader["cc_e_mail"].ToString();
+                        obj.cc_zj_data = reader["cc_zj_data"].ToString();
+                        obj.cc_status = (int)reader["cc_status"];
+                        obj.cc_checkUser = reader["cc_checkUser"].ToString();
+                        obj.cc_checkTime = (DateTime)reader["cc_checkTime"];
+                        obj.cc_createUser = reader["cc_createUser"].ToString();
+                        obj.cc_createTime = (DateTime)reader["cc_createTime"];
+                        obj.cc_isvalid = (bool)reader["cc_isvalid"];
+                    }
+                }
+
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<ClaimCompanyInfo> ClaimCompany_Selectbycc_u_uid(int cc_u_uid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Selectbycc_u_uid");
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_u_uid", DbType.Int32, cc_u_uid);
+
+            try
+            {
+                List<ClaimCompanyInfo> lst = new List<ClaimCompanyInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ClaimCompanyInfo obj = new ClaimCompanyInfo();
+                        obj.cc_id = (int)reader["cc_id"];
+                        obj.cc_u_uid = (int)reader["cc_u_uid"];
+                        obj.cc_oc_code = reader["cc_oc_code"].ToString();
+                        obj.cc_oc_name = reader["cc_oc_name"].ToString();
+                        obj.cc_contacts = reader["cc_contacts"].ToString();
+                        obj.cc_mobile = reader["cc_mobile"].ToString();
+                        obj.cc_e_mail = reader["cc_e_mail"].ToString();
+                        obj.cc_zj_data = reader["cc_zj_data"].ToString();
+                        obj.cc_status = (int)reader["cc_status"];
+                        obj.cc_checkUser = reader["cc_checkUser"].ToString();
+                        obj.cc_checkTime = (DateTime)reader["cc_checkTime"];
+                        obj.cc_createUser = reader["cc_createUser"].ToString();
+                        obj.cc_createTime = (DateTime)reader["cc_createTime"];
+                        obj.cc_isvalid = (bool)reader["cc_isvalid"];
+                        lst.Add(obj);
+                    }
+                }
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<ClaimCompanyInfo> ClaimCompany_Selectbycc_oc_code(string cc_oc_code)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_Selectbycc_oc_code");
+            Db_0.AddInParameter(dbCommandWrapper, "@cc_oc_code", DbType.String, cc_oc_code);
+
+            try
+            {
+
+                List<ClaimCompanyInfo> lst = new List<ClaimCompanyInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ClaimCompanyInfo obj = new ClaimCompanyInfo();
+                        obj.cc_id = (int)reader["cc_id"];
+                        obj.cc_u_uid = (int)reader["cc_u_uid"];
+                        obj.cc_oc_code = reader["cc_oc_code"].ToString();
+                        obj.cc_oc_name = reader["cc_oc_name"].ToString();
+                        obj.cc_contacts = reader["cc_contacts"].ToString();
+                        obj.cc_mobile = reader["cc_mobile"].ToString();
+                        obj.cc_e_mail = reader["cc_e_mail"].ToString();
+                        obj.cc_zj_data = reader["cc_zj_data"].ToString();
+                        obj.cc_status = (int)reader["cc_status"];
+                        obj.cc_checkUser = reader["cc_checkUser"].ToString();
+                        obj.cc_checkTime = (DateTime)reader["cc_checkTime"];
+                        obj.cc_createUser = reader["cc_createUser"].ToString();
+                        obj.cc_createTime = (DateTime)reader["cc_createTime"];
+                        obj.cc_isvalid = (bool)reader["cc_isvalid"];
+                        lst.Add(obj);
+                    }
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<ClaimCompanyInfo> ClaimCompany_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompany_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<ClaimCompanyInfo> lst = new List<ClaimCompanyInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ClaimCompanyInfo obj = new ClaimCompanyInfo();
+                        obj.cc_id = (int)reader["cc_id"];
+                        obj.cc_u_uid = (int)reader["cc_u_uid"];
+                        obj.cc_oc_code = reader["cc_oc_code"].ToString();
+                        obj.cc_oc_name = reader["cc_oc_name"].ToString();
+                        obj.cc_contacts = reader["cc_contacts"].ToString();
+                        obj.cc_mobile = reader["cc_mobile"].ToString();
+                        obj.cc_e_mail = reader["cc_e_mail"].ToString();
+                        obj.cc_zj_data = reader["cc_zj_data"].ToString();
+                        obj.cc_status = (int)reader["cc_status"];
+                        obj.cc_checkUser = reader["cc_checkUser"].ToString();
+                        obj.cc_checkTime = (DateTime)reader["cc_checkTime"];
+                        obj.cc_createUser = reader["cc_createUser"].ToString();
+                        obj.cc_createTime = (DateTime)reader["cc_createTime"];
+                        obj.cc_isvalid = (bool)reader["cc_isvalid"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public bool OrgCompanyExtensionData_Insert(OrgCompanyExtensionDataInfo obj, out string guid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyExtensionData_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@oc_gid", DbType.Guid, 40);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, obj.oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_type", DbType.Int32, obj.oc_type);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_typeName", DbType.String, obj.oc_typeName);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_create_e_id", DbType.Int32, obj.oc_create_e_id);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_create_e_name", DbType.String, obj.oc_create_e_name);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_status", DbType.Byte, obj.oc_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_sources", DbType.String, obj.oc_sources);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_remark", DbType.String, obj.oc_remark);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_data", DbType.String, obj.oc_data);
+            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, "OrgCompanyExtensionData_" + obj.oc_code.Substring(5, 3));
+            try
+            {
+                int _returnValue = Convert.ToInt32(Db_0.ExecuteNonQuery(dbCommandWrapper));
+                string gid = dbCommandWrapper.Parameters["@oc_gid"].Value.ToString();
+                guid = gid;
+                return string.IsNullOrEmpty(gid) ? false : true;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+        }
+
+        public bool OrgCompanyExtensionData_Update(OrgCompanyExtensionDataInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyExtensionData_Update");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, obj.oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_type", DbType.Int32, obj.oc_type);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_gid", DbType.Guid, obj.oc_gid);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_status", DbType.Byte, obj.oc_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_sources", DbType.String, obj.oc_sources);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_remark", DbType.String, obj.oc_remark);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_data", DbType.String, obj.oc_data);
+            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, "OrgCompanyExtensionData_" + obj.oc_code.Substring(5, 3));
+
+            try
+            {
+
+                int _returnValue = Convert.ToInt32(Db_0.ExecuteNonQuery(dbCommandWrapper));
+                return _returnValue > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public bool OrgCompanyExtensionData_Update_CoverAll(OrgCompanyExtensionDataInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyExtensionDataByocid_Update_CoverAll");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, obj.oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_type", DbType.Int32, obj.oc_type);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_remark", DbType.String, obj.oc_remark);
+            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, "OrgCompanyExtensionData_" + obj.oc_code.Substring(5, 3));
+
+            try
+            {
+
+                int _returnValue = Convert.ToInt32(Db_0.ExecuteNonQuery(dbCommandWrapper));
+                return _returnValue > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanyExtensionDataInfo> OrgCompanyExtensionData_SelectPaged(DatabaseSearchModel model)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyExtensionData_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@tableName", DbType.String, model.Table);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<OrgCompanyExtensionDataInfo> lst = new List<OrgCompanyExtensionDataInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyExtensionDataInfo obj = new OrgCompanyExtensionDataInfo();
+                        obj.oc_id = (int)reader["oc_id"];
+                        obj.oc_code = reader["oc_code"].ToString();
+                        obj.oc_type = (int)reader["oc_type"];
+                        obj.oc_typeName = reader["oc_typeName"].ToString();
+                        obj.oc_gid = (Guid)reader["oc_gid"];
+                        obj.oc_createTime = (DateTime)reader["oc_createTime"];
+                        obj.oc_create_e_id = (int)reader["oc_create_e_id"];
+                        obj.oc_create_e_name = reader["oc_create_e_name"].ToString();
+                        obj.oc_status = (byte)reader["oc_status"];
+                        obj.oc_sources = reader["oc_sources"].ToString();
+                        obj.oc_remark = reader["oc_remark"].ToString();
+                        obj.oc_data = reader["oc_data"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanyExtensionDataInfo> OrgCompanyExtensionData_Selectbyoc_codeandoc_type(string oc_code, int oc_type)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyExtensionData_Selectbyoc_codeandoc_type");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, oc_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_type", DbType.Int32, oc_type);
+
+            try
+            {
+                List<OrgCompanyExtensionDataInfo> list = new List<OrgCompanyExtensionDataInfo>();
+                OrgCompanyExtensionDataInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        obj = new OrgCompanyExtensionDataInfo();
+                        obj.oc_id = (int)reader["oc_id"];
+                        obj.oc_code = reader["oc_code"].ToString();
+                        obj.oc_type = (int)reader["oc_type"];
+                        obj.oc_typeName = reader["oc_typeName"].ToString();
+                        obj.oc_gid = (Guid)reader["oc_gid"];
+                        obj.oc_createTime = (DateTime)reader["oc_createTime"];
+                        obj.oc_create_e_id = (int)reader["oc_create_e_id"];
+                        obj.oc_create_e_name = reader["oc_create_e_name"].ToString();
+                        obj.oc_status = (byte)reader["oc_status"];
+                        obj.oc_sources = reader["oc_sources"].ToString();
+                        obj.oc_remark = reader["oc_remark"].ToString();
+                        obj.oc_data = reader["oc_data"].ToString();
+                        list.Add(obj);
+                    }
+                }
+                return list;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanyExtensionDataInfo> OrgCompanyClaimCompanyWall_SelectPaged(int startIndex, int endIndex, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ClaimCompanyWall_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@startIndex", DbType.Int16, startIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@endIndex", DbType.Int16, endIndex);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<OrgCompanyExtensionDataInfo> lst = new List<OrgCompanyExtensionDataInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyExtensionDataInfo obj = new OrgCompanyExtensionDataInfo();
+                        obj.oc_id = (int)reader["oc_id"];
+                        obj.oc_code = reader["oc_code"].ToString();
+                        obj.oc_type = (int)reader["oc_type"];
+                        obj.oc_typeName = reader["oc_typeName"].ToString();
+                        obj.oc_gid = (Guid)reader["oc_gid"];
+                        obj.oc_createTime = (DateTime)reader["oc_createTime"];
+                        obj.oc_create_e_id = (int)reader["oc_create_e_id"];
+                        obj.oc_create_e_name = reader["oc_create_e_name"].ToString();
+                        obj.oc_status = (byte)reader["oc_status"];
+                        obj.oc_sources = reader["oc_sources"].ToString();
+                        obj.oc_remark = reader["oc_remark"].ToString();
+                        obj.oc_data = reader["oc_data"].ToString();
+                        obj.album_data = reader["album_data"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        #endregion
+
+        #region vip gallery
+        /// <summary>
+        /// 插入订单
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public int VipUserOrder_Insert(VipUserOrderInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipUserOrder_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@mo_id", DbType.Int32, 4);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_orderid", DbType.String, obj.mo_orderid);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_ordername", DbType.String, obj.mo_ordername);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_money", DbType.Currency, obj.mo_money);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_tradeNo", DbType.String, obj.mo_tradeNo);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_paySuccess", DbType.Boolean, obj.mo_paySuccess);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payType", DbType.String, obj.mo_payType);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payTime", DbType.String, obj.mo_payTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payInfo", DbType.String, obj.mo_payInfo);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_state", DbType.Int32, obj.mo_state);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_remark", DbType.String, obj.mo_remark);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_userid", DbType.Int32, obj.mo_userid);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_userName", DbType.String, obj.mo_userName);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_createTime", DbType.DateTime, obj.mo_createTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_ip", DbType.String, obj.mo_ip);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_platformType", DbType.Int32, obj.mo_platformType);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_mobile", DbType.String, obj.mo_mobile);
+
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                int mo_id = (int)dbCommandWrapper.Parameters["@mo_id"].Value;
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        /// <summary>
+        ///  获取会员订单信息
+        /// </summary>
+        /// <param name="mo_orderid"></param>
+        /// <returns></returns>
+        public VipUserOrderInfo VipUserOrder_Selectbymo_orderid(string mo_orderid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipUserOrder_Selectbymo_orderid");
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_orderid", DbType.String, mo_orderid);
+
+            try
+            {
+
+                VipUserOrderInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+                        obj = new VipUserOrderInfo();
+                        obj.mo_id = (int)reader["mo_id"];
+                        obj.mo_orderid = reader["mo_orderid"].ToString();
+                        obj.mo_ordername = reader["mo_ordername"].ToString();
+                        obj.mo_money = (decimal)reader["mo_money"];
+                        obj.mo_tradeNo = reader["mo_tradeNo"].ToString();
+                        obj.mo_paySuccess = (bool)reader["mo_paySuccess"];
+                        obj.mo_payType = reader["mo_payType"].ToString();
+                        obj.mo_payTime = reader["mo_payTime"].ToString();
+                        obj.mo_payInfo = reader["mo_payInfo"].ToString();
+                        obj.mo_state = (int)reader["mo_state"];
+                        obj.mo_remark = reader["mo_remark"].ToString();
+                        obj.mo_userid = (int)reader["mo_userid"];
+                        obj.mo_userName = reader["mo_userName"].ToString();
+                        obj.mo_createTime = (DateTime)reader["mo_createTime"];
+                        obj.mo_ip = reader["mo_ip"].ToString();
+                        obj.mo_platformType = (int)reader["mo_platformType"];
+                        obj.mo_mobile = reader["mo_mobile"].ToString();
+                    }
+                }
+
+
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// 修改会员订单信息
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public int VipUserOrder_Update(VipUserOrderInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipUserOrder_Update");
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_orderid", DbType.String, obj.mo_orderid);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_ordername", DbType.String, obj.mo_ordername);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_money", DbType.Currency, obj.mo_money);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payType", DbType.String, obj.mo_payType);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_tradeNo", DbType.String, obj.mo_tradeNo);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_paySuccess", DbType.Boolean, obj.mo_paySuccess);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payTime", DbType.String, obj.mo_payTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_payInfo", DbType.String, obj.mo_payInfo);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_state", DbType.Int32, obj.mo_state);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_remark", DbType.String, obj.mo_remark);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_userid", DbType.Int32, obj.mo_userid);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_userName", DbType.String, obj.mo_userName);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_createTime", DbType.DateTime, obj.mo_createTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_ip", DbType.String, obj.mo_ip);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_platformType", DbType.Int32, obj.mo_platformType);
+            Db_0.AddInParameter(dbCommandWrapper, "@mo_mobile", DbType.String, obj.mo_mobile);
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public VipStatusUserInfo VipStatusUser_Selectbyvip_id(int vip_userid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipStatusUser_Selectbyvip_id");
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_userId", DbType.Int32, vip_userid);
+
+            try
+            {
+                VipStatusUserInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+                        obj = new VipStatusUserInfo();
+                        obj.vip_id = (int)reader["vip_id"];
+                        obj.vip_userId = (int)reader["vip_userId"];
+                        obj.vip_status = (bool)reader["vip_status"];
+                        obj.vip_vaildate = (DateTime)reader["vip_vaildate"];
+                        obj.vip_isVaild = (bool)reader["vip_isVaild"];
+                    }
+                }
+
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int VipStatusUser_Update(VipStatusUserInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipStatusUser_Update");
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_userId", DbType.Int32, obj.vip_userId);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_status", DbType.Boolean, obj.vip_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_vaildate", DbType.DateTime, obj.vip_vaildate);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_isVaild", DbType.Boolean, obj.vip_isVaild);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_mobile", DbType.String, obj.vip_mobile);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_isSMS", DbType.Boolean, obj.vip_isSMS);
+            try
+            {
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int VipStatusUser_Insert(VipStatusUserInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipStatusUser_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@vip_id", DbType.Int32, 4);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_userId", DbType.Int32, obj.vip_userId);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_status", DbType.Boolean, obj.vip_status);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_vaildate", DbType.DateTime, obj.vip_vaildate);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_isVaild", DbType.Boolean, obj.vip_isVaild);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_mobile", DbType.String, obj.vip_mobile);
+            Db_0.AddInParameter(dbCommandWrapper, "@vip_isSMS", DbType.Boolean, obj.vip_isSMS);
+            try
+            {
+
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                int vip_id = (int)dbCommandWrapper.Parameters["@vip_id"].Value;
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public ExcelCompanyOrderInfo ExcelCompanyOrder_Selectbyeco_orderid(string eco_orderid)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ExcelCompanyOrder_Selectbyeco_orderid");
+            Db_0.AddInParameter(dbCommandWrapper, "@eco_orderid", DbType.String, eco_orderid);
+            try
+            {
+                ExcelCompanyOrderInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+                        obj = new ExcelCompanyOrderInfo();
+                        obj.eco_id = (int)reader["eco_id"];
+                        obj.eco_orderid = reader["eco_orderid"].ToString();
+                        obj.eco_ordername = reader["eco_ordername"].ToString();
+                        obj.eco_type = (int)reader["eco_type"];
+                        obj.eco_money = (decimal)reader["eco_money"];
+                        obj.eco_tradeNo = reader["eco_tradeNo"].ToString();
+                        obj.eco_paySuccess = (bool)reader["eco_paySuccess"];
+                        obj.eco_payType = reader["eco_payType"].ToString();
+                        obj.eco_payTime = reader["eco_payTime"].ToString();
+                        obj.eco_state = (int)reader["eco_state"];
+                        obj.eco_remark = reader["eco_remark"].ToString();
+                        obj.eco_userid = (int)reader["eco_userid"];
+                        obj.eco_userName = reader["eco_userName"].ToString();
+                        obj.eco_createTime = (DateTime)reader["eco_createTime"];
+                        obj.eco_ip = reader["eco_ip"].ToString();
+                        obj.eco_platformType = (int)reader["eco_platformType"];
+                        obj.eco_mobile = reader["eco_mobile"].ToString();
+                        obj.eco_email = reader["eco_email"].ToString();
+                        obj.eco_isvaild = (bool)reader["eco_isvaild"];
+                    }
+                }
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+
+        #endregion
+
+        #region company info package
+        /// <summary>
+        /// 根据机构代码获取一批网站详细页需要的数据
+        /// </summary>
+        /// <param name="oc_code"></param>
+        /// <returns></returns>
+        public OrgCompanyDtlPack4Site OrgCompanySitePackSelect(string oc_code)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanySitePackSelect2");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, oc_code);
+
+            try
+            {
+
+                OrgCompanyDtlPack4Site pack = new OrgCompanyDtlPack4Site();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    //机构信息
+                    if (reader.Read())
+                    {
+                        pack.list = GetOrgCompanyListInfoFromReader(reader);
+
+                    }
+                    else
+                    {
+                        return pack;
+                    }
+
+                    //没有工商详细，直接返回
+                    if (!reader.NextResult())
+                    {
+                        return pack;
+                    }
+
+
+                    if (reader.Read())
+                    {
+                        pack.dtl = getOrgCompanyDtlInfo(reader, false);
+                    }
+                    else
+                    {
+                        return pack;
+                    }
+
+                    reader.NextResult();
+
+                    string area = pack.list.oc_area;
+
+                    if (area.StartsWith("4403")) //深圳的股东和变更
+                    {
+                        pack.dtlGdList = new List<OrgCompanyDtlGDInfo>();
+                        while (reader.Read())
+                        {
+                            pack.dtlGdList.Add(getOrgCompanyDtlGDInfo(reader));
+                        }
+
+                        reader.NextResult();
+
+                        pack.dtlBgsxList = new List<OrgCompanyDtl_EvtInfo>();
+                        while (reader.Read())
+                        {
+                            pack.dtlBgsxList.Add(getOrgComapanyDtl_EvtInfo(reader));
+                        }
+
+                    }
+                    else //非深圳地区的股东和变更
+                    {
+                        pack.gsxtGdList = new List<OrgCompanyGsxtDtlGDInfo>();
+                        while (reader.Read())
+                        {
+                            pack.gsxtGdList.Add(GetOrgCompanyGsxtDtlGdInfoFromReader(reader));
+                        }
+                        reader.NextResult();
+                        pack.gsxtBgsxList = new List<OrgCompanyGsxtBgsxInfo>();
+                        while (reader.Read())
+                        {
+                            pack.gsxtBgsxList.Add(GetBgsxInfoFromReader(reader));
+                        }
+
+                    }
+
+                    reader.NextResult();
+
+                    //网站信息
+                    pack.nbSiteList = new List<OrgCompanyGsxtWwInfo>();
+                    while (reader.Read())
+                    {
+                        pack.nbSiteList.Add(InternalGetOrgCompanyGsxtWwInfo(reader));
+                    }
+
+                    reader.NextResult();
+
+                    //年报信息
+                    pack.nbInfoList = new List<OrgCompanyGsxtNbInfo>();
+                    while (reader.Read())
+                    {
+                        pack.nbInfoList.Add(InternalGetGsxtNB(reader));
+                    }
+
+                }
+
+
+                return pack;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            /*using(DataAccess access = new DataAccess())
+            {
+                return access.OrgCompanySitePackSelect( oc_code );
+            }*/
+        }
+
+        /// <summary>
+        /// 从reader中读取机构信息
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public OrgCompanyListInfo GetOrgCompanyListInfoFromReader(IDataReader reader)
+        {
+            OrgCompanyListInfo obj = new OrgCompanyListInfo();
+            obj.oc_id = (int)reader["oc_id"];
+            obj.oc_code = reader["oc_code"].ToString();
+            obj.oc_number = reader["oc_number"].ToString();
+            obj.oc_area = reader["oc_area"].ToString();
+            obj.oc_areaName = reader["oc_areaName"].ToString();
+            obj.oc_regOrgName = reader["oc_regOrgName"].ToString();
+            obj.oc_name = reader["oc_name"].ToString();
+            obj.oc_address = reader["oc_address"].ToString();
+            obj.oc_createUser = reader["oc_createUser"].ToString();
+            obj.oc_createTime = (DateTime)reader["oc_createTime"];
+            obj.oc_status = (bool)reader["oc_status"];
+            obj.oc_creditcode = reader["oc_creditcode"].ToString();
+
+            object ut = reader["oc_updatetime"];
+            if (ut != DBNull.Value)
+                obj.oc_updatetime = (DateTime)ut;
+            else
+                obj.oc_updatetime = new DateTime(1900, 1, 1);
+
+            //obj.oc_updatetime = (DateTime)reader["oc_updatetime"];
+
+            object it = reader["oc_issuetime"];
+            if (it != DBNull.Value)
+                obj.oc_issuetime = (DateTime)it;
+            else
+                obj.oc_issuetime = new DateTime(1900, 1, 1);
+
+
+            //obj.oc_issuetime = (DateTime)reader["oc_issuetime"];
+
+            object iv = reader["oc_invalidtime"];
+            if (iv != DBNull.Value)
+                obj.oc_invalidtime = (DateTime)iv;
+            else
+                obj.oc_invalidtime = new DateTime(1900, 1, 1);
+
+            //obj.oc_invalidtime = (DateTime)reader["oc_invalidtime"];
+
+            object ct = reader["oc_companytype"];
+            if (ct != DBNull.Value)
+            {
+                obj.oc_companytype = (string)ct;
+            }
+            else
+            {
+                obj.oc_companytype = string.Empty;
+            }
+            if (reader["oc_creditcode"] != null)
+            {
+                obj.oc_creditcode = reader["oc_creditcode"].ToString();
+            }
+            return obj;
+        }
+
+        public OrgCompanyDtlInfo getOrgCompanyDtlInfo(IDataReader reader, bool includeOrgInfo)
+        {
+            OrgCompanyDtlInfo obj = new OrgCompanyDtlInfo();
+            obj.od_id = (int)reader["od_id"];
+            obj.od_oc_code = reader["od_oc_code"].ToString();
+            obj.od_faRen = reader["od_faRen"].ToString();
+            obj.od_regM = (decimal)reader["od_regM"];
+            obj.od_regMoney = reader["od_regMoney"].ToString();
+            obj.od_factM = (decimal)reader["od_factM"];
+            obj.od_factMoney = reader["od_factMoney"].ToString();
+            obj.od_regDate = reader["od_regDate"].ToString();
+            obj.od_bussinessS = reader["od_bussinessS"].ToString();
+            obj.od_bussinessE = reader["od_bussinessE"].ToString();
+            obj.od_chkDate = reader["od_chkDate"].ToString();
+            obj.od_yearChk = reader["od_yearChk"].ToString();
+            obj.od_regType = reader["od_regType"].ToString();
+            obj.od_bussinessDes = reader["od_bussinessDes"].ToString();
+            obj.od_ext = reader["od_ext"].ToString();
+            obj.od_CreateTime = (DateTime)reader["od_CreateTime"];
+            if (includeOrgInfo)
+            {
+                obj.oc_name = reader["oc_name"].ToString();
+                obj.oc_address = reader["oc_address"].ToString();
+                obj.oc_number = reader["oc_number"].ToString();
+            }
+            return obj;
+        }
+
+        public OrgCompanyDtlGDInfo getOrgCompanyDtlGDInfo(IDataReader reader)
+        {
+            OrgCompanyDtlGDInfo obj = new OrgCompanyDtlGDInfo();
+            obj.og_int = (int)reader["og_int"];
+            obj.og_oc_code = reader["og_oc_code"].ToString();
+            obj.og_name = reader["og_name"].ToString();
+            obj.og_money = (decimal)reader["og_money"];
+            obj.og_BL = (decimal)reader["og_BL"];
+            obj.og_unit = reader["og_unit"].ToString();
+            obj.og_pro = reader["og_pro"].ToString();
+            obj.og_type = reader["og_type"].ToString();
+            return obj;
+        }
+
+        public OrgCompanyDtl_EvtInfo getOrgComapanyDtl_EvtInfo(IDataReader reader)
+        {
+            OrgCompanyDtl_EvtInfo obj = new OrgCompanyDtl_EvtInfo();
+            obj.oe_id = (int)reader["oe_id"];
+            obj.oe_oc_code = reader["oe_oc_code"].ToString();
+            obj.oe_date = reader["oe_date"].ToString();
+            obj.oe_type = reader["oe_type"].ToString();
+            obj.oe_dtl = reader["oe_dtl"].ToString();
+            return obj;
+        }
+
+        public OrgCompanyGsxtDtlGDInfo GetOrgCompanyGsxtDtlGdInfoFromReader(IDataReader reader)
+        {
+            OrgCompanyGsxtDtlGDInfo obj = new OrgCompanyGsxtDtlGDInfo();
+            obj.og_int = (int)reader["og_int"];
+            obj.og_oc_code = reader["og_oc_code"].ToString();
+            obj.og_name = reader["og_name"].ToString();
+            obj.og_type = reader["og_type"].ToString();
+            obj.og_licenseType = reader["og_licenseType"].ToString();
+            obj.og_licenseNum = reader["og_licenseNum"].ToString();
+            obj.og_subscribeAccount = (decimal)reader["og_subscribeAccount"];
+            obj.og_subscribeForm = reader["og_subscribeForm"].ToString();
+            obj.og_subscribeDate = reader["og_subscribeDate"].ToString();
+            obj.og_realAccount = (decimal)reader["og_realAccount"];
+            obj.og_realForm = reader["og_realForm"].ToString();
+            obj.og_realDate = reader["og_realDate"].ToString();
+            obj.og_unit = reader["og_unit"].ToString();
+            obj.og_createTime = (DateTime)reader["og_createTime"];
+            obj.og_invalidTime = (DateTime)reader["og_invalidTime"];
+            obj.og_status = (byte)reader["og_status"];
+            obj.og_updateTime = (DateTime)reader["og_updateTime"];
+            return obj;
+        }
+
+        public static OrgCompanyGsxtBgsxInfo GetBgsxInfoFromReader(IDataReader reader)
+        {
+            OrgCompanyGsxtBgsxInfo obj = new OrgCompanyGsxtBgsxInfo();
+            obj.id = (int)reader["id"];
+            obj.oc_code = reader["oc_code"].ToString();
+            obj.bgsx = reader["bgsx"].ToString();
+            obj.bgq = reader["bgq"].ToString();
+            obj.bgh = reader["bgh"].ToString();
+            obj.bgrq = (DateTime)reader["bgrq"];
+            return obj;
+        }
+
+        public static OrgCompanyGsxtWwInfo InternalGetOrgCompanyGsxtWwInfo(IDataReader reader)
+        {
+            OrgCompanyGsxtWwInfo obj = new OrgCompanyGsxtWwInfo();
+            obj.id = (int)reader["id"];
+            obj.oc_code = reader["oc_code"].ToString();
+            obj.year = reader["year"].ToString();
+            obj.type = reader["type"].ToString();
+            obj.name = reader["name"].ToString();
+            obj.webSite = reader["webSite"].ToString();
+            return obj;
+        }
+
+        public static OrgCompanyGsxtNbInfo InternalGetGsxtNB(IDataReader reader)
+        {
+            OrgCompanyGsxtNbInfo obj = new OrgCompanyGsxtNbInfo();
+            obj.id = (int)reader["id"];
+            obj.oc_code = reader["oc_code"].ToString();
+            obj.year = reader["year"].ToString();
+            obj.oc_number = reader["oc_number"].ToString();
+            obj.name = reader["name"].ToString();
+            obj.phone = reader["phone"].ToString();
+            obj.postCode = reader["postCode"].ToString();
+            obj.address = reader["address"].ToString();
+            obj.mail = reader["mail"].ToString();
+            obj.shareTransfer = (byte)reader["shareTransfer"];
+            obj.runStatus = reader["runStatus"].ToString();
+            obj.webSite = (byte)reader["webSite"];
+            obj.otherShare = (byte)reader["otherShare"];
+            obj.numbers = reader["numbers"].ToString();
+            obj.totalAssets = reader["totalAssets"].ToString();
+            obj.totalEquity = reader["totalEquity"].ToString();
+            obj.totalIncome = reader["totalIncome"].ToString();
+            obj.toalProfit = reader["toalProfit"].ToString();
+            obj.mainIncome = reader["mainIncome"].ToString();
+            obj.netProfit = reader["netProfit"].ToString();
+            obj.totalTax = reader["totalTax"].ToString();
+            obj.totalDebt = reader["totalDebt"].ToString();
+            obj.createTime = (DateTime)reader["createTime"];
+            return obj;
+        }
+
+        public OrgCompanyDtlInfo OrgCompanyDtl_Selectbyod_oc_code(string oc_code)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_NewOrgCompanyDtl_Selectbyod_oc_code");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_code", DbType.String, oc_code);
+            try
+            {
+                OrgCompanyDtlInfo obj = null;
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    if (reader.Read())
+                    {
+
+                        obj = getOrgCompanyDtlInfo(reader, true);
+                    }
+                    else
+                    {
+                        obj = new OrgCompanyDtlInfo();
+                    }
+                    reader.NextResult();
+                }
+
+
+                return obj;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanyListInfo> OrgCompanyList_Selectinoc_codes(string oc_codes)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_NewOrgCompanyList_Selectinoc_codes");
+            Db_0.AddInParameter(dbCommandWrapper, "@oc_codes", DbType.String, oc_codes);
+
+            try
+            {
+
+                List<OrgCompanyListInfo> lst = new List<OrgCompanyListInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyListInfo obj = new OrgCompanyListInfo();
+                        obj.oc_code = reader["oc_code"].ToString();
+                        obj.oc_number = reader["oc_number"].ToString();
+                        obj.oc_name = reader["oc_name"].ToString();
+                        obj.oc_address = reader["oc_address"].ToString();
+                        obj.oc_number = reader["oc_number"].ToString();
+                        obj.oc_regOrgName = reader["oc_regOrgName"].ToString();
+                        obj.oc_creditcode = reader["oc_creditcode"].ToString();
+                        object iv = reader["oc_invalidtime"];
+                        if (iv != DBNull.Value)
+                            obj.oc_invalidtime = (DateTime)iv;
+                        else
+                            obj.oc_invalidtime = new DateTime(1900, 1, 1);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            /*using(DataAccess access = new DataAccess())
+            {
+                return access.OrgCompanyList_SelectPaged( obj );
+            }*/
+        }
+
+        public List<OrgCompanyDtlMgrInfo> OrgCompanyDtlMgr_Selectbyom_oc_code(string om_oc_code)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyDtlMgr_Selectbyom_oc_code");
+            Db_0.AddInParameter(dbCommandWrapper, "@om_oc_code", DbType.String, om_oc_code);
+
+            try
+            {
+
+                List<OrgCompanyDtlMgrInfo> lst = new List<OrgCompanyDtlMgrInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyDtlMgrInfo obj = getOrgCompanyDtlMgrInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public OrgCompanyDtlMgrInfo getOrgCompanyDtlMgrInfo(IDataReader reader)
+        {
+            OrgCompanyDtlMgrInfo obj = new OrgCompanyDtlMgrInfo();
+            obj.om_id = (int)reader["om_id"];
+            obj.om_oc_code = reader["om_oc_code"].ToString();
+            obj.om_name = reader["om_name"].ToString();
+            obj.om_position = reader["om_position"].ToString();
+            obj.om_type = reader["om_type"].ToString();
+            return obj;
+        }
+
+        public List<OrgCompanyDtlGDInfo> OrgCompanyDtlGD_SelectPaged(DatabaseSearchModel model)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyDtlGD_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<OrgCompanyDtlGDInfo> lst = new List<OrgCompanyDtlGDInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyDtlGDInfo obj = getOrgCompanyDtlGDInfo(reader);
+
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<OrgCompanyBrandInfo> OrgCompanyBrand_SelectPaged(DatabaseSearchModel model)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyBrand_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<OrgCompanyBrandInfo> lst = new List<OrgCompanyBrandInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyBrandInfo obj = getOrgCompanyBrandInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        private OrgCompanyBrandInfo getOrgCompanyBrandInfo(IDataReader reader)
+        {
+            OrgCompanyBrandInfo obj = new OrgCompanyBrandInfo();
+            obj.ob_id = (int)reader["ob_id"];
+            obj.ob_oc_code = reader["ob_oc_code"].ToString();
+            obj.ob_regNo = reader["ob_regNo"].ToString();
+            obj.ob_classNo = reader["ob_classNo"].ToString();
+            obj.ob_applicationDate = (DateTime)reader["ob_applicationDate"];
+            obj.ob_name = reader["ob_name"].ToString();
+            obj.ob_proposer = reader["ob_proposer"].ToString();
+            obj.ob_proposerEn = reader["ob_proposerEn"].ToString();
+            obj.ob_proposerAddr = reader["ob_proposerAddr"].ToString();
+            obj.ob_proposerAddrEn = reader["ob_proposerAddrEn"].ToString();
+            obj.ob_img = reader["ob_img"].ToString();
+            obj.ob_createTime = (DateTime)reader["ob_createTime"];
+            obj.ob_updateTime = (DateTime)reader["ob_updateTime"];
+            obj.ob_csggqh = reader["ob_csggqh"].ToString();
+            obj.ob_zcggqh = reader["ob_zcggqh"].ToString();
+            obj.ob_csggrq = reader["ob_csggrq"].ToString();
+            obj.ob_zcggrq = reader["ob_zcggrq"].ToString();
+            obj.ob_zyksqx = reader["ob_zyksqx"].ToString();
+            obj.ob_zyjsqx = reader["ob_zyjsqx"].ToString();
+            obj.ob_hqzdrq = reader["ob_hqzdrq"].ToString();
+            obj.ob_gjzcrq = reader["ob_gjzcrq"].ToString();
+            obj.ob_yxqrq = reader["ob_yxqrq"].ToString();
+            obj.ob_dlrmc = reader["ob_dlrmc"].ToString();
+            obj.ob_yszh = reader["ob_yszh"].ToString();
+            obj.ob_sblx = reader["ob_sblx"].ToString();
+            obj.ob_sfgysb = (bool)reader["ob_sfgysb"];
+
+            return obj;
+        }
+
+        public List<OrgCompanyPatentInfo> OrgCompanyPatent_SelectPaged(DatabaseSearchModel model)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_OrgCompanyPatent_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+
+                List<OrgCompanyPatentInfo> lst = new List<OrgCompanyPatentInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        OrgCompanyPatentInfo obj = getOrgCompanyPatentInfo(reader);
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        private OrgCompanyPatentInfo getOrgCompanyPatentInfo(IDataReader reader)
+        {
+            OrgCompanyPatentInfo obj = new OrgCompanyPatentInfo();
+            obj.ID = (int)reader["ID"];
+            obj.oc_code = reader["oc_code"].ToString();
+            obj.oc_name = reader["oc_name"].ToString();
+            obj.Patent_No = reader["Patent_No"].ToString();
+            obj.Patent_Day = reader["Patent_Day"].ToString();
+            obj.Patent_gkh = reader["Patent_gkh"].ToString();
+            obj.Patent_gkr = reader["Patent_gkr"].ToString();
+            obj.Patent_Name = reader["Patent_Name"].ToString();
+            obj.Patent_sjr = reader["Patent_sjr"].ToString();
+            obj.Patent_Type = reader["Patent_Type"].ToString();
+            obj.Patent_yxq = reader["Patent_yxq"].ToString();
+            obj.Patent_yxqr = reader["Patent_yxqr"].ToString();
+            obj.Patent_lknflh = reader["Patent_lknflh"].ToString();
+            obj.Patent_dlr = reader["Patent_dlr"].ToString();
+            obj.Patent_dljg = reader["Patent_dljg"].ToString();
+            obj.Patent_Status = reader["Patent_Status"].ToString();
+            obj.Patent_sqr = reader["Patent_sqr"].ToString();
+            obj.Patent_Addr = reader["Patent_Addr"].ToString();
+            obj.Patent_City = reader["Patent_City"].ToString();
+            obj.Patent_PostCode = reader["Patent_PostCode"].ToString();
+            obj.Patent_zflh = reader["Patent_zflh"].ToString();
+            obj.Patent_flh = reader["Patent_flh"].ToString();
+            obj.Patent_bzr = reader["Patent_bzr"].ToString();
+            obj.Patent_gjsq = reader["Patent_gjsq"].ToString();
+            obj.Patent_gjgb = reader["Patent_gjgb"].ToString();
+            obj.Patent_jrgjrq = reader["Patent_jrgjrq"].ToString();
+            obj.Patent_zlflh = reader["Patent_zlflh"].ToString();
+            obj.Patent_zy = reader["Patent_zy"].ToString();
+            obj.Patent_zqx = reader["Patent_zqx"].ToString();
+            obj.Patent_img = reader["Patent_img"].ToString();
+            obj.Patent_LastUpdate = (DateTime)reader["Patent_LastUpdate"];
+            obj.Patent_NextUpdate = (DateTime)reader["Patent_NextUpdate"];
+            obj.Patent_DicRecord = reader["Patent_DicRecord"].ToString();
+            obj.Patent_OtherData = reader["Patent_OtherData"].ToString();
+            obj.GetYear = (int)reader["GetYear"];
+            obj.GetPage = (int)reader["GetPage"];
+            obj.GetRowNum = (int)reader["GetRowNum"];
+
+            return obj;
+        }
+
+        public List<InvoiceInfo> InvoiceInfo_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_InvoiceInfo_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+            try
+            {
+                List<InvoiceInfo> lst = new List<InvoiceInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        InvoiceInfo obj = new InvoiceInfo();
+                        obj.invoice_id = (int)reader["invoice_id"];
+                        obj.invoice_proName = reader["invoice_proName"].ToString();
+                        obj.invoice_name = reader["invoice_name"].ToString();
+                        obj.invoice_type = (int)reader["invoice_type"];
+                        obj.invoice_money = (decimal)reader["invoice_money"];
+                        obj.invoice_address = reader["invoice_address"].ToString();
+                        obj.invoice_code = reader["invoice_code"].ToString();
+                        obj.invoice_contacts = reader["invoice_contacts"].ToString();
+                        obj.invoice_mobile = reader["invoice_mobile"].ToString();
+                        obj.invoice_desc = reader["invoice_desc"].ToString();
+                        obj.invoice_state = (int)reader["invoice_state"];
+                        obj.invoice_userId = (int)reader["invoice_userId"];
+                        obj.invoice_user = reader["invoice_user"].ToString();
+                        obj.invoice_createTime = (DateTime)reader["invoice_createTime"];
+                        obj.invoice_checkTime = reader["invoice_checkTime"].ToString();
+                        obj.invoice_checkUser = reader["invoice_checkUser"].ToString();
+                        obj.invoice_checkRemark = reader["invoice_checkRemark"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public int InvoiceInfo_Insert(InvoiceInfo obj)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_InvoiceInfo_Insert");
+            Db_0.AddOutParameter(dbCommandWrapper, "@invoice_id", DbType.Int32, 4);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_proName", DbType.String, obj.invoice_proName);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_name", DbType.String, obj.invoice_name);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_type", DbType.Int32, obj.invoice_type);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_money", DbType.Currency, obj.invoice_money);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_address", DbType.String, obj.invoice_address);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_code", DbType.String, obj.invoice_code);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_contacts", DbType.String, obj.invoice_contacts);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_mobile", DbType.String, obj.invoice_mobile);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_desc", DbType.String, obj.invoice_desc);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_state", DbType.Int32, obj.invoice_state);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_userId", DbType.Int32, obj.invoice_userId);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_user", DbType.String, obj.invoice_user);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_createTime", DbType.DateTime, obj.invoice_createTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_checkTime", DbType.String, obj.invoice_checkTime);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_checkUser", DbType.String, obj.invoice_checkUser);
+            Db_0.AddInParameter(dbCommandWrapper, "@invoice_checkRemark", DbType.String, obj.invoice_checkRemark);
+
+            try
+            {
+
+                int _returnValue = Db_0.ExecuteNonQuery(dbCommandWrapper);
+                int invoice_id = (int)dbCommandWrapper.Parameters["@invoice_id"].Value;
+
+                return _returnValue;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<VipUserOrderInfo> VipUserOrder_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_VipUserOrder_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<VipUserOrderInfo> lst = new List<VipUserOrderInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        VipUserOrderInfo obj = new VipUserOrderInfo();
+                        obj.mo_id = (int)reader["mo_id"];
+                        obj.mo_orderid = reader["mo_orderid"].ToString();
+                        obj.mo_ordername = reader["mo_ordername"].ToString();
+                        obj.mo_money = (decimal)reader["mo_money"];
+                        obj.mo_tradeNo = reader["mo_tradeNo"].ToString();
+                        obj.mo_paySuccess = (bool)reader["mo_paySuccess"];
+                        obj.mo_payType = reader["mo_payType"].ToString();
+                        obj.mo_payTime = reader["mo_payTime"].ToString();
+                        obj.mo_payInfo = reader["mo_payInfo"].ToString();
+                        obj.mo_state = (int)reader["mo_state"];
+                        obj.mo_remark = reader["mo_remark"].ToString();
+                        obj.mo_userid = (int)reader["mo_userid"];
+                        obj.mo_userName = reader["mo_userName"].ToString();
+                        obj.mo_createTime = (DateTime)reader["mo_createTime"];
+                        obj.mo_ip = reader["mo_ip"].ToString();
+                        obj.mo_platformType = (int)reader["mo_platformType"];
+                        obj.mo_mobile = reader["mo_mobile"].ToString();
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public List<ExcelCompanyOrderInfo> ExcelCompanyOrder_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            DbCommand dbCommandWrapper = Db_0.GetStoredProcCommand("Proc_ExcelCompanyOrder_SelectPaged");
+            Db_0.AddInParameter(dbCommandWrapper, "@columns", DbType.String, model.Column);
+            Db_0.AddInParameter(dbCommandWrapper, "@where", DbType.String, model.Where);
+            Db_0.AddInParameter(dbCommandWrapper, "@order", DbType.String, model.Order);
+            Db_0.AddInParameter(dbCommandWrapper, "@page", DbType.Int32, model.PageIndex);
+            Db_0.AddInParameter(dbCommandWrapper, "@pageSize", DbType.Int32, model.PageSize);
+            Db_0.AddOutParameter(dbCommandWrapper, "@rowCount", DbType.Int32, 4);
+
+            try
+            {
+                List<ExcelCompanyOrderInfo> lst = new List<ExcelCompanyOrderInfo>();
+                using (IDataReader reader = Db_0.ExecuteReader(dbCommandWrapper))
+                {
+                    while (reader.Read())
+                    {
+                        ExcelCompanyOrderInfo obj = new ExcelCompanyOrderInfo();
+                        obj.eco_id = (int)reader["eco_id"];
+                        obj.eco_orderid = reader["eco_orderid"].ToString();
+                        obj.eco_ordername = reader["eco_ordername"].ToString();
+                        obj.eco_type = (int)reader["eco_type"];
+                        obj.eco_money = (decimal)reader["eco_money"];
+                        obj.eco_tradeNo = reader["eco_tradeNo"].ToString();
+                        obj.eco_paySuccess = (bool)reader["eco_paySuccess"];
+                        obj.eco_payType = reader["eco_payType"].ToString();
+                        obj.eco_payTime = reader["eco_payTime"].ToString();
+                        obj.eco_state = (int)reader["eco_state"];
+                        obj.eco_remark = reader["eco_remark"].ToString();
+                        obj.eco_userid = (int)reader["eco_userid"];
+                        obj.eco_userName = reader["eco_userName"].ToString();
+                        obj.eco_createTime = (DateTime)reader["eco_createTime"];
+                        obj.eco_ip = reader["eco_ip"].ToString();
+                        obj.eco_platformType = (int)reader["eco_platformType"];
+                        obj.eco_mobile = reader["eco_mobile"].ToString();
+                        obj.eco_email = reader["eco_email"].ToString();
+                        obj.eco_isvaild = (bool)reader["eco_isvaild"];
+                        lst.Add(obj);
+                    }
+                    reader.NextResult();
+                    rowcount = (int)dbCommandWrapper.Parameters["@rowCount"].Value;
+                }
+
+
+                return lst;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        #endregion
     }
 }

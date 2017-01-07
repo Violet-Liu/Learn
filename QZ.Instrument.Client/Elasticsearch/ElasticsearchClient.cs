@@ -18,6 +18,7 @@ using QZ.Instrument.Model;
 using QZ.Instrument.Utility;
 using QZ.Foundation.Monad;
 using QZ.Instrument.Global;
+using QZ.Foundation.Utility;
 
 namespace QZ.Instrument.Client
 {
@@ -408,8 +409,8 @@ namespace QZ.Instrument.Client
                                                             | m.Match(t => t.Field("ob_name").Query(q.query_str))))))
                            .DoWhen(q => !string.IsNullOrEmpty(q.cat_s),
                                    q => qcs.Add(qcd.Term(t => t.Field("ob_classNo").Value(q.cat_s))))
-                           .DoWhen(q => q.status != 0,
-                                   q => qcs.Add(qcd.Term(t => t.Field("ob_status").Value(Enum.GetName(typeof(Brand_Status), q.status)))))
+                           .DoWhen(q => q.status.ToInt() > 0,
+                                   q => qcs.Add(qcd.Term(t => t.Field("ob_status").Value(Enum.GetName(typeof(Brand_Status), q.status.ToInt())))))
                            .DoWhen(q => q.q_sort == 1,
                                    q => sfd.Field("ob_applicationDate").UnmappedType(FieldType.Date).Order(SortOrder.Ascending))
                            .DoWhen(q => q.q_sort == 2,

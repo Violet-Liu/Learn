@@ -103,6 +103,9 @@ namespace QZ.Service.Enterprise
         public static OrgCompanyDtlInfo OrgCompanyDtl_Select(string oc_code) =>
             Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanyDtl_Select(oc_code, Sp_Name_Set.OrgCompanyDtl_Select));
 
+        public static OrgCompanyDtlInfo New_OrgCompanyDtl_Select(string oc_code) =>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanyDtl_Selectbyod_oc_code(oc_code));
+
         public static Tuple<OrgCompanyDtlInfo, OrgCompanyListInfo> OrgCompanyDetails_Select(string oc_code) =>
             Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => {
                 var dtl = access.OrgCompanyDtl_Select(oc_code, Sp_Name_Set.OrgCompanyDtl_Select);
@@ -158,9 +161,9 @@ namespace QZ.Service.Enterprise
                 return new List<Company_Sh>();
             });
         #endregion
-        public static Dictionary<string, string> OrgCompany_Tel_Get(DatabaseSearchModel search) =>
+        public static Tuple<Dictionary<string, string>, Dictionary<string, string>> OrgCompany_Tel_Get(DatabaseSearchModel search) =>
             Dispose_Wrap(Constants.QZOrgCompanyGsxt_Db_Key, access => access.OrgCompany_Tel_Get(search, Sp_Name_Set.Table_PageSelect));
-        
+
 
         public static List<OrgCompanyDtl_EvtInfo> OrgCompanyDtl_Evt_Select(DatabaseSearchModel<OrgCompanyDtl_EvtInfo> search) =>
             Dispose_Wrap(Constants.QZOrgCompany_Db_Key,
@@ -185,6 +188,9 @@ namespace QZ.Service.Enterprise
         public static List<CompanyPatent> OrgCompanyPatent_Page_Select(DatabaseSearchModel search) =>
             Dispose_Wrap(Constants.QZPatent,
                 access => access.OrgCompanyPatent_Page_Select(search, Sp_Name_Set.Table_PageSelect));
+        public static int OrgCompanyPatent_GetByoccode(string oc_code) =>
+            Dispose_Wrap(Constants.QZPatent,
+                access => access.OrgCompanyPatent_GetByoccode(oc_code));
 
         public static Tuple<List<Software_Abs>, int> Software_Get(DatabaseSearchModel search) =>
             Dispose_Wrap(Constants.QZProperty_Db_Key,
@@ -223,6 +229,28 @@ namespace QZ.Service.Enterprise
         public static bool Company_Favorite_Exist(int u_id, string oc_code) =>
             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Company_Favorite_Exist(u_id, oc_code, Sp_Name_Set.Company_Favorite_Select));
 
+        public static int Company_Favorite_GetByUidAndOccode(int u_id, string oc_code)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Company_Favorite_GetByUidAndOccode(u_id, oc_code, Sp_Name_Set.Company_Favorite_Select));
+
+        public static List<Favorite_Log> Company_Favorite_GetByUidAndGid(int u_id, int g_id,out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.Company_Favorite_GetByUidAndGid(u_id, g_id, Sp_Name_Set.FavoriteLog_SelectBygid, out count);
+                }
+                catch (Exception e)
+                {
+                    #region debug
+                    count = 0;
+                    //Util.Log_Info(nameof(FavoriteGroup_UpdateCount), Location.Internal, e.Message, "database error");
+                    #endregion
+                    return new List<Favorite_Log>();
+                }
+            }          
+        }
+            
         /// <summary>
         /// 
         /// </summary>
@@ -377,6 +405,9 @@ namespace QZ.Service.Enterprise
                 }
             }
         }
+
+        public static bool Favorite_Exsit_byUidAndOccode(string oc_code, int u_id) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Exsit_byUidAndOccode(oc_code, u_id));
         public static int Company_Topic_ReplyCount_Get(int t_id) =>
             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Company_Topic_ReplyCount_Get(t_id, Sp_Name_Set.Company_Topic_ReplyCount_Get));
 
@@ -454,7 +485,9 @@ namespace QZ.Service.Enterprise
         #region user
         public static User_Mini_Info User_FromId_Select(int u_id) =>
             Dispose_Wrap(Constants.QZNewSite_User_Db_Key, access => access.User_FromId_Select(u_id));
-
+        public static string User_ClientID_Getbyu_id(int u_id) =>
+           Dispose_Wrap(Constants.QZNewSite_User_Db_Key, access => access.User_ClientID_Getbyu_id(u_id));
+        
         public static List<History_Query> History_Query(DatabaseSearchModel search, int u_id) =>
             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.SearchHistory_PageSelect(search, u_id, Sp_Name_Set.DeRedundent_Page_Select));
 
@@ -529,6 +562,27 @@ namespace QZ.Service.Enterprise
 
         public static UserInfo User_FromName_Select(string u_name) =>
             Dispose_Wrap(Constants.QZNewSite_User_Db_Key, access => access.User_FromName_Select_2(u_name));
+
+        public static void User_Ifda_Insert(string u_ifda)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZNewSite_User_Db_Key))
+            {
+                try
+                {
+                    access.User_Ifda_Insert(u_ifda);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static int User_ClientID_Insert(int u_uid, string u_clientID) =>
+            Dispose_Wrap(Constants.QZNewSite_User_Db_Key, access => access.User_ClientID_Insert(u_uid, u_clientID));
+
 
         public static UserInfo User_FromId_Select_2(int u_id) =>
             Dispose_Wrap(Constants.QZNewSite_User_Db_Key, access => access.User_FromId_Select_2(u_id));
@@ -605,7 +659,7 @@ namespace QZ.Service.Enterprise
 
         public static int CommunityTieziImage_Bulk_Insert(AppTieziImageInfo img, List<string> uris) =>
             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.CommunityTieziImage_Bulk_Insert(img, uris, Sp_Name_Set.CommunityTieziImage_Insert));
- 
+
         public static int Community_Reply_Insert(AppTeiziReplyInfo info) =>
             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Community_Reply_Insert(info, Sp_Name_Set.CommunityReply_Insert));
 
@@ -671,8 +725,8 @@ namespace QZ.Service.Enterprise
             Dispose_Wrap(Constants.QZNewSite_Db_Key, access => access.CMSBlocks_Selectbyblk_pg_id(blk_pg_id).FirstOrDefault(b => b.blk_name == blk_name));
 
         public static List<CMSItemsInfo> CMSItems_FromPgid_Select(int pg_id, int pg_size) =>
-            Dispose_Wrap(Constants.QZNewSite_Db_Key, access => 
-            access.CMSItems_FromPgid_Select(new DatabaseSearchModel().SetPageSize(pg_size).SetOrder(" n_date desc ").SetWhere($"n_pg_id={pg_id}"), Sp_Name_Set.CMSItems_FromPgid_Select));
+            Dispose_Wrap(Constants.QZNewSite_Db_Key, access =>
+            access.CMSItems_FromPgid_Select(new DatabaseSearchModel().SetPageSize(pg_size).SetOrder(" n_date desc ").SetWhere($"n_pg_id={pg_id}").SetWhere("n_status=1 and n_publish='true'"), Sp_Name_Set.CMSItems_FromPgid_Select));
 
         public static List<CMSBlocksInfo> CMSBlocks_Selectbyblk_pg_id(string pg_uid) =>
             Dispose_Wrap(Constants.QZNewSite_Db_Key, access =>
@@ -680,5 +734,478 @@ namespace QZ.Service.Enterprise
                 var page = access.CMSPagesInfo_FromUid_Get(pg_uid, Sp_Name_Set.CMSPagesInfo_FromUid_Get);
                 return page == null ? null : access.CMSBlocks_Selectbyblk_pg_id(page.pg_id);
             });
+
+        public static List<CertificationInfo> Certificatelst_Get(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZProperty))
+            {
+                try
+                {
+                    return access.Certificatelst_Get(search, Sp_Name_Set.Certificatelst_Get, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<CertificationInfo> CertificateDtl_Get(int ci_id)=>
+            Dispose_Wrap(Constants.QZProperty, access=>access.CertificateDtl_Get(ci_id, Sp_Name_Set.CertificateDtl_Get));
+
+
+
+        public static List<OrgGS1RegListInfo> Reglst_Get(DatabaseSearchModel search,out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgGS1))
+            {
+                try
+                {
+                    return access.OrgGS1RegList_Get(search, Sp_Name_Set.Reglst_Get, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<OrgGS1ItemInfo> Invlst_Get(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgGS1))
+            {
+                try
+                {
+                    return access.OrgGS1InvList_Get(search, Sp_Name_Set.Invlst_Get, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static OrgGS1ItemInfo InvDtl_Get(int ogs_id) =>
+            Dispose_Wrap(Constants.QZOrgGS1, access => access.OrgGS1Item_Selectbyogs_id(ogs_id));
+
+        public static List<Favorite_Group> FavoriteGroups_Selectbyu_uid(int u_uid)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroups_Selectbyu_uid(u_uid));
+            
+        public static int FavoriteGroup_Insert(Favorite_Group group)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_Insert(group, Sp_Name_Set.FavoriteGroup_Insert));  
+         
+        public static int FavoriteGroup_UpdateName(Favorite_Group group)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_UpdateName(group));
+
+        public static int FavoriteGroup_UpdateCount(bool isAdd,int g_gid)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_UpdateCount(isAdd, g_gid));
+
+        public static int FavoriteGroup_SetCount(int g_gid, int count) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_SetCount(g_gid, count));
+
+        public static int FavoriteGroup_SetCount(int g_gid) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_SetCount(g_gid));
+
+        public static int Favorite_Into_Group(string fl_ids, int g_gid,int count)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Into_Group(fl_ids, g_gid,count));
+
+        public static int Favorite_Into_Group(int u_uid, string oc_code, int g_gid) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Into_Group(u_uid, oc_code, g_gid));
+
+        public static int FavoriteGroup_Del(int g_gid) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteGroup_Del(g_gid,Sp_Name_Set.FavoriteGroup_Delete));
+        public static int Favorite_Out_Group(int g_gid) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Out_Group(g_gid));
+
+        public static List<UNSPSC_CNInfo> UNSPSC_CN_SelectPaged(string columns, string where, string order, int page, int pagesize, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgGS1))
+            {
+                try
+                {
+                    return access.UNSPSC_CN_SelectPaged(columns, where,order,page,pagesize, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<QZEmployInfo> QZEmploy_SelectPaged(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZEmploy))
+            {
+                try
+                {
+                    return access.QZEmploy_SelectPaged(search, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<QZEmployInfo> Job_Get(int ogs_id) =>
+           Dispose_Wrap(Constants.QZEmploy, access => access.EmployInfo_Get(ogs_id, Sp_Name_Set.Employ_SelectbyID));
+
+       public static List<ZhiXingInfo> ExecuteInfo_Get(int zx_id) =>
+           Dispose_Wrap(Constants.QZCourt, access => access.ExecuteInfo_Get(zx_id, Sp_Name_Set.Execute_SelectbyZXID));
+
+        public static List<OrgCompanySiteInfo> OrgCompanySite_SelectPaged(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompany_Db_Key))
+            {
+                try
+                {
+                    return access.OrgCompanySite_SelectPaged(search, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<ZhiXingInfo> ZhiXing_SelectPaged(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZCourt))
+            {
+                try
+                {
+                    return access.ZhiXing_SelectPaged(search, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+
+        public static List<ExhibitionEnterpriseInfo> ExhibitionEnterprise_SelectPaged(DatabaseSearchModel search, out int count)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompany_Db_Key))
+            {
+                try
+                {
+                    return access.ExhibitionEnterprise_SelectPaged(search, out count);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static int OregCompanyDtl_Evt_GetByoccode(string oc_code) =>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OregCompanyDtl_Evt_GetByoccode(oc_code));
+
+        public static int OregCompanyDtl_Evt_GetByoccode(string oc_code,string areaprefix) =>
+            Dispose_Wrap(Constants.QZOrgCompanyGsxt_Db_Key, access => access.OrgCompanyGsxtBgsx_GetByoccode(oc_code,areaprefix));
+
+        public static int Company_Annual_Abs_Count(string oc_code, string oc_areaprefix) =>
+            Dispose_Wrap(Constants.QZOrgCompanyGsxt_Db_Key, access => access.Company_Annual_Abs_Count(oc_code, oc_areaprefix));
+
+        public static int Company_Icpl_Count(string oc_code) =>
+           Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.Company_Icpl_Count(oc_code));
+
+        public static int Software_GetByoccode(string oc_code) =>
+           Dispose_Wrap(Constants.QZProperty_Db_Key, access => access.Software_GetByoccode(oc_code));
+
+        public static int Product_GetByoccode(string oc_code) =>
+           Dispose_Wrap(Constants.QZProperty_Db_Key, access => access.Product_GetByoccode(oc_code));
+
+        public static int OrgCompanyDishonestt_GetByoccode(string oc_code) =>
+           Dispose_Wrap(Constants.QZCourt, access => access.OrgCompanyDishonestt_GetByoccode(oc_code));
+
+        public static int Favorite_Note_Create(int fl_id, string note) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Note_Create(fl_id, note));
+
+        public static int Favorite_Note_Update(long n_id, string note) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Note_Update(n_id, note));
+
+        public static int Favorite_Note_Del(long n_id) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Favorite_Note_Del(n_id));
+
+        public static List<Favorite_Note> FavoriteNote_SelectPaged(DatabaseSearchModel model) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteNote_SelectPaged(model));
+
+        public static Favorite_Note FavoriteNote_Top(int fl_id) =>
+           Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.FavoriteNote_top(fl_id));
+
+        public static List<SystemNoticeInfo> SystemNotice_SelectPagedByUser(int userid, int startsize, int endsize, out int totalcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.SystemNotice_SelectPagedByUser(userid, startsize, endsize, out totalcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }           
+        }
+
+        public static List<SystemNoticeByUserInfo> SystemNoticeByUser_SelectPaged(DatabaseSearchModel model, out int totalcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.SystemNoticeByUser_SelectPaged(model, out totalcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+
+        public static List<SystemNoticeInfo> SystemNotice_SelectPaged(DatabaseSearchModel model, out int totalcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.SystemNotice_SelectPaged(model, out totalcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static int SystemNoticeByUser_Insert(SystemNoticeByUserInfo obj)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.SystemNoticeByUser_Insert(obj));
+
+        public static int SystemNoticeByUser_Update(SystemNoticeByUserInfo obj) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.SystemNoticeByUser_Update(obj));
+
+        public static int SystemNoticeAll_Del(int u_id) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.SystemNoticeAll_Del(u_id));
+
+        public static CompanyStatisticsInfo CompanyStatistics_Get(string oc_code) =>
+            Dispose_Wrap(Constants.CompanyStatisticsInfoTwo, access => access.CompanyStatistics_Get(oc_code));
+
+        public static List<string> TopicUserTrace_GetClientId(int tut_t_id,int tut_t_type) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.TopicUserTrace_GetClientId(tut_t_id, tut_t_type));
+
+        public static string Topic_Content_GetByid(int id)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.CommunityTopic_Content_GetByid(id));
+        public static string CompanyTopic_Content_Getbyid(int id) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.CompanyTopic_Content_Getbyid(id));
+
+        public static int Company_Report_Collect(Req_ReportsReq obj) =>
+            Dispose_Wrap(Constants.QZNewSite_Db_Key, access => access.Company_Report_Collect(obj));
+
+        #region claim company
+        public static int Claim_Company_Insert(ClaimCompanyInfo obj) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Claim_Company_Insert(obj));
+
+        public static int Claim_Company_Update(ClaimCompanyInfo obj) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.Claim_Company_Update(obj));
+
+        public static int ClaimCompany_Deletebycc_id(int cc_id, bool cc_isvalid) =>
+           Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.ClaimCompany_Deletebycc_id(cc_id,cc_isvalid));
+
+
+        public static ClaimCompanyInfo ClaimCompany_Selectbycc_id(int cc_id) =>
+          Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.ClaimCompany_Selectbycc_id(cc_id));
+
+        public static List<ClaimCompanyInfo> ClaimCompany_Selectbycc_u_uid(int cc_u_uid) =>
+          Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.ClaimCompany_Selectbycc_u_uid(cc_u_uid));
+
+        public static List<ClaimCompanyInfo> ClaimCompany_Selectbycc_oc_code(string cc_oc_code) =>
+          Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.ClaimCompany_Selectbycc_oc_code(cc_oc_code));
+
+        public static List<ClaimCompanyInfo> ClaimCompany_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.ClaimCompany_SelectPaged(model, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static bool OrgCompanyExtensionData_Insert(OrgCompanyExtensionDataInfo obj, out string guid)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyExtension))
+            {
+                try
+                {
+                    return access.OrgCompanyExtensionData_Insert(obj, out guid);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static bool OrgCompanyExtensionData_Update(OrgCompanyExtensionDataInfo obj) =>
+          Dispose_Wrap(Constants.QZOrgCompanyExtension, access => access.OrgCompanyExtensionData_Update(obj));
+
+        public static bool OrgCompanyExtensionData_Update_CoverAll(OrgCompanyExtensionDataInfo obj) =>
+            Dispose_Wrap(Constants.QZOrgCompanyExtension, access => access.OrgCompanyExtensionData_Update_CoverAll(obj));
+
+        public static List<OrgCompanyExtensionDataInfo> OrgCompanyExtensionData_SelectPaged(DatabaseSearchModel model)=>
+            Dispose_Wrap(Constants.QZOrgCompanyExtension, access => access.OrgCompanyExtensionData_SelectPaged(model));
+
+        public static List<OrgCompanyExtensionDataInfo> OrgCompanyExtensionData_Selectbyoc_codeandoc_type(string oc_code, int oc_type)=>
+            Dispose_Wrap(Constants.QZOrgCompanyExtension, access => access.OrgCompanyExtensionData_Selectbyoc_codeandoc_type(oc_code, oc_type));
+
+        public static List<OrgCompanyExtensionDataInfo> OrgCompanyClaimCompanyWall_SelectPaged(int startIndex, int endIndex, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyExtension))
+            {
+                try
+                {
+                    return access.OrgCompanyClaimCompanyWall_SelectPaged(startIndex, endIndex, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+        #endregion
+
+        #region vip gallery
+        public static int VipUserOrder_Insert(VipUserOrderInfo obj)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipUserOrder_Insert(obj));
+
+        public static VipUserOrderInfo VipUserOrder_Selectbymo_orderid(string mo_orderid) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipUserOrder_Selectbymo_orderid(mo_orderid));
+
+        public static int VipUserOrder_Update(VipUserOrderInfo obj)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipUserOrder_Update(obj));
+
+        public static VipStatusUserInfo VipStatusUser_Selectbyvip_id(int vip_userid)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipStatusUser_Selectbyvip_id(vip_userid));
+
+        public static int VipStatusUser_Update(VipStatusUserInfo obj)=>
+             Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipStatusUser_Update(obj));
+
+        public static int VipStatusUser_Insert(VipStatusUserInfo obj)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.VipStatusUser_Insert(obj));
+
+        public static ExcelCompanyOrderInfo ExcelCompanyOrder_Selectbyeco_orderid(string eco_orderid)=>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.ExcelCompanyOrder_Selectbyeco_orderid(eco_orderid));
+        #endregion
+
+        #region company info package
+        public static OrgCompanyDtlPack4Site OrgCompanySitePackSelect(string oc_code)=>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanySitePackSelect(oc_code));
+
+        public static List<OrgCompanyListInfo> OrgCompanyList_Selectinoc_codes(string oc_code) =>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanyList_Selectinoc_codes(oc_code));
+
+        public static List<OrgCompanyDtlMgrInfo> OrgCompanyDtlMgr_Selectbyom_oc_code(string om_oc_code)=>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanyDtlMgr_Selectbyom_oc_code(om_oc_code));
+
+        public static List<OrgCompanyDtlGDInfo> OrgCompanyDtlGD_SelectPaged(DatabaseSearchModel model)=>
+            Dispose_Wrap(Constants.QZOrgCompany_Db_Key, access => access.OrgCompanyDtlGD_SelectPaged(model));
+
+        public static List<OrgCompanyBrandInfo> OrgCompanyBrand_SelectPaged(DatabaseSearchModel model)=>
+            Dispose_Wrap(Constants.QZBrand_Db_Key, access => access.OrgCompanyBrand_SelectPaged(model));
+
+        public static List<OrgCompanyPatentInfo> OrgCompanyPatent_SelectPaged(DatabaseSearchModel model)=>
+            Dispose_Wrap(Constants.QZPatent, access => access.OrgCompanyPatent_SelectPaged(model));
+
+        public static List<InvoiceInfo> InvoiceInfo_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.InvoiceInfo_SelectPaged(model, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static int InvoiceInfo_Insert(InvoiceInfo obj) =>
+            Dispose_Wrap(Constants.QZOrgCompanyApp_Db_Key, access => access.InvoiceInfo_Insert(obj));
+
+        public static List<VipUserOrderInfo> VipUserOrder_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.VipUserOrder_SelectPaged(model, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+
+        public static List<ExcelCompanyOrderInfo> ExcelCompanyOrder_SelectPaged(DatabaseSearchModel model, out int rowcount)
+        {
+            using (var access = new QZOrgCompanyAppAccess(Constants.QZOrgCompanyApp_Db_Key))
+            {
+                try
+                {
+                    return access.ExcelCompanyOrder_SelectPaged(model, out rowcount);
+                }
+                catch (Exception e)
+                {
+                    //count = 0;
+                    //return new List<Cm_Topic_Dtl>();
+                    throw e;
+                }
+            }
+        }
+        #endregion
+
     }
 }

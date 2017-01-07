@@ -52,13 +52,13 @@ namespace QZ.Test.UnitTest
         {
             _simulator = new Simulator();
             _action = act => { act(); Console.WriteLine(Global.Instance.Response); };
-            _action(() => _simulator.CompanyTrade_Search());
+            _action(() => _action(() => _simulator.Favorites()));
         }
 
         [Fact]
         public void ES_Test()
         {
-            ES_Search.Dishonest_Test("朱克刚", 10);
+            ES_Search.Dishonest_Test("深圳市腾讯计算机系统有限公司", 10);
         }
     }
 }

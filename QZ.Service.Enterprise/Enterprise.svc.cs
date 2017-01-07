@@ -58,6 +58,13 @@ namespace QZ.Service.Enterprise
         /// <param name="request"></param>
         /// <returns></returns>
         public Response Company_Intelli_Tip(Request request) => ServiceImpl.Process_Company_Intelli_Tip(request);
+
+        /// <summary>
+        /// get companies which are scaned by user or added into favorites
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public Response Company_FavoriteScan(Request request) => CompanyImpl.Process_Company_FavoriteScan(request);
         #endregion
 
         #region company detail
@@ -98,12 +105,24 @@ namespace QZ.Service.Enterprise
         public Response Exhibit_Detail(Request request) => CompanyImpl.Process_Exhibit_Detail(request);
 
         public Response Exhibit_Companies(Request request) => CompanyImpl.Process_Exhibit_Companies(request);
+
+        public Response Company_CetificationList(Request request) => CompanyImpl.Process_Company_CetificationList(request);
+
+        public Response Company_CertificateDtl(string ci_id) => CompanyImpl.Process_Company_CetificationDtl(ci_id);
+
+        public Response Company_RegList(Request request) => CompanyImpl.Process_Company_RegList(request);
+
+        public Response Company_InvList(Request request) => CompanyImpl.Process_Company_InvList(request);
+
+        public Response Company_InvDtl(string ogs_id) => CompanyImpl.Process_Company_InvDtl(ogs_id);
         #endregion
 
         #region company operation i.e. `vote` or `info correct`
         public Response Company_Correct(Request request) => ServiceImpl.Process_Company_Correct(request);
         public Response Company_Favorite_Add(Request request) => ServiceImpl.Process_Company_Favorite_Add(request);
+        public Response Company_Favorite_NewAdd(Request request) => ServiceImpl.Process_Company_Favorite_NewAdd(request);
         public Response Company_Favorite_Remove(Request request) => ServiceImpl.Process_Company_Favorite_Remove(request);
+        public Response Company_Favorite_NewRemove(Request request) => ServiceImpl.Process_Company_Favorite_NewRemove(request);
         public Response Company_Report_Send(Request request) => ServiceImpl.Process_Company_Report_Send(request);
         public Response Company_Impression(Request request) => ServiceImpl.Process_Company_Impression(request);
         public Response Company_UpDown_Vote(Request request) => ServiceImpl.Process_Company_UpDown_Vote(request);
@@ -159,14 +178,18 @@ namespace QZ.Service.Enterprise
 
         #region company ext i.e. brand patent copyright court...
         public Response Query_Brand(Request request) => ServiceImpl.Process_Query_Brand(request);
+        public Response NewQuery_Brand(Request request) => ServiceImpl.Process_NewQuery_Brand(request);
         //public Response ExtQuery_History(Request request) => ServiceImpl.Process_Ext_SearchHistory
         public Response Brand_Dtl(Request request) => ServiceImpl.Process_Brand_Dtl(request);
         public Response Patent_Dtl(Request request) => ServiceImpl.Process_Patent_Dtl(request);
+        public Response Patent_NewQuery(Request request) => ServiceImpl.Process_Patent_NewQuery(request);
         public Response Patent_Query(Request request) => ServiceImpl.Process_Patent_Query(request);
         public Response Patent_Universal_Query(Request request) => ServiceImpl.Process_Patent_Universal_Query(request);
+        public Response Judge_NewQuery(Request request) => ServiceImpl.Process_Judge_NewQuery(request);
         public Response Judge_Query(Request request) => ServiceImpl.Process_Judge_Query(request);
         public Response Judge_Detail(Request request) => ServiceImpl.Process_Judge_Detail(request);
         public Response Dishonest_Detail(Request request) => ServiceImpl.Process_Dishonest_Dtl(request);
+        public Response Dishonest_NewQuery(Request request) => ServiceImpl.Process_Dishonest_NewQuery(request);
         public Response Dishonest_Query(Request request) => ServiceImpl.Process_Dishonest_Query(request);
         public Response Patent_Get(Request request) => ServiceImpl.Process_Patent_Get(request);
         public Response Brand_Get(Request request) => ServiceImpl.Process_Brand_Get(request);
@@ -209,6 +232,26 @@ namespace QZ.Service.Enterprise
         public Response Company_UniversalTradeSearch(Request request) => CompanyImpl.Process_Company_UniversalTradeSearch(request);
 
         public Response Company_Search4Exhibit(Request request) => CompanyImpl.Process_Company_Search4Exhibit(request);
+
+        public Response Company_Employs(Request request) => CompanyImpl.Process_Employs(request);
+
+        public Response Company_JobDtl(string ogs_id) => CompanyImpl.Process_JobDtl_Get(ogs_id);
+
+        public Response Company_SearchItemSite(Request request) => CompanyImpl.Process_SearchItemSite_Get(request);
+
+        public Response Company_Executes(Request request) => CompanyImpl.Process_Executes_Get(request);
+
+        public Response Company_ExecuteDtl(string zx_id)=> CompanyImpl.Process_ExecuteDtl_Get(zx_id);
+
+        public Response Company_LinkCach(Request request) => CompanyImpl.Process_LinkCach_Get(request);
+
+        public Response Company_Exhibitions(Request request) => CompanyImpl.Process_Exhibitions_Get(request);
+
+        public Response Company_Report_Collect(Request request) => CompanyImpl.Process_Report_Collect(request);
+
+        public Response Company_Claim_Submit(Request request) => CompanyImpl.Process_Claim_Submit(request);
+
+        //public Response Company_Query_VipExport(Request request)=>
         #endregion
 
     }

@@ -157,19 +157,84 @@ namespace QZ.Instrument.Utility
             }
         }
 
+        public static string DateStringFromNow(DateTime dt)
+        {
+            TimeSpan span = DateTime.Now - dt;
+
+            
+
+            if(span.TotalDays>365)
+            {
+                double n = Math.Round(span.TotalDays / 365, 1);
+                return n.ToString() + "年前";
+            }
+            if (span.TotalDays > 180)
+            {
+                return "半年前";
+            }
+            if (span.TotalDays > 60)
+            {
+                return "2月前";
+            }
+            else
+            if (span.TotalDays > 30)
+            {
+                return "1个月前";
+            }
+            else
+            if (span.TotalDays > 14)
+            {
+                return "2周前";
+            }
+            else
+            if (span.TotalDays > 7)
+            {
+                return "1周前";
+            }
+            else
+            if (span.TotalDays > 1)
+            {
+                return string.Format("{0}天前", (int)Math.Floor(span.TotalDays));
+            }
+            else
+            if (span.TotalHours > 1)
+            {
+                return string.Format("{0}小时前", (int)Math.Floor(span.TotalHours));
+            }
+            else
+            if (span.TotalMinutes > 1)
+            {
+                return string.Format("{0}分钟前", (int)Math.Floor(span.TotalMinutes));
+            }
+            else
+            if (span.TotalSeconds >= 1)
+            {
+                return string.Format("{0}秒前", (int)Math.Floor(span.TotalSeconds));
+            }
+            else
+            {
+                return "1秒前";
+            }
+        }
 
         public static string To_OpStatus(string od_ext)
         {
-            if (string.IsNullOrEmpty(od_ext))
-                return "正常";
-            string BusinessStatus = null;
-            if (od_ext == "")
+            string BusinessStatus = "在业";
+            if (string.IsNullOrEmpty(od_ext) || od_ext.Contains("在业") || od_ext.Contains("迁入") || od_ext.Contains("确立") || od_ext.Contains("登记成立"))
             {
-                BusinessStatus = "正常";
+                BusinessStatus = "在业";
+            }
+            else if(od_ext.Contains("迁出"))
+            {
+                BusinessStatus = "迁出";
             }
             else if (od_ext.Contains("注销"))
             {
                 BusinessStatus = "注销";
+            }
+            else if (od_ext.Contains("吊销") && od_ext.Contains("未注销"))
+            {
+                BusinessStatus = "吊销,未注销";
             }
             else if (od_ext.Contains("吊销"))
             {
@@ -197,7 +262,7 @@ namespace QZ.Instrument.Utility
             }
             else
             {
-                BusinessStatus = "正常";
+                BusinessStatus = "在业";
             }
             return BusinessStatus;
         }

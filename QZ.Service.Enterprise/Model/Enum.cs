@@ -40,5 +40,18 @@ namespace QZ.Service.Enterprise
         reply=1
     }
 
+    public enum ApiOrderStateEnums
+    {
+        待支付 = 1,
+        已支付 = 2,
+        已完成 = 3,
+    }
+
+    public enum ApiOrderPay
+    {
+        支付宝=1,
+        微信=2,
+    }
+
 
 }

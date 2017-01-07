@@ -38,7 +38,12 @@ namespace QZ.Instrument.Model
         public string u_name;
         public int pg_size;
         public int pg_index;
-
+        public string oc_type;
+        public string oc_area;
+        public string oc_trade;
+        public string oc_status;
+        public string oc_regm;
+        public oc_sort oc_sort;
         public static Req_Trade_UniversalSearch Default()
         {
             var s = new Req_Trade_UniversalSearch();

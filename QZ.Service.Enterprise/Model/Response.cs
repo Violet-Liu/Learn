@@ -27,6 +27,18 @@ namespace QZ.Service.Enterprise
         }
     }
 
+    [DataContract]
+    public class UselessResponse
+    {
+        [DataMember(Name = "Content")]
+        public string Content { get; set; }
+        public UselessResponse(string content)
+        {
+            Content = content;
+        }
+    }
+
+
     /// <summary>
     /// Header of response
     /// </summary>

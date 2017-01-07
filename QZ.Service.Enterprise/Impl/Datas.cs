@@ -58,7 +58,7 @@ namespace QZ.Service.Enterprise
         private static IDictionary<byte, string> _companyStatus = new Dictionary<byte, string>()
         {
             [0] = "未知",
-            [1] = "正常",
+            [1] = "在业",
             [2] = "存续",
             [3] = "迁出",
             [4] = "吊销",

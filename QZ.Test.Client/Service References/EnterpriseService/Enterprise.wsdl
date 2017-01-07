@@ -7,36 +7,686 @@
       <xsd:import schemaLocation="http://localhost:9081/Enterprise.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/QZ.Service.Enterprise" />
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="IEnterprise_GetData_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetData" />
-  </wsdl:message>
-  <wsdl:message name="IEnterprise_GetData_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataResponse" />
-  </wsdl:message>
-  <wsdl:message name="IEnterprise_GetDataUsingDataContract_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataUsingDataContract" />
-  </wsdl:message>
-  <wsdl:message name="IEnterprise_GetDataUsingDataContract_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDataUsingDataContractResponse" />
-  </wsdl:message>
   <wsdl:message name="IEnterprise_Index_InputMessage">
     <wsdl:part name="parameters" element="tns:Index" />
   </wsdl:message>
   <wsdl:message name="IEnterprise_Index_OutputMessage">
     <wsdl:part name="parameters" element="tns:IndexResponse" />
   </wsdl:message>
+  <wsdl:message name="IEnterprise_Index_Pics_InputMessage">
+    <wsdl:part name="parameters" element="tns:Index_Pics" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Index_Pics_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Index_PicsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Area_InputMessage">
+    <wsdl:part name="parameters" element="tns:Area" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Area_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AreaResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Fresh_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Fresh" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Fresh_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_FreshResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Dtl_Simple_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Dtl_Simple" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Dtl_Simple_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Dtl_SimpleResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Trades_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Trades" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Trades_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Recommend_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Recommend" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Recommend_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_RecommendResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Intelli_Tip_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Intelli_Tip" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Intelli_Tip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Intelli_TipResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_FavoriteScan_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_FavoriteScan" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_FavoriteScan_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_FavoriteScanResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Invest_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Invest" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Invest_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_InvestResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Map_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Map" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Map_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_MapResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Stock_Holder_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Stock_Holder" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Stock_Holder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Stock_HolderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_CetificationList_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_CetificationList" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_CetificationList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_CetificationListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_CertificateDtl_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_CertificateDtl" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_CertificateDtl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_CertificateDtlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_RegList_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_RegList" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_RegList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_RegListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_InvList_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_InvList" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_InvList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_InvListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_InvDtl_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_InvDtl" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_InvDtl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_InvDtlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Change_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Change" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Change_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ChangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Icpl_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Icpl" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Icpl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_IcplResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Branch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Branch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Branch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_BranchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Annual_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Annual" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Annual_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_AnnualResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Annual_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Annual_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Annual_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Annual_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Impression_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Impression" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Impression_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ImpressionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_New_Topic_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_New_Topic" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_New_Topic_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_New_TopicResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Reply_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Reply" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Reply_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ReplyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Fresh_Topic_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Fresh_Topic" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Fresh_Topic_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Fresh_TopicResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Favorite_Add_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Favorite_Add" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Favorite_Add_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Favorite_AddResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Favorite_Remove_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Favorite_Remove" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Favorite_Remove_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Favorite_RemoveResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Report_Send_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Report_Send" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Report_Send_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Report_SendResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Query_Hot_InputMessage">
+    <wsdl:part name="parameters" element="tns:Query_Hot" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Query_Hot_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Query_HotResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_ExtQuery_Hot_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExtQuery_Hot" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_ExtQuery_Hot_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExtQuery_HotResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_UpDown_Vote_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_UpDown_Vote" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Topic_UpDown_Vote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Topic_UpDown_VoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_UpDown_Vote_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_UpDown_Vote" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_UpDown_Vote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_UpDown_VoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Correct_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Correct" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Correct_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_CorrectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Query_Brand_InputMessage">
+    <wsdl:part name="parameters" element="tns:Query_Brand" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Query_Brand_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Query_BrandResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Dtl_InputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_Dtl" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Dtl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_DtlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Brand_Dtl_InputMessage">
+    <wsdl:part name="parameters" element="tns:Brand_Dtl" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Brand_Dtl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Brand_DtlResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Universal_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_Universal_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Universal_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_Universal_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Query_InputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_Query" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Query_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_QueryResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Get_InputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_Get" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Patent_Get_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Patent_GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Brand_Get_InputMessage">
+    <wsdl:part name="parameters" element="tns:Brand_Get" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Brand_Get_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Brand_GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ScoreMark_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ScoreMark" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ScoreMark_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ScoreMarkResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ScoreDetail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ScoreDetail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ScoreDetail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ScoreDetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Get_InputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_Get" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Judge_Get_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Judge_GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Get_InputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_Get" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Dishonest_Get_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Dishonest_GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Copyrights_Get_InputMessage">
+    <wsdl:part name="parameters" element="tns:Copyrights_Get" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Copyrights_Get_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Copyrights_GetResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeInfos_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeInfos" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeInfos_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeInfosResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeSearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeSearch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeSearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ProInfos_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ProInfos" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ProInfos_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ProInfosResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ProSearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ProSearch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ProSearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ProSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Comment_TipOff_InputMessage">
+    <wsdl:part name="parameters" element="tns:Comment_TipOff" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Comment_TipOff_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Comment_TipOffResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Comment_Shield_InputMessage">
+    <wsdl:part name="parameters" element="tns:Comment_Shield" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Comment_Shield_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Comment_ShieldResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_FwdTradeSearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_FwdTradeSearch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_FwdTradeSearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_FwdTradeSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ExhTradeSearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ExhTradeSearch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_ExhTradeSearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_ExhTradeSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Exhibit_Participate_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Exhibit_Participate" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Exhibit_Participate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Exhibit_ParticipateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Exhibit_Detail_InputMessage">
+    <wsdl:part name="parameters" element="tns:Exhibit_Detail" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Exhibit_Detail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Exhibit_DetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Exhibit_Companies_InputMessage">
+    <wsdl:part name="parameters" element="tns:Exhibit_Companies" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Exhibit_Companies_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Exhibit_CompaniesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeIntelliTip_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeIntelliTip" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_TradeIntelliTip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_TradeIntelliTipResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_UniversalTradeSearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_UniversalTradeSearch" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_UniversalTradeSearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_UniversalTradeSearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Search4Exhibit_InputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Search4Exhibit" />
+  </wsdl:message>
+  <wsdl:message name="IEnterprise_Company_Search4Exhibit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:Company_Search4ExhibitResponse" />
+  </wsdl:message>
   <wsdl:portType name="IEnterprise">
-    <wsdl:operation name="GetData">
-      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/GetData" message="tns:IEnterprise_GetData_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/GetDataResponse" message="tns:IEnterprise_GetData_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetDataUsingDataContract">
-      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/GetDataUsingDataContract" message="tns:IEnterprise_GetDataUsingDataContract_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/GetDataUsingDataContractResponse" message="tns:IEnterprise_GetDataUsingDataContract_OutputMessage" />
-    </wsdl:operation>
     <wsdl:operation name="Index">
       <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Index" message="tns:IEnterprise_Index_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/IndexResponse" message="tns:IEnterprise_Index_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Index_Pics">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Index_Pics" message="tns:IEnterprise_Index_Pics_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Index_PicsResponse" message="tns:IEnterprise_Index_Pics_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Area">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Area" message="tns:IEnterprise_Area_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/AreaResponse" message="tns:IEnterprise_Area_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Fresh">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Fresh" message="tns:IEnterprise_Company_Fresh_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_FreshResponse" message="tns:IEnterprise_Company_Fresh_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Dtl_Simple">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Dtl_Simple" message="tns:IEnterprise_Company_Dtl_Simple_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Dtl_SimpleResponse" message="tns:IEnterprise_Company_Dtl_Simple_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Query" message="tns:IEnterprise_Company_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_QueryResponse" message="tns:IEnterprise_Company_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Detail" message="tns:IEnterprise_Company_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_DetailResponse" message="tns:IEnterprise_Company_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Trades">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Trades" message="tns:IEnterprise_Company_Trades_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_TradesResponse" message="tns:IEnterprise_Company_Trades_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Recommend">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Recommend" message="tns:IEnterprise_Company_Recommend_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_RecommendResponse" message="tns:IEnterprise_Company_Recommend_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Intelli_Tip">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Intelli_Tip" message="tns:IEnterprise_Company_Intelli_Tip_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Intelli_TipResponse" message="tns:IEnterprise_Company_Intelli_Tip_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_FavoriteScan">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_FavoriteScan" message="tns:IEnterprise_Company_FavoriteScan_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_FavoriteScanResponse" message="tns:IEnterprise_Company_FavoriteScan_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Invest">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Invest" message="tns:IEnterprise_Company_Invest_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_InvestResponse" message="tns:IEnterprise_Company_Invest_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Map">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Map" message="tns:IEnterprise_Company_Map_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_MapResponse" message="tns:IEnterprise_Company_Map_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Stock_Holder">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Stock_Holder" message="tns:IEnterprise_Company_Stock_Holder_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Stock_HolderResponse" message="tns:IEnterprise_Company_Stock_Holder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_CetificationList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_CetificationList" message="tns:IEnterprise_Company_CetificationList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_CetificationListResponse" message="tns:IEnterprise_Company_CetificationList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_CertificateDtl">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_CertificateDtl" message="tns:IEnterprise_Company_CertificateDtl_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_CertificateDtlResponse" message="tns:IEnterprise_Company_CertificateDtl_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_RegList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_RegList" message="tns:IEnterprise_Company_RegList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_RegListResponse" message="tns:IEnterprise_Company_RegList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_InvList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_InvList" message="tns:IEnterprise_Company_InvList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_InvListResponse" message="tns:IEnterprise_Company_InvList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_InvDtl">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_InvDtl" message="tns:IEnterprise_Company_InvDtl_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_InvDtlResponse" message="tns:IEnterprise_Company_InvDtl_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Change">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Change" message="tns:IEnterprise_Company_Change_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ChangeResponse" message="tns:IEnterprise_Company_Change_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Icpl">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Icpl" message="tns:IEnterprise_Company_Icpl_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_IcplResponse" message="tns:IEnterprise_Company_Icpl_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Branch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Branch" message="tns:IEnterprise_Company_Branch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_BranchResponse" message="tns:IEnterprise_Company_Branch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Annual">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Annual" message="tns:IEnterprise_Company_Annual_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_AnnualResponse" message="tns:IEnterprise_Company_Annual_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Annual_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Annual_Detail" message="tns:IEnterprise_Company_Annual_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Annual_DetailResponse" message="tns:IEnterprise_Company_Annual_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Impression">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Impression" message="tns:IEnterprise_Company_Impression_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ImpressionResponse" message="tns:IEnterprise_Company_Impression_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_New_Topic">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_New_Topic" message="tns:IEnterprise_Company_New_Topic_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_New_TopicResponse" message="tns:IEnterprise_Company_New_Topic_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Reply">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Reply" message="tns:IEnterprise_Company_Reply_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ReplyResponse" message="tns:IEnterprise_Company_Reply_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Fresh_Topic">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Fresh_Topic" message="tns:IEnterprise_Company_Fresh_Topic_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Fresh_TopicResponse" message="tns:IEnterprise_Company_Fresh_Topic_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Topic_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_Query" message="tns:IEnterprise_Company_Topic_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_QueryResponse" message="tns:IEnterprise_Company_Topic_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Topic_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_Detail" message="tns:IEnterprise_Company_Topic_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_DetailResponse" message="tns:IEnterprise_Company_Topic_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Favorite_Add">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Favorite_Add" message="tns:IEnterprise_Company_Favorite_Add_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Favorite_AddResponse" message="tns:IEnterprise_Company_Favorite_Add_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Favorite_Remove">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Favorite_Remove" message="tns:IEnterprise_Company_Favorite_Remove_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Favorite_RemoveResponse" message="tns:IEnterprise_Company_Favorite_Remove_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Report_Send">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Report_Send" message="tns:IEnterprise_Company_Report_Send_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Report_SendResponse" message="tns:IEnterprise_Company_Report_Send_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Query_Hot">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Query_Hot" message="tns:IEnterprise_Query_Hot_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Query_HotResponse" message="tns:IEnterprise_Query_Hot_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ExtQuery_Hot">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/ExtQuery_Hot" message="tns:IEnterprise_ExtQuery_Hot_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/ExtQuery_HotResponse" message="tns:IEnterprise_ExtQuery_Hot_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Topic_UpDown_Vote">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_UpDown_Vote" message="tns:IEnterprise_Company_Topic_UpDown_Vote_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Topic_UpDown_VoteResponse" message="tns:IEnterprise_Company_Topic_UpDown_Vote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_UpDown_Vote">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_UpDown_Vote" message="tns:IEnterprise_Company_UpDown_Vote_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_UpDown_VoteResponse" message="tns:IEnterprise_Company_UpDown_Vote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Correct">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Correct" message="tns:IEnterprise_Company_Correct_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_CorrectResponse" message="tns:IEnterprise_Company_Correct_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Query_Brand">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Query_Brand" message="tns:IEnterprise_Query_Brand_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Query_BrandResponse" message="tns:IEnterprise_Query_Brand_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Patent_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Patent_Query" message="tns:IEnterprise_Patent_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Patent_QueryResponse" message="tns:IEnterprise_Patent_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Patent_Dtl">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Patent_Dtl" message="tns:IEnterprise_Patent_Dtl_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Patent_DtlResponse" message="tns:IEnterprise_Patent_Dtl_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Brand_Dtl">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Brand_Dtl" message="tns:IEnterprise_Brand_Dtl_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Brand_DtlResponse" message="tns:IEnterprise_Brand_Dtl_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Patent_Universal_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Patent_Universal_Query" message="tns:IEnterprise_Patent_Universal_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Patent_Universal_QueryResponse" message="tns:IEnterprise_Patent_Universal_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Judge_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Judge_Query" message="tns:IEnterprise_Judge_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Judge_QueryResponse" message="tns:IEnterprise_Judge_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Judge_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Judge_Detail" message="tns:IEnterprise_Judge_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Judge_DetailResponse" message="tns:IEnterprise_Judge_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Dishonest_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_Detail" message="tns:IEnterprise_Dishonest_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_DetailResponse" message="tns:IEnterprise_Dishonest_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Dishonest_Query">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_Query" message="tns:IEnterprise_Dishonest_Query_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_QueryResponse" message="tns:IEnterprise_Dishonest_Query_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Patent_Get">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Patent_Get" message="tns:IEnterprise_Patent_Get_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Patent_GetResponse" message="tns:IEnterprise_Patent_Get_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Brand_Get">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Brand_Get" message="tns:IEnterprise_Brand_Get_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Brand_GetResponse" message="tns:IEnterprise_Brand_Get_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_ScoreMark">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_ScoreMark" message="tns:IEnterprise_Company_ScoreMark_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ScoreMarkResponse" message="tns:IEnterprise_Company_ScoreMark_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_ScoreDetail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_ScoreDetail" message="tns:IEnterprise_Company_ScoreDetail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ScoreDetailResponse" message="tns:IEnterprise_Company_ScoreDetail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Judge_Get">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Judge_Get" message="tns:IEnterprise_Judge_Get_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Judge_GetResponse" message="tns:IEnterprise_Judge_Get_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Dishonest_Get">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_Get" message="tns:IEnterprise_Dishonest_Get_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Dishonest_GetResponse" message="tns:IEnterprise_Dishonest_Get_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Copyrights_Get">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Copyrights_Get" message="tns:IEnterprise_Copyrights_Get_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Copyrights_GetResponse" message="tns:IEnterprise_Copyrights_Get_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_TradeInfos">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeInfos" message="tns:IEnterprise_Company_TradeInfos_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeInfosResponse" message="tns:IEnterprise_Company_TradeInfos_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_TradeSearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeSearch" message="tns:IEnterprise_Company_TradeSearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeSearchResponse" message="tns:IEnterprise_Company_TradeSearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_ProInfos">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_ProInfos" message="tns:IEnterprise_Company_ProInfos_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ProInfosResponse" message="tns:IEnterprise_Company_ProInfos_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_ProSearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_ProSearch" message="tns:IEnterprise_Company_ProSearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ProSearchResponse" message="tns:IEnterprise_Company_ProSearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Comment_TipOff">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Comment_TipOff" message="tns:IEnterprise_Comment_TipOff_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Comment_TipOffResponse" message="tns:IEnterprise_Comment_TipOff_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Comment_Shield">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Comment_Shield" message="tns:IEnterprise_Comment_Shield_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Comment_ShieldResponse" message="tns:IEnterprise_Comment_Shield_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_FwdTradeSearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_FwdTradeSearch" message="tns:IEnterprise_Company_FwdTradeSearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_FwdTradeSearchResponse" message="tns:IEnterprise_Company_FwdTradeSearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_ExhTradeSearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_ExhTradeSearch" message="tns:IEnterprise_Company_ExhTradeSearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_ExhTradeSearchResponse" message="tns:IEnterprise_Company_ExhTradeSearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Exhibit_Participate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Exhibit_Participate" message="tns:IEnterprise_Company_Exhibit_Participate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Exhibit_ParticipateResponse" message="tns:IEnterprise_Company_Exhibit_Participate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Exhibit_Detail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Exhibit_Detail" message="tns:IEnterprise_Exhibit_Detail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Exhibit_DetailResponse" message="tns:IEnterprise_Exhibit_Detail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Exhibit_Companies">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Exhibit_Companies" message="tns:IEnterprise_Exhibit_Companies_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Exhibit_CompaniesResponse" message="tns:IEnterprise_Exhibit_Companies_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_TradeIntelliTip">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeIntelliTip" message="tns:IEnterprise_Company_TradeIntelliTip_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_TradeIntelliTipResponse" message="tns:IEnterprise_Company_TradeIntelliTip_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_UniversalTradeSearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_UniversalTradeSearch" message="tns:IEnterprise_Company_UniversalTradeSearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_UniversalTradeSearchResponse" message="tns:IEnterprise_Company_UniversalTradeSearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Company_Search4Exhibit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IEnterprise/Company_Search4Exhibit" message="tns:IEnterprise_Company_Search4Exhibit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IEnterprise/Company_Search4ExhibitResponse" message="tns:IEnterprise_Company_Search4Exhibit_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:service name="Enterprise" />

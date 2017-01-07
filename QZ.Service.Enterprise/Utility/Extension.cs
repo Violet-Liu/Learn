@@ -29,6 +29,26 @@ namespace QZ.Service.Enterprise
         }
 
         /// <summary>
+        /// 加密ToAesEncryptCodeKey[base16]
+        /// </summary>
+        /// <param name="orgcode"></param>
+        /// <returns></returns>
+        public static string ToAesEncrypt16CodeKey(this string orgcode)
+        {
+            return QZ.Instrument.Utility.Util.HexEncodingString(Cipher_Aes.EncryptToBytes(orgcode, ConfigurationManager.AppSettings["code_key"].ToString()));
+        }
+
+        /// <summary>
+        /// ToAesDecryptCodeKey[base16]
+        /// </summary>
+        /// <param name="orgcode"></param>
+        /// <returns></returns>
+        public static string ToAesDecrypt16CodeKey(this string orgcode)
+        {
+            return Encoding.UTF8.GetString(Cipher_Aes.DecryptToBytes(QZ.Instrument.Utility.Util.DecodeHexEncodingString(orgcode), ConfigurationManager.AppSettings["code_key"].ToString()));
+        }
+
+        /// <summary>
         /// Decrypte input string with client key
         /// </summary>
         /// <param name="input"></param>
@@ -101,6 +121,9 @@ namespace QZ.Service.Enterprise
             if (!head_Mb.HasValue)
                 return Constructor.Create_KeyErr_Response().ToMaybe();
 
+            //if (Token.VerifyBlack(head_Mb.Value.Token))
+            //    return Constructor.Create_BlackErr_Response().ToMaybe();
+
             // validate the token
             var validation_Mb = head_Mb.Select<bool, Response>(
                 h => Token.Verify(h.Token, h.Cookie, login),
@@ -136,11 +159,15 @@ namespace QZ.Service.Enterprise
             if (!head_Mb.HasValue)
                 return Constructor.Create_KeyErr_Response().ToLeft<Response, Request_Head>();
 
+            //if (Token.VerifyBlack(head_Mb.Value.Token))
+            //    return Constructor.Create_BlackErr_Response().ToLeft<Response, Request_Head>();
+
             // validate the token
             var validation_Mb = head_Mb.Select<bool, Response>(
                 h => Token.Verify(h.Token, h.Cookie, login),
                 // check verify result: true -> no significant return value; false -> token error response for return value
                 (h, boolean) => boolean ? null : Constructor.Create_TokErr_Response());
+
 
             // statistic ip accessing 
             head_Mb.Where(_ => !validation_Mb.HasValue && flag)  // filter to make sure the token verification is passed, if not passed, ip statisticing will not be processed
@@ -295,9 +322,14 @@ namespace QZ.Service.Enterprise
             var u_id = correct.u_id.ToInt();
             return u_id > 0 ? correct : None<Req_Oc_Correct>.Default;
         }
+        public static bool CommunityTopicReply_Redundent_Check(this Req_Cm_Comment comment) =>
+            Util.PostFilter($"CommunityTopicReplyCache_{comment.u_id}", comment.reply_content);
 
         public static bool CompanyTopic_Redundent_Check(this Req_Oc_Comment comment) =>
-            Util.PostFilter($"CompanyTopicCache_{comment.oc_code}_{comment.u_id}", comment.topic_content);
+          Util.PostFilter($"CompanyTopicCache_{comment.oc_code}_{comment.u_id}", comment.topic_content);
+
+        public static bool CompanyTopicReply_Redundent_Check(this Req_Oc_Comment comment) =>
+            Util.PostFilter($"CompanyTopicCache_{comment.oc_code}_{comment.u_id}", comment.reply_content);
 
         public static bool CommunityTopic_Redundent_Check(this Req_Cm_Comment comment) =>
             Util.PostFilter($"CommunityTopicCache_{comment.u_id}", comment.topic_content);
@@ -352,6 +384,49 @@ namespace QZ.Service.Enterprise
             if (sum > 0)
                 list.ForEach(l => l.sh_money_ratio = Math.Round(l.sh_money / sum,2));
             return list;
+        }
+        public static Maybe<Req_Favorite_Add> User_Valid_Check(this Req_Favorite_Add favorite)
+        {
+            var u_id = favorite.u_id.ToInt();
+            return u_id > 0 ? favorite : None<Req_Favorite_Add>.Default;
+        }
+
+        public static bool IsNotNull(this object value)
+        {
+            if (value != null && value.ToString().Trim() != string.Empty)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 判断是不是等于空
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsNull(this object value)
+        {
+            if (value == null || value.ToString() == string.Empty)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static string NullToString(this object value, string v = "")
+        {
+            if (value != null && value.ToString() != string.Empty)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return v;
+            }
         }
     }
 }

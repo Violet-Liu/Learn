@@ -11,17 +11,23 @@ using QZ.Foundation.Utility;
 using QZ.Instrument.Utility;
 using QZ.Instrument.Model;
 using QZ.Instrument.Client;
+using QZ.Service.Getui;
+using System.Collections;
+using Aop.Api.Response;
+using System.Threading;
+using QZ.Instrument.Common;
+using System.Net;
 
 namespace QZ.Service.Enterprise
 {
     public static class Req_Ext
-    {       
+    {
         /// <summary>
         /// Query and get a list of company info
         /// </summary>
         /// <param name="company"></param>
         /// <returns></returns>
-        public static Maybe<Resp_Company_List> Company_List_Query(this Company company) => 
+        public static Maybe<Resp_Company_List> Company_List_Query(this Company company) =>
             company.ToMaybe().DoWhen(_ => !VisitorStatisticHandler.AuthorizeIp(),
                                      q => q.Pg_Index(1).Pg_Size(10).Input_Cutoff())
                            .DoWhen(q => !string.IsNullOrEmpty(q.oc_name),
@@ -29,7 +35,7 @@ namespace QZ.Service.Enterprise
 
 
 
-                            .Do(q => 
+                            .Do(q =>
                                 {
                                     var i = DataAccess.SearchHistory_Insert(q, q.u_id.ToInt() > 0);
                                 })        // Insert Search history table      /* Using Do Operation if it can do */
@@ -65,11 +71,38 @@ namespace QZ.Service.Enterprise
                            .Do(b => DataAccess.SearchHistoryExt_Insert(b.Type_Set(1), b.u_id.ToInt() > 0))
                            .Where(b => b.pg_index < 50)
 
-                           .ShiftWhenOrElse(b => (string.IsNullOrEmpty(b.cat_s) || b.cat_s == "0") && b.status == 0,
+                           .ShiftWhenOrElse(b => (string.IsNullOrEmpty(b.cat_s) || b.cat_s == "0") && b.status.ToInt() == 0,
                                             b => ElasticsearchClient.General_Brand_Query(b),
                                             b => ElasticsearchClient.Brand_Query(b))
 
                            .Select(sp => ServiceHandler.Brand_Query_Handle(sp, brand.pg_size).ToMaybe());
+
+        public static Maybe<ES_Outcome<ES_Brand>> Brand_NewQuery(this Req_Info_Query brand)
+        {     
+            var dict = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(brand.cat_s)) dict.Add("type", brand.cat_s);
+            if (!string.IsNullOrEmpty(brand.status))
+            {
+                if (brand.status != "其他")
+                    dict.Add("status", brand.status);
+                else
+                    dict.Add("status", "");
+            }
+            if (brand.year != 0) dict.Add("date", brand.year.ToString());
+            var brands= brand.ToMaybe().DoWhen(b => !string.IsNullOrEmpty(b.query_str),
+                                   b => b.query_str = (Regex.Replace(b.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
+                            .Do(b => DataAccess.SearchHistoryExt_Insert(b.Type_Set(1), b.u_id.ToInt() > 0))
+                            .Where(b => b.pg_index < 50).ShiftWhenOrElse(b => dict.Count == 0,
+                                                                         b => (b.pg_index < 2),
+                                                                         b => ES_Induce.Induce(ES_Client.Brand_GSearch(b.query_str, b.pg_size)),
+                                                                         b => ES_Induce.Induce(ES_Client.Brand_GSearch(b.query_str, b.pg_index, b.pg_size)),
+                                                                         b => ES_Induce.Induce(ES_Client.Brand_FSearch(b.query_str, b.pg_size, dict)),
+                                                                         b => ES_Induce.Induce(ES_Client.Brand_FSearch(b.query_str, b.pg_size, dict, b.pg_index)));
+
+            brands.Value.docs.ToList().ForEach(t => t.doc.ob_img = ConfigurationManager.AppSettings["brand_domain"] + t.doc.ob_img);
+            return brands;
+
+        }
 
         public static Maybe<Resp_Patents> Patent_Query(this Req_Info_Query patent) =>
             patent.ToMaybe().DoWhen(p => !string.IsNullOrEmpty(p.query_str),
@@ -82,25 +115,77 @@ namespace QZ.Service.Enterprise
                                    p => ElasticsearchClient.Patent_Query(p))
                            .Select(c => ServiceHandler.Patent_Query_Handle(c, patent.pg_size).ToMaybe());
 
-        public static Maybe<Resp_Patents> Patent_Related_Query(this Req_Info_Query patent) =>
-            patent.ToMaybe().DoWhen(p => !string.IsNullOrEmpty(p.query_str),
-                                    p => p.query_str = (Regex.Replace(p.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
-                            .Do(p => DataAccess.SearchHistoryExt_Insert(p.Type_Set(2), p.u_id.ToInt() > 0))
-                            .Where(b => b.pg_index < 50)
+        public static Maybe<ES_Outcome<ES_Patent>> Patent_NewQuery(this Req_Info_Query patent)
+        {
+            var dict = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(patent.area)) dict.Add("area", patent.area);
+            if (!string.IsNullOrEmpty(patent.p_type)) dict.Add("type", patent.p_type);
+            if (!string.IsNullOrEmpty(patent.status))
+            {
+                if (patent.status != "其他")
+                    dict.Add("status", patent.status);
+                else
+                    dict.Add("status", "");
+            }
+                
+            if (patent.year != 0) dict.Add("date", patent.year.ToString());
 
-                           .Select(b => ElasticsearchClient.Patent_Related_Query(b).ToMaybe())
-                           .Select(c => ServiceHandler.Patent_Query_Handle(c).ToMaybe());
+
+            return patent.ToMaybe().DoWhen(p => !string.IsNullOrEmpty(p.query_str),
+                        p => p.query_str = (Regex.Replace(p.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
+                    .Do(p => DataAccess.SearchHistoryExt_Insert(p.Type_Set(2), p.u_id.ToInt() > 0))
+                    .Where(b => b.pg_index < 50)
+                    .ShiftWhenOrElse(p => dict.Count == 0,
+                                     p => (p.pg_index < 2),
+                                     p => ES_Induce.Induce(ES_Client.Patent_GSearch(p.query_str, p.pg_size)),
+                                     p => ES_Induce.Induce(ES_Client.Patent_GSearch(p.query_str, p.pg_index, p.pg_size)),
+                                     p => ES_Induce.Induce(ES_Client.Patent_FSearch(p.query_str, p.pg_size, dict)),
+                                     p => ES_Induce.Induce(ES_Client.Patent_FSearch(p.query_str, p.pg_size, dict, p.pg_index)));
+        }
+
+        public static Maybe<Resp_Patents> Patent_Related_Query(this Req_Info_Query patent) =>
+                patent.ToMaybe().DoWhen(p => !string.IsNullOrEmpty(p.query_str),
+                                        p => p.query_str = (Regex.Replace(p.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
+                                .Do(p => DataAccess.SearchHistoryExt_Insert(p.Type_Set(2), p.u_id.ToInt() > 0))
+                                .Where(b => b.pg_index < 50)
+
+                               .Select(b => ElasticsearchClient.Patent_Related_Query(b).ToMaybe())
+                               .Select(c => ServiceHandler.Patent_Query_Handle(c).ToMaybe());
 
         public static Maybe<Resp_Patents> Patent_Universal_Query(this Req_Info_Query patent) =>
             patent.ToMaybe().Select(p => ElasticsearchClient.Patent_Intelli_Query(p).ToMaybe()).Select(c => ServiceHandler.Patent_Universal_Query_Handle(c).ToMaybe());
 
-        public static Maybe<Resp_Judges> Judge_Query(this Req_Info_Query judge) =>
-            judge.ToMaybe().DoWhen(j => !string.IsNullOrEmpty(j.query_str),
+        public static Maybe<ES_Outcome<ES_Judge>> Judge_NewQuery(this Req_Info_Query judge)
+        {
+            var dict = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(judge.status))
+            {
+                if (judge.status != "其他")
+                    dict.Add("status", judge.status);
+                else
+                    dict.Add("status", "");
+            }
+            if (judge.year != 0) dict.Add("date", judge.year.ToString());
+            return judge.ToMaybe().DoWhen(j => !string.IsNullOrEmpty(j.query_str),
                                    j => j.query_str = (Regex.Replace(j.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
                            .Do(b => DataAccess.SearchHistoryExt_Insert(b.Type_Set(5), b.u_id.ToInt() > 0))
                            .Where(j => j.pg_index < 50)
-                           .Select(j => ElasticsearchClient.Judge_Query(j).ToMaybe())
-                           .Select(c => ServiceHandler.Judge_Query_Handle(c).ToMaybe());
+                           .ShiftWhenOrElse(j => dict.Count == 0,
+                                            j => (j.pg_index < 2),
+                                            j => ES_Induce.Induce(ES_Client.Judge_GSearch(j.query_str, j.pg_size)),
+                                            j => ES_Induce.Induce(ES_Client.Judge_GSearch(j.query_str, j.pg_size, j.pg_index)),
+                                            j => ES_Induce.Induce(ES_Client.Judge_FSearch(j.query_str, j.pg_size, dict)),
+                                            j => ES_Induce.Induce(ES_Client.Judge_FSearch(j.query_str, j.pg_size, dict, j.pg_index)));
+
+        }
+
+        public static Maybe<Resp_Judges> Judge_Query(this Req_Info_Query judge) =>
+                judge.ToMaybe().DoWhen(j => !string.IsNullOrEmpty(j.query_str),
+                                       j => j.query_str = (Regex.Replace(j.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
+                               .Do(b => DataAccess.SearchHistoryExt_Insert(b.Type_Set(5), b.u_id.ToInt() > 0))
+                               .Where(j => j.pg_index < 50)
+                               .Select(j => ElasticsearchClient.Judge_Query(j).ToMaybe())
+                               .Select(c => ServiceHandler.Judge_Query_Handle(c).ToMaybe());
         //c.Documents.Select(d => d.To_Judge_Abs()).ToList().ToMaybe())
         //               .Select(list => new Resp_Judges() { judge_list = list, count = 100 }.ToMaybe());
 
@@ -109,6 +194,32 @@ namespace QZ.Service.Enterprise
         //    var 
         //}
         public static Judge_Dtl Judge_Dtl_Query(this Req_Query_Dtl judge) => DataAccess.Judge_Dtl_Query(judge.s_id);
+
+        public static Maybe<ES_Outcome<ES_Dishonest>> Dishonest_NewQuery(this Req_Info_Query dishonest)
+        {
+            var dict = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(dishonest.area)) dict.Add("area", dishonest.area);
+            if (!string.IsNullOrEmpty(dishonest.status))
+            {
+                if (dishonest.status != "其他")
+                    dict.Add("status", dishonest.status);
+                else
+                    dict.Add("status", "");
+            }
+            if (dishonest.year != 0) dict.Add("date", dishonest.year.ToString());
+            return dishonest.ToMaybe().DoWhen(d => !string.IsNullOrEmpty(d.query_str),
+                                   d => d.query_str = (Regex.Replace(d.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
+                           .Do(d => DataAccess.SearchHistoryExt_Insert(d.Type_Set(6), d.u_id.ToInt() > 0))
+                           .Where(d => d.pg_index < 50)
+                           .ShiftWhenOrElse(d => dict.Count == 0,
+                                            d => (d.pg_index < 2),
+                                            d => ES_Induce.Induce(ES_Client.Dishonest_GSearch(d.query_str, d.pg_size)),
+                                            d => ES_Induce.Induce(ES_Client.Dishonest_GSearch(d.query_str, d.pg_size, d.pg_index)),
+                                            d => ES_Induce.Induce(ES_Client.Dishonest_FSearch(d.query_str, d.pg_size, dict)),
+                                            d => ES_Induce.Induce(ES_Client.Dishonest_FSearch(d.query_str, d.pg_size, dict, d.pg_index)));
+
+        }
+
 
 
         public static Maybe<Resp_Dishonests> Dishonest_Query(this Req_Info_Query dishonest) =>
@@ -137,7 +248,7 @@ namespace QZ.Service.Enterprise
                 .SetWhere($"pc_oc_code='{c.oc_code}'").SetOrder(" pc_firstPublicationDate desc "));
 
             var crs = new Resp_Copyrights();
-            if(sw_tuple == null)
+            if (sw_tuple == null)
             {
                 crs.sw_list = new List<Software_Abs>();
             }
@@ -158,11 +269,12 @@ namespace QZ.Service.Enterprise
 
         public static Resp_Judges Judges_Get(this Req_Oc_Mini c)
         {
-            var judge = new Req_Info_Query() { oc_code = c.oc_code, q_sort = 2, pg_size = 100 };
-            var search_resp = ElasticsearchClient.JudgeByCode_Query(judge);
-            var docs = search_resp.Documents;
-            var list = docs.Select(d => d.To_Judge_Abs()).ToList();
-            return new Resp_Judges() { judge_list = list, count = search_resp.Total };
+            var judges = ES_Induce.Induce(ES_Client.Judge_GSearch(c.oc_code, c.pg_index, c.pg_size));
+            //var judge = new Req_Info_Query() { oc_code = c.oc_code, q_sort = 2, pg_size = c.pg_size,pg_index=c.pg_index };
+            //var search_resp = ElasticsearchClient.JudgeByCode_Query(judge);
+            var docs = judges.docs;
+            var list = docs.Select(d => d.doc.To_Judge_Abs()).ToList();
+            return new Resp_Judges() { judge_list = list, count = judges.total };
             //judge.ToMaybe().DoWhen(j => !string.IsNullOrEmpty(j.query_str),
             //                       j => j.query_str = (Regex.Replace(j.query_str, @"[\\%#.]", "", RegexOptions.Compiled)))
             //               .Do(b => DataAccess.SearchHistoryExt_Insert(b.Type_Set(5), b.u_id.ToInt() > 0))
@@ -175,14 +287,16 @@ namespace QZ.Service.Enterprise
         public static Resp_Dishonests Dishonest_Get(this Req_Oc_Mini c)
         {
             var list = DataAccess.OrgCompanyDishonest_Page_Select(new DatabaseSearchModel().SetPageIndex(c.pg_index).SetTable("Shixin")
-                .SetPageSize(c.pg_size).SetWhere($"sx_cardNum='{c.oc_code}'").SetOrder(" sx_publishDate desc"));
+                .SetPageSize(c.pg_size).SetWhere($"oc_code='{c.oc_code}'").SetWhere("isHidden=0").SetOrder(" sx_publishDate desc"));
             return list == null ? Resp_Dishonests.Default : new Resp_Dishonests() { dishonest_list = list.Select(l => l.To_Dishonest_Abs()).ToList() };
         }
         public static Resp_Brands Brand_Page_Select(this Req_Oc_Mini company)
         {
+            //var brand= ES_Induce.Induce(ES_Client.Brand_SearchByCode(company.oc_code, company.pg_size, company.pg_index));
             var list = DataAccess.OrgCompanyBrand_Page_Select(new DatabaseSearchModel().SetPageIndex(company.pg_index).SetPageSize(company.pg_size).SetTable("OrgCompanyBrand")
                 .SetWhere($" ob_oc_code = '{company.oc_code}'").SetOrder(" ob_applicationDate desc "));
-            return list == null ? Resp_Brands.Default : new Resp_Brands() { brand_list = list.Select(l => l.To_Brand_Abs()).ToList()};
+            return list == null ? Resp_Brands.Default : new Resp_Brands() { brand_list = list.Select(l => l.To_Brand_Abs()).ToList() };
+            //return brand;
         }
         public static Resp_Brand_Dtls Brands_Get(this Req_Oc_Mini company)
         {
@@ -196,9 +310,9 @@ namespace QZ.Service.Enterprise
 
         public static Maybe<Resp_Company_Detail> Company_Detail_Query(this Company company)
         {
-  
 
-            var u_id = company.u_id.ToInt(); 
+
+            var u_id = company.u_id.ToInt();
             var c_Mb = company.ToMaybe().Where(c => !DataAccess.CompanyBlackList_Exist_ByCode(c.oc_code))     // where clause make sure this company doesn't exist in company black list
                 .DoWhen(c => c.quick_flag,                              // if user jump to company detail page directly(quickly), log the search operation.
                         c => DataAccess.SearchHistory_Insert(c, u_id > 0))
@@ -216,9 +330,9 @@ namespace QZ.Service.Enterprise
                 });
 
             //todo: update view info of company change trace  
-            if(u_id > 0 && DataAccess.Company_Favorite_Exist(u_id, company.oc_code))
+            if (u_id > 0 && DataAccess.Company_Favorite_Exist(u_id, company.oc_code))
             {
-                if(DataAccess.FavoriteViewTrace_Time_Status_Update(u_id, company.oc_code, false) == -1)   // -1 means no record found in database, so it needs to insert a record into record
+                if (DataAccess.FavoriteViewTrace_Time_Status_Update(u_id, company.oc_code, false) == -1)   // -1 means no record found in database, so it needs to insert a record into record
                 {
                     var info = new FavoriteViewTraceInfo() { fvt_oc_code = company.oc_code, fvt_u_uid = u_id, fvt_status = true, fvt_viewtime = DateTime.Now };
                     DataAccess.FavoriteViewTrace_Insert(info);
@@ -235,9 +349,10 @@ namespace QZ.Service.Enterprise
             {
                 if (!(company.oc_area.StartsWith("71") || company.oc_area.StartsWith("81") || company.oc_area.StartsWith("72") || company.oc_area.StartsWith("00")))
                 {
-                    var dict = DataAccess.OrgCompany_Tel_Get(new DatabaseSearchModel().SetTable($"OrgCompanyGsxtNb_{company.oc_area.Substring(0, 2)}").SetWhere($"oc_code='{company.oc_code}'").SetOrder(" id "));
-                    if (dict != null && dict.Count > 0)
+                    var dicts = DataAccess.OrgCompany_Tel_Get(new DatabaseSearchModel().SetTable($"OrgCompanyGsxtNb_{company.oc_area.Substring(0, 2)}").SetWhere($"oc_code='{company.oc_code}'").SetOrder(" id "));
+                    if (dicts != null && dicts.Item1.Count > 0)
                     {
+                        var dict = dicts.Item1;
                         var tel = dict.First().Value;
                         var year = dict.First().Key;
                         foreach (var pair in dict)
@@ -256,32 +371,117 @@ namespace QZ.Service.Enterprise
                         else
                             detail_Mb.Value.tel_list = tels;
 
-
                     }
-                }
-
-                var comMirror = ESClient.SelectByCode(company.oc_code).FirstOrDefault();
-                if (comMirror != null)
-                {
-                    foreach (var code in comMirror.gb_codes)
+                    if (dicts != null && dicts.Item2.Count > 0)
                     {
-                        var name = ResponseAdaptor.GBName_Get(comMirror.gb_cat, code);
-                        if (name != "" && !detail_Mb.Value.gb_trades.ContainsValue(name))
-                            detail_Mb.Value.gb_trades.Add(code, name);
+                        var dict = dicts.Item2;
+                        var email = dict.First().Value;
+                        var year = dict.First().Key;
+                        foreach (var pair in dict)
+                        {
+                            if (pair.Key.CompareTo(year) > 0)
+                                email = pair.Value;
+                        }
+
+                        if (email.Email_Get())
+                        {
+                            detail_Mb.Value.email = email;
+                        }
                     }
                 }
+
+                //var comMirror = ESClient.SelectByCode(company.oc_code).FirstOrDefault();
+                //if (comMirror != null)
+                //{
+                //    foreach (var code in comMirror.gb_codes)
+                //    {
+                //        var name = ResponseAdaptor.GBName_Get(comMirror.gb_cat, code);
+                //        if (name != "" && !detail_Mb.Value.gb_trades.ContainsValue(name))
+                //            detail_Mb.Value.gb_trades.Add(code, name);
+                //    }
+                //}
             }
             #endregion
 
-            
-            return detail_Mb.Do(d => d.oc_member_list = mgr_Mb.HasValue ? mgr_Mb.Value : new List<Company_Member>());
+            CompanyStatisticsInfo statisinfo = DataAccess.CompanyStatistics_Get(c_Mb.Value.oc_code);
+            var dicstatistics = new List<statistic>();
+
+            #region Members
+            var member = new statistic { key = "成员信息", count = mgr_Mb.HasValue ? mgr_Mb.Value.Count : 0 };
+            dicstatistics.Add(member);
+
+            var stock = new statistic { key = "股东信息", count = statisinfo.IsNotNull() ? statisinfo.gudongxinxi : 0 };
+            dicstatistics.Add(stock);
+
+            var cha = new statistic { key = "变更信息", count = statisinfo.IsNotNull() ? statisinfo.biangengxinxi : 0 };
+            dicstatistics.Add(cha);
+
+            var trades = c_Mb.Value.Company_Trades_Get();
+            var trade = new statistic { key = "所属行业", count = trades.IsNotNull() && trades.gb_trades.IsNotNull() ? trades.gb_trades.Count : 0 };
+            dicstatistics.Add(trade);
+
+            var investobj = new statistic { key = "对外投资", count = statisinfo.IsNotNull() ? statisinfo.duiwaitouzi : 0 };
+            dicstatistics.Add(investobj);
+
+            var annualobj = new statistic { key = "企业年报", count = statisinfo.IsNotNull() ? statisinfo.nianbao : 0 };
+            dicstatistics.Add(annualobj);
+
+            int certcount;
+            var certifics = new Req_Business_State { oc_code = c_Mb.Value.oc_code, pg_index = 1, pg_size = 2 }
+                                .Company_CetificateList_Get(out certcount);
+            var certobj = new statistic { key = "企业证书", count = certcount };
+            dicstatistics.Add(certobj);
+
+            var regsobj = new statistic { key = "厂商信息", count = statisinfo.IsNotNull() ? statisinfo.changshangbianmaxinxi : 0 };
+            dicstatistics.Add(regsobj);
+
+            var invsobj = new statistic { key = "产品信息", count = statisinfo.IsNotNull() ? statisinfo.shangpintiaomaxinxi : 0 };
+            dicstatistics.Add(invsobj);
+
+            var empobj = new statistic { key = "企业招聘", count = statisinfo.IsNotNull() ? statisinfo.zhaopin : 0 };
+            dicstatistics.Add(empobj);
+
+            var icplobj = new statistic { key = "备案信息", count = statisinfo.IsNotNull() ? statisinfo.yuminbeian : 0 };
+            dicstatistics.Add(icplobj);
+
+            var brandobj = new statistic { key = "商标信息", count = statisinfo.IsNotNull() ? statisinfo.shangbiaoxinxi : 0 };
+            dicstatistics.Add(brandobj);
+
+            var patentobj = new statistic { key = "专利信息", count = statisinfo.IsNotNull() ? statisinfo.zhuanlixinxi : 0 };
+            dicstatistics.Add(patentobj);
+
+            var softwareobj = new statistic { key = "软件著作权", count = statisinfo.IsNotNull() ? statisinfo.ruanjianzhuzuoquan : 0 };
+            dicstatistics.Add(softwareobj);
+
+            var productobj = new statistic { key = "作品著作权", count = statisinfo.IsNotNull() ? statisinfo.zuopinzhuzuoquan : 0 };
+            dicstatistics.Add(productobj);
+
+            var judgobj = new statistic { key = "诉讼信息", count = statisinfo.IsNotNull() ? statisinfo.panjuewenshu : 0 };
+            dicstatistics.Add(judgobj);
+
+            var dishonestobj = new statistic { key = "失信信息", count = statisinfo.IsNotNull() ? statisinfo.shixinren : 0 };
+            dicstatistics.Add(dishonestobj);
+
+            var executeobj = new statistic { key = "被执行人", count = statisinfo.IsNotNull() ? statisinfo.beizhixingren : 0 };
+            dicstatistics.Add(executeobj);
+
+            var exhibitionobj = new statistic { key = "参展信息", count = statisinfo.IsNotNull() ? statisinfo.zhuanhuihuikan : 0 };
+            dicstatistics.Add(exhibitionobj);
+
+            var fenzhi = new statistic { key = "分支机构", count = statisinfo.IsNotNull() ? statisinfo.fenzhi : 0 };
+            dicstatistics.Add(fenzhi);
+            #endregion
+
+            return detail_Mb.Do(d => d.oc_member_list = mgr_Mb.HasValue ? mgr_Mb.Value : new List<Company_Member>())
+                        .Do(d => d.statistic_count = dicstatistics);
         }
+
 
         public static Trade_Intelli_Tip Company_Trades_Get(this Company c)
         {
             var tip = new Trade_Intelli_Tip();
             var comMirror = ESClient.SelectByCode(c.oc_code).FirstOrDefault();
-            if(comMirror != null)
+            if (comMirror != null)
             {
                 foreach (var code in comMirror.gb_codes)
                 {
@@ -313,7 +513,7 @@ namespace QZ.Service.Enterprise
                 return tel;     // is cell phone
             }
             else
-                return district + "-" + tel;  
+                return district + "-" + tel;
         }
 
         private static string Tel_Handle2(string tel, string district)
@@ -377,8 +577,13 @@ namespace QZ.Service.Enterprise
                              .ShiftWhenOrElse(c => c.oc_area.StartsWith("4403"),
                                               c => Company_Sh_Compensate_0(DataAccess.Company_Sh_Get(c.oc_code, c.oc_area)),
                                               c => Company_Sh_Compensate_1(DataAccess.Company_Sh_Get(c.oc_code, c.oc_area).MoneyRatio_Compensate()))
-                             .Select(list => new Resp_Oc_Sh() { sh_list = list }.ToMaybe());        
-        
+                             .Select(list => new Resp_Oc_Sh() { sh_list = list }.ToMaybe())
+                             .DoWhen(t => t.sh_list.IsNotNull() && t.sh_list.Count > 0, t => t.sh_list.ForEach(b =>
+                             {
+                                 b.sh_money = Convert.ToDecimal(Util.InvestMoneyHandle(b.sh_money.ToString()));
+                             }
+                             ));
+
 
         /// <summary>
         /// Fill oc_code and oc_area field infos of a given stock holders (companies )
@@ -405,9 +610,9 @@ namespace QZ.Service.Enterprise
             var company_list = CompanyNameIndex_Proxy.Company_Mini_Info_Get(sh_list.Select_Where(sh => sh.sh_name.Replace("（", "(").Replace("）", ")"), sh => sh.sh_name.Trim().Length > 6));
 
             var list = new List<Company_Sh>();
-            foreach(var sh in sh_list)
+            foreach (var sh in sh_list)
             {
-                if(sh.sh_status != 4)
+                if (sh.sh_status != 4)
                 {
                     if (sh.sh_name.Trim().Length > 6)
                     {
@@ -427,7 +632,7 @@ namespace QZ.Service.Enterprise
                              .ShiftWhenOrElse(c => c.oc_area == "4403",
                                               c => Company_Change_Get_1(c),
                                               c => Company_Change_Get_0(c));
-        
+
 
         private static List<Oc_Change> Company_Change_Get_0(Req_Oc_Mini m)
         {
@@ -435,7 +640,7 @@ namespace QZ.Service.Enterprise
             var search = new DatabaseSearchModel<OrgCompanyGsxtBgsxInfo>().SetWhereClause($" oc_code = '{m.oc_code}' ")
                 .SetOrderField(c => c.bgrq).Ascend(false).SetPageIndex(m.pg_index).SetPageSize(m.pg_size);
             var list = DataAccess.OrgCompanyGsxtBgsx_Select(search, m.oc_area.Substring(0, 2));
-            if(list != null && list.Count > 0)
+            if (list != null && list.Count > 0)
             {
                 string date = "";
                 foreach (var info in list)
@@ -580,7 +785,7 @@ namespace QZ.Service.Enterprise
             return bgsx;
         }
 
-        public static Maybe<List<Company_Icpl>> Company_Icpl(this Req_Oc_Mini company) =>       
+        public static Maybe<List<Company_Icpl>> Company_Icpl(this Req_Oc_Mini company) =>
             company.ToMaybe().Where(c => !DataAccess.CompanyBlackList_Exist_ByCode(c.oc_code))
                              .Select(c =>
                              {
@@ -635,10 +840,10 @@ namespace QZ.Service.Enterprise
                     return new Resp_Binary() { remark = "发帖内容不能超过1000字" };
                 Task<File_Upload_Info> task = null;   // declare a task for uploading images
 
-                if(topic.pic_list == null || topic.pic_list.Count < 1)  // no image data
+                if (topic.pic_list == null || topic.pic_list.Count < 1)  // no image data
                     state.File_State = File_Upload_State.None;
-                else if(topic.pic_list.Count > 10)      // too many images
-                    state.File_State = File_Upload_State.Count_Err;               
+                else if (topic.pic_list.Count > 10)      // too many images
+                    state.File_State = File_Upload_State.Count_Err;
                 else        // ready to upload images
                     task = Task.Run(() => Pics_Upload(topic.pic_list, topic.u_id));     // create a new task to do pictures uploading                    
 
@@ -681,7 +886,7 @@ namespace QZ.Service.Enterprise
                                 if (task.Result.State == File_Upload_State.Success)
                                     state.Count = DataAccess.CompanyTieziImage_Bulk_Insert(img, task.Result.Uris);
                             }
-                            catch(AggregateException e)
+                            catch (AggregateException e)
                             {
                                 //foreach (var ex in e.InnerExceptions)
                                 //    Util.Log_Info(nameof(Company_New_Topic), Location.Internal, ex.Message, $"uploading image task exception: {ex.GetType()}\t{ex.Source}");
@@ -701,7 +906,7 @@ namespace QZ.Service.Enterprise
         private static File_Upload_Info Pics_Upload(List<string> pics, string u_id)
         {
             var i = new File_Upload_Info();
-            
+
             i.Uris = new List<string>();
             foreach (var pic in pics)
             {
@@ -776,13 +981,36 @@ namespace QZ.Service.Enterprise
                                 if (task.Result.State == File_Upload_State.Success)
                                     state.Count = DataAccess.CompanyTieziImage_Bulk_Insert(img, task.Result.Uris);
                             }
-                            catch(AggregateException e)
+                            catch (AggregateException e)
                             {
                                 foreach (var ex in e.InnerExceptions)
                                     Util.Log_Info(nameof(Company_Reply), Location.Internal, ex.Message, $"uploading image task exception: {ex.GetType()}\t{ex.Source}");
                             }
                         }
                         #endregion
+
+                        //#region push message to app
+                        //List<string> clientidlst = DataAccess.TopicUserTrace_GetClientId(cmt.topic_id, 0);
+                        //string topic_content = DataAccess.CompanyTopic_Content_Getbyid(cmt.topic_id);
+                        //if (clientidlst.Count > 0 && !string.IsNullOrEmpty(topic_content))
+                        //{
+                        //    MessageInfo mess = new MessageInfo();
+                        //    string title = "你在公司的评论有新消息";
+                        //    mess.type = MessageType.CompanyReply;
+
+                        //    mess.content = topic_content;
+                        //    mess.title = title;
+                        //    mess.topicid = cmt.topic_id.ToString();
+                        //    mess.u_id = cmt.u_id;
+                        //    mess.u_name = cmt.u_name;
+                        //    mess.replycontent = cmt.reply_content;
+
+                        //    string content1 = mess.ToJson();
+                        //    string begintime = DateTime.Now.ToString();
+                        //    string endtime = DateTime.Now.AddMinutes(60).ToString();
+                        //    PushService.PushMessageToList(title, topic_content, "", "", "2", content1, false, false, true, begintime, endtime, clientidlst);
+                        //}
+                        //#endregion
                     }
                     else
                         state.T_R_State = TopicReply_State.Db_Insert_Err;
@@ -802,7 +1030,7 @@ namespace QZ.Service.Enterprise
                 l.topic_gentle_time = Util.Get_Gentle_Time(l.topic_date);
                 l.u_face = Util.UserFace_Get(l.u_id.ToInt());
             }))
-            .Select<Resp_Topics_Abs>(list => new Resp_Topics_Abs() { topic_list = list, count = count}));
+            .Select<Resp_Topics_Abs>(list => new Resp_Topics_Abs() { topic_list = list, count = count }));
         }
 
         public static Resp_Topics_Dtl Company_Topic_Query(this Req_Oc_Mini company)
@@ -819,7 +1047,7 @@ namespace QZ.Service.Enterprise
                 topics = topics.Where(t => !t.t_shield).ToList();
 
             }
-            
+
             return new Resp_Topics_Dtl() { topic_list = topics, count = count };
         }
 
@@ -858,7 +1086,7 @@ namespace QZ.Service.Enterprise
                 t.up_down_flag = Topic_Up_Down.None;
             t.pic_list = DataAccess.Oc_Comment_Imgs_Select(t.topic_id, 0);
 
-            
+
         }
         public static Resp_Binary Company_Topic_UpDown_Vote(this Req_Topic_Vote vote)
         {
@@ -880,7 +1108,30 @@ namespace QZ.Service.Enterprise
                 {
                     // down -> up
                     if (DataAccess.Company_Topic_Down2Up(info) > 0)
+                    {
+                        //int count = 0;
+                        //var search = new DatabaseSearchModel().SetPageIndex(1).SetPageSize(1).SetOrder(" ctt_date desc ").SetWhere("ctt_status= 1").SetWhere($"ctt_id={vote.topic_id}");
+                        //List<Topic_Dtl> dtl = DataAccess.Company_Topics_Dtl_Get(search,out count);
+
+                        //if (dtl.IsNotNull() && dtl.Count> 0&&dtl[0].u_id.ToInt()>0)
+                        //{
+                        //    string clientId = DataAccess.User_ClientID_Getbyu_id(dtl[0].u_id.ToInt());
+                        //    if (!string.IsNullOrWhiteSpace(clientId))
+                        //    {
+                        //        MessageInfo message = new MessageInfo();
+                        //        message.type = MessageType.CompanyUp;
+                        //        message.u_id = vote.u_id;
+                        //        message.u_name = vote.u_name;
+                        //        message.title = "你发布的公司评论有了新的点赞";
+                        //        message.content = dtl[0].topic_content;
+                        //        string begintime = DateTime.Now.ToString();
+                        //        string endtime = DateTime.Now.AddMinutes(60).ToString();
+                        //        PushService.PushMessageToSingle("2", message.title, message.ToJson(), begintime, endtime, clientId);
+                        //    }
+
+                        //}
                         return new Resp_Binary() { remark = "点赞成功", status = true };
+                    }
                     return new Resp_Binary() { remark = "点赞失败", status = false };
                 }
             }
@@ -946,7 +1197,7 @@ namespace QZ.Service.Enterprise
             .ShiftWhenOrElse(info => DataAccess.Company_Correct(info) > 0,
                                 _ => new Resp_Binary() { status = true, remark = "提交成功" },
                                 _ => new Resp_Binary() { remark = "提交失败" });
-        
+
         public static Maybe<List<Reply_Dtl>> Company_Topic_Detail(this Req_Topic_Dtl topic)
         {
             var search = new DatabaseSearchModel();
@@ -958,7 +1209,7 @@ namespace QZ.Service.Enterprise
         private static List<Reply_Dtl> Replies_Compensate(List<Reply_Dtl> replies)
         {
             var search = new DatabaseSearchModel();
-            foreach(var r in replies)
+            foreach (var r in replies)
             {
                 r.u_face = Util.UserFace_Get(r.u_id.ToInt());
                 r.reply_content = r.reply_content.De_Sql_Safe();
@@ -967,6 +1218,114 @@ namespace QZ.Service.Enterprise
             }
             return replies;
         }
+
+        public static List<Favorite_Log> Favorites_GetByUidAndGuid(this Req_Favorite_Group favorite)
+        {
+            int count = 0;
+            var search = new DatabaseSearchModel().SetPageIndex(favorite.pg_index).SetPageSize(favorite.pg_size)
+                .SetWhere($"fl_u_uid={favorite.u_id.ToInt()}").SetWhere($"fl_g_gid={favorite.g_id.ToInt()}").SetWhere("fl_valid=1")
+                .SetOrder(" fl_id desc ");
+            var list = DataAccess.Favorites_Get(search, out count);
+            list.ForEach(t => t.favorite_note = DataAccess.FavoriteNote_Top(t.favorite_id));
+            DataAccess.FavoriteGroup_SetCount(favorite.g_id.ToInt(), count);
+            if (list == null)
+                list = new List<Favorite_Log>();
+            return list;
+        }
+
+        public static List<Favorite_Log> UnFavorites_Get(this Req_Favorite_Group favorite)
+        {
+            int count = 0;
+            var search = new DatabaseSearchModel().SetPageIndex(favorite.pg_index).SetPageSize(favorite.pg_size)
+                .SetWhere($"fl_u_uid={favorite.u_id.ToInt()}").SetWhere($" isnull(fl_g_gid,'0')='0'").SetWhere("fl_valid=1")
+                .SetOrder(" fl_id desc ");
+            var list = DataAccess.Favorites_Get(search, out count);
+            list.ForEach(t => t.favorite_note = DataAccess.FavoriteNote_Top(t.favorite_id));
+            if (list == null)
+                list = new List<Favorite_Log>();
+            return list;
+        }
+
+        public static Resp_Binary Favorite_Into_Group(this Req_FavoriteIntoGroup req) =>
+            req.ToMaybe().FuncWhen(t => t.g_id.ToInt() > 0,
+                a => a.ToMaybe().Select<int>(g => DataAccess.Favorite_Into_Group(String.Join(",", g.fl_ids), g.g_id.ToInt(), g.fl_ids.Count))
+                .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "添加成功", status = true },
+                                         _ => new Resp_Binary() { remark = "添加失败", status = false }).Value).Value;
+
+        public static Resp_Binary Favorite_Note_Add(this Req_FavoriteNote req)
+        {
+            var obj = req.ToMaybe().Where(t => t.fl_id.ToInt() > 0 && !string.IsNullOrWhiteSpace(t.note));
+            if (obj.IsNotNull())
+                return obj.Select<int>(g => DataAccess.Favorite_Note_Create(g.fl_id.ToInt(), g.note))
+                .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "创建成功", status = true },
+                                         _ => new Resp_Binary() { remark = "创建失败", status = false }).Value;
+            else
+                return new Resp_Binary() { remark = "创建失败", status = false };
+        }
+        public static Resp_Binary Favorite_Note_UP(this Req_FavoriteNote req) =>
+           req.ToMaybe().FuncWhen(t => t.n_id.ToLong() > 0 && !string.IsNullOrWhiteSpace(t.note), a => a.ToMaybe().Select<int>(g => DataAccess.Favorite_Note_Update(g.n_id.ToLong(), g.note))
+                .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "修改成功", status = true },
+                                         _ => new Resp_Binary() { remark = "修改失败", status = false }).Value).Value;
+        public static List<Favorite_Note> Favorite_Note_SelectPaged(this Req_FavoriteNote req)
+        {
+            var search = new DatabaseSearchModel().SetWhere($"fl_id={req.fl_id.ToInt()}").SetOrder("create_date desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size);
+            var obj = req.ToMaybe().Where(t => t.fl_id.ToInt() > 0);
+            if (obj.IsNotNull())
+            {
+                var lst = obj.Select<List<Favorite_Note>>(g => DataAccess.FavoriteNote_SelectPaged(search));
+                return lst.Value;
+            }
+            else
+                return new List<Favorite_Note>();
+        }
+
+        public static Maybe<Resp_Binary> Favorite_Group_Update(this Req_Favorite_Add group) =>
+            group.ToMaybe().Where(g => !string.IsNullOrWhiteSpace(g.g_name) && g.g_id.ToInt() > 0).Select<Favorite_Group>(t => new Favorite_Group()
+            {
+                g_gid = t.g_id.ToInt(),
+                g_name = t.g_name,
+                u_uid = t.u_id.ToInt(),
+                fl_count = 0
+            })
+                .Select<int>(g => DataAccess.FavoriteGroup_UpdateName(g))
+                .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "修改成功", status = true },
+                                 _ => new Resp_Binary() { remark = "修改失败", status = false });
+
+        public static Maybe<Resp_Binary> Favorite_Group_Del(this Req_Favorite_Add group) =>
+            group.ToMaybe().Where(t => t.g_id.ToInt() > 0)
+            .Select<int>(g => DataAccess.FavoriteGroup_Del(group.g_id.ToInt()))
+            .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "删除成功", status = true },
+                                         _ => new Resp_Binary() { remark = "删除失败", status = false });
+
+        public static Maybe<Resp_Binary> Favorite_Group_Add(this Req_Favorite_Add group) =>
+            group.ToMaybe().Where(req => group.u_id.ToInt() > 0 && !string.IsNullOrWhiteSpace(group.g_name))
+                .Select(t => new Favorite_Group()
+                {
+                    u_uid = t.u_id.ToInt(),
+                    g_name = t.g_name,
+                    fl_count = 0
+                }.ToMaybe())
+            .Select<int>(info => DataAccess.FavoriteGroup_Insert(info))
+            .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "新建成功", status = true },
+                                         _ => new Resp_Binary() { remark = "新建失败", status = false });
+
+
+        public static Maybe<Resp_Binary> Company_Favorite_Add(this Req_Favorite_Add req_favorite) =>
+            req_favorite.ToMaybe().ShiftWhenOrElse(req => req.q_action == 0,
+                                        t => t.ToMaybe().FuncWhen(ta => ta.g_id.ToInt() > 0,
+                                                        tb => DataAccess.FavoriteGroup_UpdateCount(true, tb.g_id.ToInt())),
+                                        s => s.ToMaybe().FuncWhen(sa => sa.u_id.ToInt() > 0,
+                                                        sb => DataAccess.FavoriteGroup_Insert(new Favorite_Group()
+                                                        {
+                                                            u_uid = sb.u_id.ToInt(),
+                                                            g_name = sb.g_name,
+                                                            fl_count = 1
+                                                        })))
+                                   .Select<int>(t => DataAccess.Favorite_Into_Group(req_favorite.u_id.ToInt(), req_favorite.oc_code, req_favorite.g_id.ToInt()))
+                .ShiftWhenOrElse(i => i > 0,
+                                 _ => new Resp_Binary() { remark = "收藏成功", status = true },
+                                 _ => new Resp_Binary() { remark = "收藏失败", status = false });
+
 
 
         public static Maybe<Resp_Binary> Company_Favorite_Add(this Req_Oc_Mini company) =>
@@ -979,7 +1338,8 @@ namespace QZ.Service.Enterprise
                         fl_oc_name = c.oc_name.Replace("<font color=\"red\">", "").Replace("</font>", ""),
                         fl_u_name = c.u_name,
                         fl_u_uid = c.u_id.ToInt(),
-                        fl_valid = 1
+                        fl_valid = 1,
+                        fl_g_gid = 0
                     }.ToMaybe()
                 )
                 .Select<int>(info => DataAccess.FavoriteLog_Insert(info))
@@ -987,29 +1347,116 @@ namespace QZ.Service.Enterprise
                                  _ => new Resp_Binary() { remark = "收藏成功", status = true },
                                  _ => new Resp_Binary() { remark = "收藏失败", status = false });
 
+        public static Maybe<Resp_Binary> Company_Favorite_NewRemove(this Maybe<Req_Oc_Mini> company) =>
+            company.DoWhen(c => DataAccess.FavoriteGroup_UpdateCount(false, DataAccess.Company_Favorite_GetByUidAndOccode(c.u_id.ToInt(), c.oc_code)) > 0,
+                f => DataAccess.Company_Favorite_GetByUidAndOccode(f.u_id.ToInt(), f.oc_code))
+            .ShiftWhenOrElse(c => DataAccess.FavoriteLog_Disable(c.oc_code, c.u_id.ToInt()) > 0,
+                                    _ => new Resp_Binary() { remark = "取消收藏成功", status = true },
+                                    _ => new Resp_Binary() { remark = "取消收藏失败", status = true });
         public static Maybe<Resp_Binary> Company_Favorite_Remove(this Maybe<Req_Oc_Mini> company) =>
             company.ShiftWhenOrElse(c => DataAccess.FavoriteLog_Disable(c.oc_code, c.u_id.ToInt()) > 0,
                                     _ => new Resp_Binary() { remark = "取消收藏成功", status = true },
                                     _ => new Resp_Binary() { remark = "取消收藏失败", status = true });
 
+
         public static Resp_Binary Company_Report_Send(this Req_Oc_Mini company)
         {
             var lst = DataAccess.OrgCompanyList_Select(company.oc_code);
-            if(lst == null || lst.oc_id <= 0)
+            if (lst == null || lst.oc_id <= 0)
                 return new Resp_Binary() { status = false, remark = "发送失败" };
 
-            var oc_name = lst.oc_name;
-            string file_name = $"企业信息报告-{oc_name}.pdf";
-            string key = "pdf_interval_key" + company.oc_code;
-            var ms = new MemoryStream();
-            Pdf_Reporter.ExportPDF(company.oc_area, company.oc_code, ms);
-            byte[] bytes = GetPrivateField<byte[]>(ms, "_buffer");
-            int len = GetPrivateField<int>(ms, "_length");
-
-            MemoryStream msCpy = new MemoryStream(bytes, 0, len);
-
-            ServiceHandler.SendReportMail(company.oc_code, file_name, company.u_email, company.u_name, company.u_id, lst, msCpy);
+            company.Export_Pdf(lst);
             return new Resp_Binary() { status = true, remark = "发送成功" };
+        }
+
+        private async static void Export_Pdf(this Req_Oc_Mini company, OrgCompanyListInfo lst)
+        {
+            await Task.Run(() =>
+            {
+
+                Thread.Sleep(500);
+                string file_name = $"{lst.oc_name}-企业信用报告-企业查询宝";
+                string key = "pdf_interval_key" + company.oc_code;
+
+                string baseUrl = System.AppDomain.CurrentDomain.BaseDirectory;//debug后面有\
+                    string filename = file_name + "-" + DateTime.Now.ToString("yyyyMMdd") + ".pdf";
+                string dirpath = baseUrl + "exportpdf\\";
+
+                if (!Directory.Exists(dirpath))
+                {
+                    Directory.CreateDirectory(dirpath);
+                }
+
+                if (!File.Exists(dirpath + filename))
+                {
+                    var ms = new MemoryStream();
+                    PDFReport.ExportPDF(company.oc_area, company.oc_code, ms);
+                    byte[] bytes = GetPrivateField<byte[]>(ms, "_buffer");
+                    int len = GetPrivateField<int>(ms, "_length");
+
+                    Directory.CreateDirectory(dirpath);
+                    var files = Directory.GetFiles(dirpath, $"{file_name}*.pdf");
+                    if (files.IsNotNull() && files.Count() > 0)
+                    {
+                        files.ToList().ForEach(t => File.Delete(t));
+                    }
+
+                    using (FileStream fs2 = new FileStream(dirpath + filename, FileMode.Create))
+                    {
+                        fs2.Write(bytes, 0, bytes.Length);
+                    }
+
+                    MemoryStream msCpy = new MemoryStream(bytes, 0, len);
+                    ServiceHandler.SendReportMail(company.oc_code, filename, company.u_email, company.u_name, company.u_id, lst, msCpy);
+                    bytes = null;
+                }
+                else
+                {
+                    if (!IsFileInUse(dirpath + filename))
+                    {
+                        using (FileStream fs = new FileStream(dirpath + filename, FileMode.Open))
+                        {
+                            int fslen = (int)fs.Length;
+                            byte[] bytes = new Byte[fslen];
+                            int r = fs.Read(bytes, 0, fslen);
+
+                            MemoryStream msCpy = new MemoryStream(bytes, 0, fslen);
+                            ServiceHandler.SendReportMail(company.oc_code, filename, company.u_email, company.u_name, company.u_id, lst, msCpy);
+                            bytes = null;
+                        }
+                    }
+                }
+            });
+        }
+
+        private static bool IsFileInUse(string fileName)
+        {
+            bool inUse = true;
+            if (File.Exists(fileName))
+            {
+                FileStream fs = null;
+                try
+                {
+                    fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                    inUse = false;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message.ToString());
+                }
+                finally
+                {
+                    if (fs != null)
+                    {
+                        fs.Close();
+                    }
+                }
+                return inUse;           //true表示正在使用,false没有使用
+            }
+            else
+            {
+                return false;           //文件不存在则一定没有被使用
+            }
         }
 
         public static T GetPrivateField<T>(object instance, string fieldname)
@@ -1024,6 +1471,7 @@ namespace QZ.Service.Enterprise
         {
             var result = new Resp_Login() { state = Login_State.Name_Err };  /* initial state name_err, corresponding to no user searched from database */
             var login_log = new Users_LoginLogs_Info();
+            
             // todo finish inserting login log into database
             var user_Mb = login.ToMaybe().Select<UserInfo>(l =>                         // select user from database
                 {
@@ -1037,14 +1485,25 @@ namespace QZ.Service.Enterprise
 
                 .DoWhenButNone(u => u.u_pwd != Cipher_Md5.Md5_16_1(login.u_pwd), _ => result.state = Login_State.Pwd_Err)      /* pwd dismatch */
                 .DoWhenButNone(u => u.u_status == (int)Users_State.Prohibit || u.u_status == (int)Users_State.Closed, _ => result.state = Login_State.State_Err)  /* status error */
+                .DoWhenButNone(u => u.u_status == (int)Users_State.ADBlack, _ => result.state = Login_State.ADBlack_Err)
                 .DoWhen(u => !DataAccess.User_FirstLogin_Exist(u.u_id),       // to check whether logins at the first time, if do, present some experience
                         u => User_FirstLogin_Insert(u).User_Exp_Boost(u))
                 .Do(u => User_Update(u))    /* update user info */
-                .Do(u => 
+                .Do(u =>
                     {
                         result.state = Login_State.Success; result.u_id = u.u_uid.ToString(); result.u_name = u.u_name;
                         result.u_face = Util.UserFace_Get(u.u_uid);
                     });
+            var vip = DataAccess.VipStatusUser_Selectbyvip_id(user_Mb.Value.u_id);
+            if (vip.IsNotNull())
+            {
+                double days = (vip.vip_vaildate - DateTime.Now).TotalDays;
+                if (days > 0)
+                {
+                    result.isVip = vip.vip_isVaild;
+                    result.vipremainDays = (vip.vip_vaildate - DateTime.Now).TotalDays.ToString();
+                }
+            }
             return result;
         }
 
@@ -1115,7 +1574,7 @@ namespace QZ.Service.Enterprise
         #region user info binding
         public static Resp_User_Info_Set Info_Set(this Req_User_Info info, Request_Head head)
         {
-            switch(info.type)
+            switch (info.type)
             {
                 case User_Info_Type.name:
                     return Uname_Set_Execute(info, head);
@@ -1146,7 +1605,7 @@ namespace QZ.Service.Enterprise
                     return new Resp_User_Info_Set() { status = true, remark = "设置成功" };
                 return new Resp_User_Info_Set() { status = false, remark = "设置失败" };
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Resp_User_Info_Set.Default;
             }
@@ -1160,7 +1619,7 @@ namespace QZ.Service.Enterprise
 
                           .Select<UserInfo>(i => DataAccess.User_FromId_Select_2(i.u_id.ToInt()))   /* current object is switched to user*/
                           .DoWhenOrElse(u => u.u_status_email == 0,
-                                        u => 
+                                        u =>
                                         {
                                             if (u.u_email != info.value)
                                             {
@@ -1182,7 +1641,7 @@ namespace QZ.Service.Enterprise
                                            .DoWhenButNone(i => Instrument.Utility.Util.Length_Get(i.value) > 30, _ => resp.remark = "用户名太长")
                                            .Do(i => ServiceHandler.UserName_Validate(i.value).ToMaybe().Do(j => resp.remark = j));
 
-            if(string.IsNullOrEmpty(resp.remark))   /* passing filters above */
+            if (string.IsNullOrEmpty(resp.remark))   /* passing filters above */
             {
                 resp.remark = "修改失败";   /* initial state */
                 DataAccess.UserNameUpdate_Flag_Get(u_id, int.Parse(ConfigurationManager.AppSettings["u_name_limit"])).ToMaybe()
@@ -1255,7 +1714,7 @@ namespace QZ.Service.Enterprise
             var dtl = new Resp_OpenUser_Login();
             var user = ServiceHandler.New_OpenUser_Create(login);
             var uid = DataAccess.User_Insert_2(user);
-            if(uid == -2)
+            if (uid == -2)
             {
                 // 如果昵称已经存在，则默认修改昵称
                 user.u_name = user.u_name + DateTime.Now.ToString("yyyyMMdd");//"_QianZhan";
@@ -1351,7 +1810,7 @@ namespace QZ.Service.Enterprise
             DataAccess.Query_Delete(del.u_id.ToInt(), del.oc_name) > 0
             ? new Resp_Binary() { remark = "删除成功", status = true }
             : new Resp_Binary() { remark = "删除失败" };
-        
+
         public static Resp_Binary Query_Drop(this Req_Query del) =>
             DataAccess.Query_Drop(del.u_id.ToInt()) > 0
             ? new Resp_Binary() { remark = "删除成功", status = true }
@@ -1361,7 +1820,7 @@ namespace QZ.Service.Enterprise
             query.Select<DatabaseSearchModel, List<string>>(q => new DatabaseSearchModel().SetPageIndex(q.pg_index).SetPageSize(q.pg_size)
                                                                                           .SetOrder(" sh_id desc ").SetWhere($"sh_uid={q.u_id}").SetWhere($"sh_type={q.q_type}"),
                                                            (q, s) => DataAccess.Ext_SearchHistory_Page_Select(s, q.u_id.ToInt()))
-                 .Select<Ext_SearchHistory>(list => 
+                 .Select<Ext_SearchHistory>(list =>
                     {
                         if (list != null && list.Count > 0)
                         {
@@ -1374,7 +1833,7 @@ namespace QZ.Service.Enterprise
                             return new Ext_SearchHistory() { query_list = lst, q_type = query.Value.q_type };
                         }
                         return new Ext_SearchHistory() { query_list = new List<string>(), q_type = query.Value.q_type };
-                        });
+                    });
 
         public static Resp_Binary Ext_SearchHistory_Drop(this Req_Info_Query drop) =>
             DataAccess.Ext_SearchHistory_Drop(drop.u_id.ToInt(), drop.q_type) > 0
@@ -1386,7 +1845,7 @@ namespace QZ.Service.Enterprise
         public static List<Browse_Log> Browses_Get(this Req_Cm_Topic browse)
         {
             var search = new DatabaseSearchModel().SetPageIndex(browse.pg_index).SetPageSize(browse.pg_size).SetOrder(" max(bl_id) desc ").SetWhere($"bl_u_uid={browse.u_id}")//.SetWhere("sh_searchType = 1")
-                .SetWhere("bl_oc_name is not null GROUP BY bl_oc_name")     // distince bl_oc_name
+                .SetWhere("isnull(bl_oc_name,'')<>'' GROUP BY bl_oc_name")     // distince bl_oc_name
                 .SetColumn("bl_oc_name, max(bl_id) as max_id, max(bl_date) as max_date, max(bl_oc_code) as max_oc_code, max(bl_oc_area) as max_oc_area");
             //var search = new DatabaseSearchModel().SetPageIndex(browse.pg_index).SetPageSize(browse.pg_size).SetOrder(" bl_id desc ").SetWhere($"bl_u_uid={browse.u_id}")
             //    .SetWhere("bl_oc_name is not null");
@@ -1417,6 +1876,43 @@ namespace QZ.Service.Enterprise
         #endregion
 
         #region company favorites
+        public static Resp_NewFavorites Favorites_NewGet(this Req_Cm_Topic favorite)
+        {
+            int count = 0;
+            var search = new DatabaseSearchModel().SetPageIndex(favorite.pg_index).SetPageSize(favorite.pg_size).SetWhere($"fl_u_uid={favorite.u_id}").SetWhere("fl_valid=1").SetOrder(" fl_id desc ");
+            var grouplist = new List<Favorite_Group>();
+            //查询某个分组（不包含全部分组）,不返回grouplist，减少传输
+            if (favorite.group_id != 0)
+                search = search.SetWhere($"fl_g_gid={favorite.group_id}");
+            else
+            {
+                DataAccess.FavoriteGroups_Selectbyu_uid(favorite.u_id.ToInt()).ToMaybe()
+                            //.DoWhen(gs => !gs.Exists(g => g.g_name.Equals("全部")),
+                            //action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "全部", fl_count = 0 }))
+                            .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "竞品", fl_count = 0 }))
+                             .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "客户", fl_count = 0 }))
+                             .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "供应商", fl_count = 0 }))
+                             .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "经销商", fl_count = 0 }))
+                             .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "其他", fl_count = 0 }))
+                             .DoWhen(gs => gs.Count == 0,
+                             action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = favorite.u_id.ToInt(), g_name = "关注", fl_count = 0 }));
+
+
+                grouplist = DataAccess.FavoriteGroups_Selectbyu_uid(favorite.u_id.ToInt());
+            }
+
+            var list = DataAccess.Favorites_Get(search, out count);
+            list.ForEach(t => t.favorite_note = DataAccess.FavoriteNote_Top(t.favorite_id));
+            if (list == null)
+                list = new List<Favorite_Log>();
+            return new Resp_NewFavorites() { favorite_list = list, favorite_group = grouplist, count = count };
+        }
+
         public static Resp_Favorites Favorites_Get(this Req_Cm_Topic favorite)
         {
             int count = 0;
@@ -1432,7 +1928,7 @@ namespace QZ.Service.Enterprise
 
         #region personal notice
         public static Resp_Binary Notice_Status(this Req_User_Info user) => new Resp_Binary() { status = DataAccess.TopicTrace_Status_Get(user.u_id.ToInt()) };
-        
+
         public static Resp_Oc_Notice Notice_Companies(this Req_Cm_Topic user)
         {
             int count = 0;
@@ -1547,7 +2043,7 @@ namespace QZ.Service.Enterprise
         /// <param name="notice"></param>
         /// <param name="u_id"></param>
         private static void Cm_Topic_Notice_Compensate(Topic_Notice notice, int u_id)
-        {           
+        {
             var topic = DataAccess.Community_Topic_Dtl_Get(notice.topic_id);
             if (topic != null)   // not equal to null
             {
@@ -1754,6 +2250,31 @@ namespace QZ.Service.Enterprise
                             }
                         }
                         #endregion
+
+                        //#region push message to app
+
+                        List<string> clientidlst = DataAccess.TopicUserTrace_GetClientId(cmt.topic_id, 1);
+                        string topic_content = DataAccess.Topic_Content_GetByid(cmt.topic_id);
+                        if (clientidlst.Count > 0 && !string.IsNullOrEmpty(topic_content))
+                        {
+                            MessageInfo mess = new MessageInfo();
+                            string title = "你关注的帖子有新消息";
+                            mess.type = MessageType.CommunityReply;
+
+                            mess.content = topic_content;
+                            mess.title = title;
+                            mess.topicid = cmt.topic_id.ToString();
+                            mess.u_id = cmt.u_id;
+                            mess.u_name = cmt.u_name;
+                            mess.replycontent = cmt.reply_content;
+
+                            string content1 = mess.ToJson();
+                            string begintime = DateTime.Now.ToString();
+                            string endtime = DateTime.Now.AddMinutes(60).ToString();
+                            PushService.PushMessageToList(title, topic_content, "", "", "2", content1, false, false, true, begintime, endtime, clientidlst);
+                        }
+
+                        //#endregion
                     }
                     else
                         state.T_R_State = TopicReply_State.Db_Insert_Err;
@@ -1781,20 +2302,20 @@ namespace QZ.Service.Enterprise
             }
             var u_id = user.u_id.ToInt();
             var topics = DataAccess.Community_Topics_Dtl_Get(search, out count);
-            if(topics == null)
+            if (topics == null)
             {
                 topics = new List<Cm_Topic_Dtl>();
             }
-            else if(topics.Count > 0)
+            else if (topics.Count > 0)
             {
-                
+
                 var result = Parallel.ForEach(topics, t => Cm_Topic_Compensate(t, u_id));
                 //topics.Sort(new Topic_Dtl_Comparer());  
                 topics = topics.Where(t => !t.t_shield).ToList();
-                 
+
             }
 
-            
+
 
             return new Resp_Cm_Topics_Dtl() { topic_list = topics, count = count };
         }
@@ -1849,7 +2370,7 @@ namespace QZ.Service.Enterprise
         private static Resp_Cm_Topics_Dtl Community_Topic_ReplyByMe_Query(this Req_Cm_Topic topic)
         {
             #region debug
-            Util.Log_Info(nameof(Community_Topic_ReplyByMe_Query),Location.Enter, string.Empty, string.Empty);
+            Util.Log_Info(nameof(Community_Topic_ReplyByMe_Query), Location.Enter, string.Empty, string.Empty);
             #endregion
             var u_id = topic.u_id.ToInt();  // current app user id
             var topic_ids = DataAccess.CommunityReply_GroupBy_TidUid_Get(u_id, topic.pg_index, topic.pg_size);
@@ -1933,28 +2454,51 @@ namespace QZ.Service.Enterprise
             var tuple = DataAccess.Community_Topic_UpDown_Flag_Get(vote.topic_id, vote.u_id.ToInt());
             if (tuple.Item1 == 1)   // already up
             {
-                if(vote.op_type == 2)
+                if (vote.op_type == 2)
                 {
                     // up -> down
                     if (DataAccess.Community_Topic_Up2Down(info) > 0)
+                    {
+
                         return new Resp_Binary() { remark = "点踩成功", status = true };
+                    }
                     return new Resp_Binary() { remark = "点踩失败", status = false };
                 }
             }
             else if (tuple.Item2 == 1)  // already down
             {
-                if(vote.op_type == 1)
+                if (vote.op_type == 1)
                 {
                     // down -> up
                     if (DataAccess.Community_Topic_Down2Up(info) > 0)
+                    {
+                        Cm_Topic_Dtl dtl = DataAccess.Community_Topic_Dtl_Get(vote.topic_id);
+                        if (dtl.IsNotNull() && dtl.u_id.ToInt() > 0)
+                        {
+                            string clientId = DataAccess.User_ClientID_Getbyu_id(dtl.u_id.ToInt());
+                            if (!string.IsNullOrWhiteSpace(clientId))
+                            {
+                                MessageInfo message = new MessageInfo();
+                                message.type = MessageType.CommunityUp;
+                                message.u_id = vote.u_id;
+                                message.u_name = vote.u_name;
+                                message.title = "你发布的帖子有了新的点赞";
+                                message.content = dtl.topic_content;
+                                string begintime = DateTime.Now.ToString();
+                                string endtime = DateTime.Now.AddMinutes(60).ToString();
+                                PushService.PushMessageToSingle("2", message.title, message.ToJson(), begintime, endtime, clientId);
+                            }
+
+                        }
                         return new Resp_Binary() { remark = "点赞成功", status = true };
+                    }
                     return new Resp_Binary() { remark = "点赞失败", status = false };
                 }
             }
             else                        // had not voted
             {
                 info.all_type = vote.op_type;
-                
+
                 if (DataAccess.Community_Topic_UpDown_Vote(info) > 0)
                     return new Resp_Binary() { remark = action + "成功", status = true };
                 return new Resp_Binary() { remark = action + "失败", status = false };
@@ -1962,6 +2506,365 @@ namespace QZ.Service.Enterprise
 
             return new Resp_Binary() { remark = $"当前已经{action}", status = true };
         }
+
+        public static Maybe<Resp_Binary> Company_Report_Collect(this Req_ReportsReq req) =>
+            req.ToMaybe().Where(t => !string.IsNullOrEmpty(req.phone) && !string.IsNullOrEmpty(req.contact) && !string.IsNullOrEmpty(req.content))
+                .DoWhenOrElse(b => b.type == 0, w => w.oc_name = "信用评估报告_" + w.oc_name, e => e.oc_name = "尽调报告_" + e.oc_name)
+                .Select<int>(t => DataAccess.Company_Report_Collect(t))
+                .ShiftWhenOrElse(b => b > 0, w => new Resp_Binary { remark = "提交成功", status = true }, e => new Resp_Binary { remark = "提交失败", status = false });
+
+        public static Resp_Binary Company_Claim_Submit(this Req_Claim req)
+        {
+            var emailReg = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*");
+            var contactsReg = new Regex(@"^[\u4e00-\u9fa5]{2,4}|[a-zA-Z0-9]{4,20}$");
+            var phoneReg = new Regex(@"^\d{11}$");
+            var isadd = false;
+
+            if (req.cc_oc_code.IsNotNull() && req.cc_oc_code.Length != 9)
+                return new Resp_Binary { remark = "认证公司异常", status = false };
+            if (req.cc_e_mail.IsNotNull() && !emailReg.Match(req.cc_e_mail).Success)
+                return new Resp_Binary { remark = "邮箱不合法，请重新输入", status = false };
+            if (req.contact.IsNotNull() && !contactsReg.Match(req.contact).Success)
+                return new Resp_Binary { remark = "联系人未输入或输入有误", status = false };
+            if (string.IsNullOrWhiteSpace(req.ccc_mobile))
+                return new Resp_Binary { remark = "手机号未输入", status = false };
+            if (!phoneReg.Match(req.ccc_mobile).Success)
+                return new Resp_Binary { remark = "手机号不合法", status = false };
+            var i = ServiceHandler.Code_Verify(req.ccc_mobile, req.verify_code);
+            if (i < 1)
+                return i.ToMaybe().ShiftWhenOrElse(b => i < 0, r => new Resp_Binary { remark = "验证码过期", status = false }, d => new Resp_Binary { remark = "验证码错误", status = false }).Value;
+
+            var info = DataAccess.ClaimCompany_Selectbycc_oc_code(req.cc_oc_code).FirstOrDefault();
+
+            if (!info.IsNotNull() && info.cc_status == 3)
+                isadd = true;
+            else
+                return new Resp_Binary { status = false, remark = "已经提交资料，请先删除重新提交新的资料" };
+            ClaimCompanyInfo obj = new ClaimCompanyInfo();
+            if (isadd)
+            {
+                var comMirror = DataAccess.OrgCompanyList_Select(req.cc_oc_code);
+                if (comMirror != null)
+                {
+                    obj.cc_oc_name = comMirror.oc_name;
+                    obj.cc_u_uid = req.u_id.ToInt();
+                    obj.cc_status = bool.Parse(SiteConfigHelper.GetSiteConfig(SiteConfigHelper.IsClaimStatus)) ? 2 : 1;
+                    obj.cc_e_mail = obj.cc_e_mail.NullToString();
+                    obj.cc_createTime = DateTime.Now;
+                    obj.cc_createUser = req.u_name;
+                    obj.cc_isvalid = true;
+                    obj.cc_checkTime = DateTime.Now;
+                    obj.cc_checkUser = "";
+                    obj.cc_zj_data = req.images.IsNotNull() ? "[" + string.Join("", req.images.Select(t => "{\"url\":\"" + t.ToString() + "\"}" + ",")).TrimEnd(',') + "]" : "[]";
+                    var result = DataAccess.Claim_Company_Insert(obj);
+
+                    if (result > 0)
+                        return new Resp_Binary { remark = "提交成功", status = true };
+                    else
+                        return new Resp_Binary { remark = "提交失败", status = false };
+                }
+            }
+            return new Resp_Binary { remark = "提交失败", status = false };
+        }
+
+        public static Resp_Common Vip_Order_Submit(this Req_VipOrder req,Either<Response,Request_Head> pre_Ei)
+        {
+            if (req.type != 1 && req.type != 2 && req.type != 3 || string.IsNullOrWhiteSpace(req.mobile))
+                return new Resp_Common { remark = "请填写联系方式", status = false };
+            var ordername = "";
+            var money = 30;
+            var pay_mode = "支付宝";
+            switch(req.type)
+            {
+                case 1:
+                    ordername = "一个月30元";
+                    money = 30;
+                    break;
+                case 2:
+                    ordername = "三个月84元";
+                    money = 84;
+                    break;
+                case 3:
+                    ordername = "一年300元";
+                    money = 300;
+                    break;
+            }
+
+            switch (req.pay_type)
+            {
+                case 1:
+                    pay_mode = "支付宝";
+                    break;
+                case 2:
+                    pay_mode = "微信";
+                    break;
+            }
+
+
+            VipUserOrderInfo item = new VipUserOrderInfo();
+            item.mo_orderid = "hy" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            item.mo_ordername = ordername;
+            item.mo_money = Convert.ToDecimal(0.01);
+            item.mo_tradeNo = "";
+            item.mo_paySuccess = false;
+            item.mo_payType = pay_mode;
+            item.mo_payTime = "";
+            item.mo_payInfo = "";
+            item.mo_state = (int)ApiOrderStateEnums.待支付;
+            item.mo_remark = "";
+            item.mo_userid = req.u_id.ToInt();
+            item.mo_userName = req.u_name;
+            if (pre_Ei.Right.Platform == Platform.Android)
+                item.mo_platformType = 2;
+            else if (pre_Ei.Right.Platform == Platform.Iphone)
+                item.mo_platformType = 3;
+            else if (pre_Ei.Right.Platform == Platform.Ipad)
+                item.mo_platformType = 4;
+            else
+                item.mo_platformType = 1;
+            item.mo_createTime = DateTime.Now;
+            item.mo_ip = "";
+            item.mo_mobile = req.mobile;
+            var result = DataAccess.VipUserOrder_Insert(item);
+            if(result>0)
+            {
+                string signature = AlipayHandler.Signature(item);
+                return new Resp_Common { remark = "提交成功", status = true, addition = signature };
+            }
+            return new Resp_Common { remark = "提交失败", status = false };
+        }
+
+        public static Resp_Common Vip_Order_Notify(this Req_VipOrder req)
+        {
+            AlipayTradeQueryResponse result = AlipayHandler.alipay_trade_query(req.out_trade_no, req.trade_no);
+            if (result.Code.Equals("10000") && (result.TradeStatus.Equals("TRADE_SUCCESS") || result.TradeStatus.Equals("TRADE_FINISHED")))
+            {
+                var type = req.out_trade_no.Substring(0, 2);
+                if (type == "hy")
+                {
+                    var orderInfo = DataAccess.VipUserOrder_Selectbymo_orderid(req.out_trade_no);
+                    if (orderInfo.IsNotNull())
+                    {
+                        if (UpdatePayState(req.trade_no, orderInfo))
+                        {
+                            
+                            var user = DataAccess.VipStatusUser_Selectbyvip_id(req.u_id.ToInt());
+
+                            return new Resp_Common { status = true, addition = (user.vip_vaildate - DateTime.Now).TotalDays.ToString() };
+                        }
+                        else
+                            return new Resp_Common { status = false };
+                    }
+                    else
+                    {
+                        return new Resp_Common { remark = "订单不存在", status = false };
+                    }
+                }
+                else if (type == "qy")
+                {
+                    var orderInfo = DataAccess.ExcelCompanyOrder_Selectbyeco_orderid(req.out_trade_no);
+                    if (orderInfo.IsNotNull())
+                    {
+                    }
+                    else
+                        return new Resp_Common { remark = "订单不存在", status = false };
+                }
+            }
+            else
+            {
+                return new Resp_Common { remark = "交易状态有误", status = false };
+            }
+
+            return new Resp_Common { status = false };
+        }
+
+        private static bool UpdatePayState(string trade_no, VipUserOrderInfo orderInfo)
+        {
+            var updateInfo = orderInfo.ToMaybe().Where(t => t.mo_state == (int)ApiOrderStateEnums.待支付)
+                                            .Select<VipUserOrderInfo>(t =>
+                                            {
+                                                t.mo_state = (int)ApiOrderStateEnums.已支付;
+                                                t.mo_paySuccess = true;
+                                                t.mo_tradeNo = trade_no;
+                                                t.mo_payTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                                return t;
+                                            });
+            var result = updateInfo.HasValue ? DataAccess.VipUserOrder_Update(updateInfo.Value) > 0 : false;
+            result = UpdatePayState(orderInfo, result);
+
+            return result;
+        }
+
+        private static bool UpdatePayState(VipUserOrderInfo orderInfo,bool result)
+        {
+            #region update user status
+            if (result)
+            {
+                var vus = DataAccess.VipStatusUser_Selectbyvip_id(orderInfo.mo_userid);
+                if (vus.IsNotNull())
+                {
+                    vus.vip_status = true;
+                    vus.vip_mobile = orderInfo.mo_mobile;
+                    vus.vip_isSMS = false;
+                    if (DateTime.Now > vus.vip_vaildate)
+                    {
+                        if (orderInfo.mo_money.ToString("f2") == "30.00")
+                        {
+                            vus.vip_vaildate = DateTime.Now.AddMonths(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "0.01")
+                        {
+                            vus.vip_vaildate = DateTime.Now.AddMonths(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "84.00")
+                        {
+                            vus.vip_vaildate = DateTime.Now.AddMonths(3);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "300.00")
+                        {
+                            vus.vip_vaildate = DateTime.Now.AddYears(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "500.00")
+                        {
+                            vus.vip_vaildate = DateTime.Now.AddYears(2);
+                        }
+                    }
+                    else
+                    {
+                        if (orderInfo.mo_money.ToString("f2") == "30.00")
+                        {
+                            vus.vip_vaildate = vus.vip_vaildate.AddMonths(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "0.01")
+                        {
+                            vus.vip_vaildate = vus.vip_vaildate.AddMonths(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "84.00")
+                        {
+                            vus.vip_vaildate = vus.vip_vaildate.AddMonths(3);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "300.00")
+                        {
+                            vus.vip_vaildate = vus.vip_vaildate.AddYears(1);
+                        }
+                        else if (orderInfo.mo_money.ToString("f2") == "500.00")
+                        {
+                            vus.vip_vaildate = vus.vip_vaildate.AddYears(2);
+                        }
+                    }
+                    result = DataAccess.VipStatusUser_Update(vus) > 0;
+                }
+                else
+                {
+                    vus = new VipStatusUserInfo();
+                    vus.vip_userId = orderInfo.mo_userid;
+                    vus.vip_isVaild = true;
+                    vus.vip_status = true;
+                    vus.vip_mobile = orderInfo.mo_mobile;
+                    vus.vip_isSMS = false;
+                    if (orderInfo.mo_money.ToString("f2") == "30.00")
+                    {
+                        vus.vip_vaildate = DateTime.Now.AddMonths(1);
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "0.01")
+                    {
+                        vus.vip_vaildate = DateTime.Now.AddMonths(1);
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "84.00")
+                    {
+                        vus.vip_vaildate = DateTime.Now.AddMonths(3);
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "300.00")
+                    {
+                        vus.vip_vaildate = DateTime.Now.AddYears(1);
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "500.00")
+                    {
+                        vus.vip_vaildate = DateTime.Now.AddYears(2);
+                    }
+
+                    result = DataAccess.VipStatusUser_Insert(vus) > 0;
+                }
+
+                #region send ms
+                if (result)
+                {
+                    CacheMarker.SetDateVipStatus(vus);
+                    var datestr = "一个月";
+                    if (orderInfo.mo_money.ToString("f2") == "30.00")
+                    {
+                        datestr = "一个月";
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "0.01")
+                    {
+                        datestr = "一个月";
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "34.00")
+                    {
+                        datestr = "三个月";
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "300.00")
+                    {
+                        datestr = "一年";
+                    }
+                    else if (orderInfo.mo_money.ToString("f2") == "500.00")
+                    {
+                        datestr = "二年";
+                    }
+                    string message = string.Format("尊敬的[企业查询宝]用户, 您的帐号{0}充值{1}会员成功。", orderInfo.mo_ordername, datestr);
+                    ShortMsg_Proxy.ShortMsg_Send("企业查询宝", "企业查询宝充值会员", vus.vip_mobile, message);
+                }
+                #endregion
+            }
+            return result;
+            #endregion
+        }
+
+        public static string Vip_Order_AliPayNotify(string form)
+        {
+            AlipayReturnData notifyData = AlipayHandler.GetNotifyData(form);
+            if (notifyData.trade_status == "TRADE_SUCCESS" || notifyData.trade_status == "TRADE_FINISHED")
+            {
+                LogHelper.Info("异步通知验证支付宝端订单是否存在成功");
+                AlipayTradeQueryResponse result = AlipayHandler.alipay_trade_query(notifyData.out_trade_no, notifyData.trade_no);
+                if (result.Code.Equals("10000") && (result.TradeStatus.Equals("TRADE_SUCCESS") || result.TradeStatus.Equals("TRADE_FINISHED")))
+                {
+                    if (AlipayHandler.ValidationApp_id(notifyData.app_id) && notifyData.buyer_id == result.BuyerUserId)
+                    {
+                        LogHelper.Info("异步通知验证appid是否一致成功");
+                        LogHelper.Info("异步通知验证seller_id是否一致成功");
+
+                        var orderInfo = DataAccess.VipUserOrder_Selectbymo_orderid(notifyData.out_trade_no);
+                        if (orderInfo == null)
+                        {
+                            return "FAILED";
+                        }
+                        LogHelper.Info("异步通知验证数据库订单是否存在成功");
+                        if (UpdatePayState(notifyData.trade_no, orderInfo))
+                        {
+                            return "SUCCESS";
+                        }
+                        else
+                        {
+                            return "FAILED";
+                        }
+                    }
+                }
+            }
+
+            return "FAILED";
+        }
+
+        //public static Resp_Binary Company_Query_VipExport(this Company com)
+        //{
+        //    if (!com.email.Email_Get())
+        //        return new Resp_Binary { remark = "邮箱格式不正确", status = false };
+        //    if (!com.phone.Phone_Get())
+        //        return new Resp_Binary { remark = "手机格式不正确", status = false };
+        //    if (com.end - com.start > 500)
+        //        return new Resp_Binary { remark = "超出最大限制5000", status = false };
+
+        //}
         #endregion
     }
 }

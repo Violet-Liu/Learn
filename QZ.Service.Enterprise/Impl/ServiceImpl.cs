@@ -8,6 +8,10 @@ using QZ.Foundation.Utility;
 using QZ.Foundation.Model;
 using QZ.Instrument.Utility;
 using QZ.Instrument.Model;
+using QZ.Instrument.Client;
+using System.Net.Http;
+using QZ.Instrument.Common;
+
 namespace QZ.Service.Enterprise
 {
     public class ServiceImpl
@@ -70,7 +74,7 @@ namespace QZ.Service.Enterprise
 
                 .Select<List<Query_Hot>>(items =>  
                 {
-                    var hot_list = items.Select(i => Query_Hot_Get(i, code_key)).Where(c => !string.IsNullOrEmpty(c.oc_name)).ToList();
+                    var hot_list = items.Select(i => Query_Hot_Get(i, code_key)).ToList();
                     if (hot_list.Count < 1)
                         return null;
                     return hot_list;
@@ -125,15 +129,49 @@ namespace QZ.Service.Enterprise
             var fields = info.n_linkUrl.Split('/');
             var len = fields.Length;
             var field = fields[len - 1];
-            hot.oc_code = field.Substring(0, field.Length - 5).To_Occode(code_key);
-
-            var c = DataAccess.OrgCompanyList_Select(hot.oc_code);
-            if(c != null)
+            
+            if (fields.Contains("show") && fields.Contains("detail"))
             {
-                hot.oc_area = c.oc_area;
-                hot.oc_name = c.oc_name;
+                hot.type = 2;
+                hot.show_url = field.Split('.')[0];
+                hot.cat_id = "538";
             }
+            else
+            {
+                hot.type = 1;
+                hot.oc_code = field.Substring(0, field.Length - 5).To_Occode(code_key);
+                var c = DataAccess.OrgCompanyList_Select(hot.oc_code);
+                if (c != null)
+                {
+                    hot.oc_area = c.oc_area;
+                    hot.oc_name = c.oc_name;
+                }
+            }
+
+
+            
             return hot;
+        }
+
+        public static Response Process_NewQuery_Brand(Request request)
+        {
+
+
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_Info_Query>(); // get request body
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Brand_Query);
+            DataAccess.AppOrgCompanyLog_Insert(op_Log);
+
+            var list_mb = request_Body.Brand_NewQuery();
+
+            var body = list_mb.HasValue ? list_mb.Value.ToJson() : new ES_Outcome<ES_Brand>() { docs = new List<ES_Doc<ES_Brand>>() }.ToJson();
+            var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
+
+
+
+            return response;
         }
 
         public static Response Process_Query_Brand(Request request)
@@ -156,6 +194,23 @@ namespace QZ.Service.Enterprise
 
             return response;
         }
+        public static Response Process_Patent_NewQuery(Request request)
+        {
+
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_Info_Query>(); // get request body
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Patent_Query);
+            DataAccess.AppOrgCompanyLog_Insert(op_Log);
+
+            var list_mb = request_Body.Patent_NewQuery();
+            var body = list_mb.HasValue ? list_mb.Value.ToJson() : new ES_Outcome<ES_Patent>() { docs = new List<ES_Doc<ES_Patent>>() }.ToJson();
+            var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
+
+            return response;
+        }
+
         public static Response Process_Patent_Query(Request request)
         {
 
@@ -180,6 +235,25 @@ namespace QZ.Service.Enterprise
                 return pre_Ei.Left;
             var patent_mb = request.GetBody<Req_Info_Query>().Patent_Universal_Query();
             var body = patent_mb.HasValue ? patent_mb.Value.ToJson() : Resp_Patents.Default.ToJson();
+            var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
+
+
+            return response;
+        }
+
+        public static Response Process_Judge_NewQuery(Request request)
+        {
+
+
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_Info_Query>(); // get request body
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Judge_Query);
+            DataAccess.AppOrgCompanyLog_Insert(op_Log);
+
+            var list_mb = request_Body.Judge_NewQuery();
+            var body = list_mb.HasValue ? list_mb.Value.ToJson() : new ES_Outcome<ES_Judge>() { docs = new List<ES_Doc<ES_Judge>>() }.ToJson();
             var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
 
 
@@ -276,6 +350,25 @@ namespace QZ.Service.Enterprise
             var response = Normal_Resp_Create(body);
             return response;
         }
+        public static Response Process_Dishonest_NewQuery(Request request)
+        {
+
+
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_Info_Query>(); // get request body
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Dishonest_Query);
+            DataAccess.AppOrgCompanyLog_Insert(op_Log);
+
+            var list_mb = request_Body.Dishonest_NewQuery();
+            var body = list_mb.HasValue ? list_mb.Value.ToJson() : new ES_Outcome<ES_Dishonest>() { docs = new List<ES_Doc<ES_Dishonest>>() }.ToJson();
+            var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
+
+
+
+            return response;
+        }
 
         public static Response Process_Dishonest_Query(Request request)
         {
@@ -363,10 +456,8 @@ namespace QZ.Service.Enterprise
                 return pre_Mb.Value;
 
             var list = request.GetBody<Req_Oc_Mini>().Brand_Page_Select();
-            var body = list.ToJson();
+            var body = list != null ? list.ToJson() : new Resp_Brands().ToJson();
             var response = Normal_Resp_Create(body, EncryptType.AES | EncryptType.Gzip);
-
-
 
             return response;
         }
@@ -762,7 +853,9 @@ namespace QZ.Service.Enterprise
             // create user operation log and insert it into database
             var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Oc_Topic_Add);
 
-            var topic_Mb = request_Body.User_Valid_Check().Where(t => t.CompanyTopic_Redundent_Check()).Select(t => t.Company_New_Topic().ToMaybe()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+            var topic_Mb = request_Body.User_Valid_Check().ShiftWhenOrElse(t => t.CompanyTopic_Redundent_Check(),
+                b => b.ToMaybe().Select<Resp_Binary>(t => t.Company_New_Topic()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log)),
+                s => new Resp_Binary { remark = "不允许短时间内发表重复帖子", status = false }).Value;
             var body = topic_Mb.HasValue ? topic_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
             var response = Normal_Resp_Create(body);
 
@@ -780,7 +873,12 @@ namespace QZ.Service.Enterprise
             var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Oc_Reply_Add);
             DataAccess.AppOrgCompanyLog_Insert(op_Log);
 
-            var reply_Mb = request_Body.User_Valid_Check().Select(t => t.Company_Reply().ToMaybe());
+            var reply_Mb = request_Body.User_Valid_Check()
+                .ShiftWhenOrElse(t => t.CompanyTopicReply_Redundent_Check(),
+                b => b.ToMaybe().Select<Resp_Binary>(t => t.Company_Reply()),
+                s => new Resp_Binary { remark = "不允许短时间内回复重复评论", status = false }).Value;
+            
+                
             var body = reply_Mb.HasValue ? reply_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
             var response = Normal_Resp_Create(body);
             return response;
@@ -901,6 +999,25 @@ namespace QZ.Service.Enterprise
 
             return response;
         }
+        public static Response Process_Company_Favorite_NewAdd(Request request)
+        {
+
+
+            var pre_Ei = request.Preprocess2Either(false);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_Favorite_Add>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Oc_Favorite_Add);
+
+            var bin_Mb = request_Body.User_Valid_Check().Select(c => c.Company_Favorite_Add()).DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log))
+                .DoWhen(bin => bin.status, fun => DataAccess.FavoriteGroup_SetCount(request_Body.g_id.ToInt()));
+
+            var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
+            var response = Normal_Resp_Create(body);
+
+            return response;
+        }
         public static Response Process_Company_Favorite_Remove(Request request)
         {
 
@@ -913,6 +1030,24 @@ namespace QZ.Service.Enterprise
             var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Oc_Favorite_Remove);
 
             var bin_Mb = request_Body.User_Valid_Check().Company_Favorite_Remove().DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+            var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
+            var response = Normal_Resp_Create(body);
+
+            return response;
+        }
+
+        public static Response Process_Company_Favorite_NewRemove(Request request)
+        {
+
+
+            var pre_Ei = request.Preprocess2Either(false);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_Oc_Mini>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Oc_Favorite_Remove);
+
+            var bin_Mb = request_Body.User_Valid_Check().Company_Favorite_NewRemove().DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
             var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
             var response = Normal_Resp_Create(body);
 
@@ -967,6 +1102,9 @@ namespace QZ.Service.Enterprise
                         break;
                     case Login_State.State_Err:
                         head.Text = "帐号异常";
+                        break;
+                    case Login_State.ADBlack_Err:
+                        head.Text = "你的账号异常，已被列入黑名单，如有疑问请联系我们客服QQ1713694365";
                         break;
                 }
             }
@@ -1376,6 +1514,26 @@ namespace QZ.Service.Enterprise
             return response;
         }
 
+        public static Response Process_Favorites_NewGet(Request request)
+        {
+            //#region debug
+            //Util.Log_Info(nameof(Process_Favorites_Get), Location.Enter, string.Empty, "normal");
+            //#endregion
+
+            var pre_Mb = request.Preprocess2Maybe(true);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            var queries_Mb = request.GetBody<Req_Cm_Topic>().User_Valid_Check().Select(q => q.Favorites_NewGet().ToMaybe());
+            var body = queries_Mb.HasValue ? queries_Mb.Value.ToJson() : Resp_NewFavorites.Default.ToJson();
+            var response = Normal_Resp_Create(body);
+
+            //#region debug
+            //Util.Log_Info(nameof(Process_Favorites_Get), Location.Exit, body, "normal");
+            //#endregion
+            return response;
+        }
+
         public static Response Process_Notice_Status(Request request)
         {
             //#region debug
@@ -1506,7 +1664,10 @@ namespace QZ.Service.Enterprise
             // create user operation log and insert it into database
             var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Cm_Topic_Add);
 
-            var topic_Mb = request_Body.User_Valid_Check().Where(t => t.CommunityTopic_Redundent_Check()).Select(t => t.Community_New_Topic().ToMaybe()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+            var topic_Mb = request_Body.User_Valid_Check().ShiftWhenOrElse(t => t.CommunityTopic_Redundent_Check(),
+                b => b.ToMaybe().Select<Resp_Binary>(d => d.Community_New_Topic()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log)),
+                s => new Resp_Binary { remark = "不允许短时间内发表重复的帖子", status = false }).Value;
+
             var body = topic_Mb.HasValue ? topic_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
             var response = Normal_Resp_Create(body);
 
@@ -1525,7 +1686,9 @@ namespace QZ.Service.Enterprise
             // create user operation log and insert it into database
             var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Op_Cm_Reply_Add);
 
-            var reply_Mb = request_Body.User_Valid_Check().Select(t => t.Community_New_Reply().ToMaybe()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+            var reply_Mb = request_Body.User_Valid_Check().ShiftWhenOrElse(t => t.CommunityTopicReply_Redundent_Check(),
+                b=>b.ToMaybe().Select<Resp_Binary>(d=> d.Community_New_Reply()).Do(_ => DataAccess.AppOrgCompanyLog_Insert(op_Log)),
+                s => new Resp_Binary { remark = "不允许短时间内回复重复的评论", status = false }).Value;
 
             var body = reply_Mb.HasValue ? reply_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
             var response = Normal_Resp_Create(body);
@@ -1614,6 +1777,423 @@ namespace QZ.Service.Enterprise
             #region debug
             //Util.Log_Info(nameof(Process_Community_Topic_UpDown_Vote), Location.Exit, body, "json of response body");
             #endregion
+            return response;
+        }
+        #endregion
+
+        #region favorite
+        public static Response Process_Favorite_Group_Get(string u_id)
+        {
+            var grouplst = DataAccess.FavoriteGroups_Selectbyu_uid(u_id.ToInt()).ToMaybe()
+                .DoWhen(gs => gs.Count==0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "竞品", fl_count = 0 }))
+                                  .DoWhen(gs => gs.Count == 0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "其他", fl_count = 0 }))
+                                 .DoWhen(gs => gs.Count == 0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "关注", fl_count = 0 }))
+                                 .DoWhen(gs => gs.Count==0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "客户", fl_count = 0 }))
+                                 .DoWhen(gs => gs.Count == 0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "供应商", fl_count = 0 }))
+                                 .DoWhen(gs => gs.Count == 0,
+                                 action => DataAccess.FavoriteGroup_Insert(new Favorite_Group { u_uid = u_id.ToInt(), g_name = "经销商", fl_count = 0 }));
+
+            grouplst = DataAccess.FavoriteGroups_Selectbyu_uid(u_id.ToInt()).ToMaybe();
+            var body = grouplst.HasValue ? grouplst.Value.ToJson() : new List<Favorite_Group>().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_Favorites_GetbyId(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+            var request_Body = request.GetBody<Req_Favorite_Group>();
+            var lst = request_Body.ToMaybe().Where(req => req.u_id.ToInt() > 0 && req.g_id.ToInt() > 0)
+                .Select<List<Favorite_Log>>(t => t.Favorites_GetByUidAndGuid());
+
+            lst.Value.ForEach(t => t.oc_name.Replace("<font color=\"red\">", "").Replace("</font>", ""));
+            var body = lst.HasValue ? lst.Value.ToJson() : new List<Favorite_Log>().ToJson();
+
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_Favorite_Group_Insert(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(false);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_Favorite_Add>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Favorite_Group_Insert);
+
+            var bin_Mb = request_Body.User_Valid_Check().Select(c => c.Favorite_Group_Add()).DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+
+            var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
+
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_Favorite_Group_Del(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(false);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_Favorite_Add>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Favorite_Group_Del);
+
+            var bin_Mb = request_Body.User_Valid_Check().Select(c => c.Favorite_Group_Del()).DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+
+            var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
+
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_Favorite_Group_Update(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(false);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_Favorite_Add>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.Favorite_Group_Update);
+
+            var bin_Mb = request_Body.User_Valid_Check().Select(c => c.Favorite_Group_Update()).DoWhen(bin => bin.status, _ => DataAccess.AppOrgCompanyLog_Insert(op_Log));
+
+            var body = bin_Mb.HasValue ? bin_Mb.Value.ToJson() : Resp_Binary.Default.ToJson();
+
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_UnGroupedFavorites_Get(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+            var request_Body = request.GetBody<Req_Favorite_Group>();
+            var lst = request_Body.ToMaybe().Where(req => req.u_id.ToInt() > 0)
+                .Select<List<Favorite_Log>>(t => t.UnFavorites_Get());
+
+            lst.Value.ForEach(t => t.oc_name.Replace("<font color=\"red\">", "").Replace("</font>", ""));
+
+            var body = lst.HasValue ? lst.Value.ToJson() : new List<Favorite_Log>().ToJson();
+
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Favorite_Into_Group(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            var request_Body = request.GetBody<Req_FavoriteIntoGroup>();
+            var lst = request_Body.ToMaybe().Select<Resp_Binary>(t => t.Favorite_Into_Group());
+
+            var body = lst.HasValue ? lst.Value.ToJson() : new Resp_Binary().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Favorite_Out_Group(string fl_id)
+        {
+            
+            var lst = DataAccess.Favorite_Out_Group(fl_id.ToInt()).ToMaybe()
+                        .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "添加成功", status = true },
+                                        _ => new Resp_Binary() { remark = "添加失败", status = false });
+
+            var body = lst.HasValue ? lst.Value.ToJson() : new Resp_Binary().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Favorite_Note_Add(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            var request_Body = request.GetBody<Req_FavoriteNote>();
+            var lst = request_Body.ToMaybe().Select<Resp_Binary>(t => t.Favorite_Note_Add());
+
+            var body = lst.HasValue ? lst.Value.ToJson() : new Resp_Binary().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Favorite_Note_Get(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            var request_Body = request.GetBody<Req_FavoriteNote>();
+            var lst = request_Body.Favorite_Note_SelectPaged();
+            var body = lst.ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+        
+        public static Response Favorite_Note_UP(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            var request_Body = request.GetBody<Req_FavoriteNote>();
+            var lst = request_Body.ToMaybe().Select<Resp_Binary>(t => t.Favorite_Note_UP());
+
+            var body = lst.HasValue ? lst.Value.ToJson() : new Resp_Binary().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Favorite_Note_Del(string n_id)
+        {
+            var result = DataAccess.Favorite_Note_Del(n_id.ToLong()).ToMaybe()
+                       .ShiftWhenOrElse(i => i > 0, _ => new Resp_Binary() { remark = "添加成功", status = true },
+                                       _ => new Resp_Binary() { remark = "添加失败", status = false });
+
+            var body = result.HasValue ? result.Value.ToJson() : new Resp_Binary().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_SysNotices_Get(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+            int rowcount = 0;
+            var request_Body = request.GetBody<Req_Cm_Topic>();
+            var lst = request_Body.ToMaybe()
+                .Select<List<SystemNoticeInfo>>(t => DataAccess.SystemNotice_SelectPagedByUser(t.u_id.ToInt(), t.pg_index > 1 ? ((t.pg_index - 1) * t.pg_size) : 1, t.pg_index * t.pg_size, out rowcount))
+                .FuncWhen(t => t.IsNotNull(), t => t.Select(u => new
+                {
+                    s_id = u.s_id,
+                    title = u.s_title,
+                    isread = u.isread,
+                    date = u.s_date.ToString("yyyy-MM-dd"),
+
+                }));
+            var body = lst.HasValue ? new { sysnotices = lst.Value, count = rowcount }.ToJson() : new { sysnotices = new[] { new { } }, count = 0 }.ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_SysNoticeDtl_Get(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+            int rowcount = 0;
+            int bycount = 0;
+            var req_body = request.GetBody<req_sysnotice>();
+            SystemNoticeByUserInfo entity = null;
+            DatabaseSearchModel sysnotice = new DatabaseSearchModel().SetWhere($"s_id={req_body.s_id}").SetWhere("s_isvalid=1").SetPageIndex(1).SetPageSize(1).SetOrder("s_date desc");
+            var list = DataAccess.SystemNotice_SelectPaged(sysnotice, out rowcount);
+            DatabaseSearchModel sysbyuser = new DatabaseSearchModel().SetWhere($"userid={req_body.u_id}").SetWhere($"s_id={req_body.s_id}").SetPageIndex(1).SetPageSize(1).SetOrder("createtime desc");
+            var byuser = DataAccess.SystemNoticeByUser_SelectPaged(sysbyuser, out bycount);
+
+            var resp_mb = req_body.ToMaybe().Where(t => t.s_id.ToInt() > 0 && t.u_id.ToInt() > 0).DoWhen(b => list.IsNotNull() && (byuser == null || byuser.Count == 0),
+                t => t.ToMaybe().Select<SystemNoticeByUserInfo>(n => new SystemNoticeByUserInfo()
+                {
+                    s_id = n.s_id.ToInt(),
+                    userid = n.u_id.ToInt(),
+                    isread = true,
+                    isdel = false,
+                    createtime = DateTime.Now
+                }).Do(f => DataAccess.SystemNoticeByUser_Insert(f)));
+
+            var body = list.ToMaybe().HasValue ? list[0].ToJson() : new SystemNoticeInfo().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+
+        }
+
+        public static Response Process_SysNotice_SingleDel(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+
+
+            int bycount = 0;
+            var req_body = request.GetBody<req_sysnotice>();
+            SystemNoticeByUserInfo entity = null;
+            
+            DatabaseSearchModel sysbyuser = new DatabaseSearchModel().SetWhere($"userid={req_body.u_id}").SetWhere($"s_id={req_body.s_id}").SetPageIndex(1).SetPageSize(1).SetOrder("createtime desc");
+            var byuser = DataAccess.SystemNoticeByUser_SelectPaged(sysbyuser, out bycount);
+
+            var result = req_body.ToMaybe().Where(t => t.s_id.ToInt() > 0 && t.u_id.ToInt() > 0)
+                .ShiftWhenOrElse(b => (byuser == null || byuser.Count == 0)
+                                , t => t.ToMaybe().Select<SystemNoticeByUserInfo>(n => new SystemNoticeByUserInfo()
+                                {
+                                    s_id = n.s_id.ToInt(),
+                                    userid = n.u_id.ToInt(),
+                                    isread = false,
+                                    isdel = true,
+                                    createtime = DateTime.Now
+                                }).Select<int>(f => DataAccess.SystemNoticeByUser_Insert(f)).Value
+                                , d =>
+                                {
+                                    byuser[0].isdel = true;
+                                    return DataAccess.SystemNoticeByUser_Update(byuser[0]);
+                                });
+
+            var resp_mb= result.HasValue&&result.Value>0? new Resp_Binary() { remark = "删除成功", status = true }
+                                                        : new Resp_Binary() { remark = "删除失败" };
+            var response = Normal_Resp_Create(resp_mb.ToJson());
+            return response;
+        }
+
+        public static Response Process_SysNotice_AllDel(string u_id)
+        {
+            var resp_mb = u_id.ToMaybe().FuncWhen(b => b.ToInt() > 0, d => DataAccess.SystemNoticeAll_Del(d.ToInt()))
+                .ShiftWhenOrElse(b => b > 0, w => new Resp_Binary() { remark = "删除成功", status = true }
+                                        , e => new Resp_Binary() { remark = "删除失败" });
+            var body = resp_mb.HasValue ? resp_mb.Value.ToJson() : new Resp_Binary() { remark = "删除失败" }.ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+        public static Response Process_Claims_Get(Request request)
+        {
+            var pre_Mb = request.Preprocess2Maybe(false);
+            if (pre_Mb.HasValue)
+                return pre_Mb.Value;
+            int count = 0;
+            var req_body = request.GetBody<Req_myClaim>();
+            var resp_mb = req_body.ToMaybe().Select<List<ClaimCompanyInfo>>(t => t.ClaimCompany_SelectPaged(out count))
+                            .Value.Select(t => new
+                            {
+                                cccc_oc_code = t.cc_oc_code,
+                                cc_oc_name = t.cc_oc_name,
+                                cc_date = QZ.Instrument.Utility.Util.DateStringFromNow(t.cc_createTime),
+                                cc_id = t.cc_id,
+                                cc_status = t.cc_status,
+                                visitNum = DataAccess.CompanyEvaluate_Select(t.cc_oc_code).ce_visitNum,
+                                oc_data = DataAccess.OrgCompanyExtensionData_SelectPaged(new DatabaseSearchModel().SetTable("OrgCompanyExtensionData_ALL_50000").SetWhere("oc_type=50010").SetWhere($"oc_code={t.cc_oc_code}").SetOrder("oc_id").SetPageIndex(1).SetPageSize(10))
+                            });
+
+            var body = resp_mb.IsNotNull() ? resp_mb.ToJson() : new ClaimCompanyInfo().ToJson();
+            var response = Normal_Resp_Create(body);
+            return response;
+        }
+
+
+        public static Response Process_VipOrder_Submit(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body = request.GetBody<Req_VipOrder>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(request_Body.pay_type == 1 ? Constants.op_AliPay_VipOrder_Submit : Constants.op_WX_VipOrder_Submit);
+                DataAccess.AppOrgCompanyLog_Insert(op_Log);   
+            var resp_mb = request_Body.Vip_Order_Submit(pre_Ei);
+            var response = Normal_Resp_Create(resp_mb.ToJson());
+            return response;
+        }
+
+        public static Response Process_VipOrder_Notify(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+
+            var request_Body= request.GetBody<Req_VipOrder>();
+            var op_Log = pre_Ei.Right.To_AppOrgCompanyLog().Set_Uid(request_Body.u_id).Set_Uname(request_Body.u_name).Set_Action(Constants.op_Alipay_VipOrder_Notify);
+            DataAccess.AppOrgCompanyLog_Insert(op_Log);
+            var resp_mb = request_Body.Vip_Order_Notify();
+            var response = Normal_Resp_Create(resp_mb.ToJson());
+            return response;
+        }
+
+        public static string Process_VipOrder_AliPayNotify(string form)
+        {
+            var response = Req_Ext.Vip_Order_AliPayNotify(form);
+            return response;
+        }
+
+        public static Response Process_Invoices_Get(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_myClaim>();
+
+            DatabaseSearchModel model = new DatabaseSearchModel().SetWhere($"invoice_userId={request_Body.u_id}").SetOrder("invoice_state desc,invoice_createTime desc").SetPageIndex(request_Body.pg_index).SetPageSize(request_Body.pg_size);
+            int rowcount = 0;
+            var resp_mb = DataAccess.InvoiceInfo_SelectPaged(model, out rowcount);
+            var json = resp_mb.IsNotNull() ? new { invoices = resp_mb, count = rowcount }.ToJson() : new { invoices = "", count = 0 }.ToJson();
+            var response = Normal_Resp_Create(json);
+            return response;
+        }
+
+        public static Response Process_Invoice_Add(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_InvoiceInfo>();
+
+            var resp_mb = DataAccess.InvoiceInfo_Insert(request_Body.ToMaybe().Select<InvoiceInfo>(t => new InvoiceInfo
+            {
+                invoice_proName = t.proName,
+                invoice_type = t.type,
+                invoice_name = t.name,
+                invoice_money = t.money,
+                invoice_contacts = t.contacts,
+                invoice_mobile = t.mobile,
+                invoice_desc = t.desc,
+                invoice_code = t.code,
+                invoice_address = t.address,
+                invoice_checkUser = "",
+                invoice_checkTime = "",
+                invoice_checkRemark = "",
+                invoice_userId = t.u_id.ToInt(),
+                invoice_user = t.u_name,
+                invoice_state = 1,
+                invoice_createTime = DateTime.Now
+            }).Value);
+
+            var response = Normal_Resp_Create(resp_mb > 0 ? new Resp_Binary { remark = "提交成功", status = true }.ToJson() : new Resp_Binary { remark = "提交失败", status = false }.ToJson());
+            return response;
+        }
+
+        public static Response Process_Orders_Get(Request request)
+        {
+            var pre_Ei = request.Preprocess2Either(true);
+            if (pre_Ei.HasLeft)
+                return pre_Ei.Left;
+            var request_Body = request.GetBody<Req_myClaim>();
+            int count = 0;
+            if (request_Body.type==0)
+            {
+                var list=request_Body.VipUserOrder_SelectPaged(out count);
+                var resp_mb = list.IsNotNull() && list.Count > 0 ? new { outlist = list, count = count }.ToJson() : new { outlist = "", count = 0 }.ToJson();
+                return Normal_Resp_Create(resp_mb);
+            }
+            else
+            {
+                var list = request_Body.ExcelCompanyOrder_SelectPaged(out count);
+                var resp_mb = list.IsNotNull() && list.Count > 0 ? new { outlist = list, count = count }.ToJson() : new { outlist = "", count = 0 }.ToJson();
+                return Normal_Resp_Create(resp_mb);
+            }
+        }
+
+        public static UselessResponse Process_test(string args)
+        {
+            var response = new UselessResponse(args);
             return response;
         }
         #endregion

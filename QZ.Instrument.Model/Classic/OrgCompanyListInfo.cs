@@ -222,5 +222,10 @@ namespace QZ.Instrument.Model
         }
         #endregion
 
+        /// <summary>
+        /// oc_companytype
+        /// </summary>
+        public string oc_creditcode { get; set; }
+
     }
 }

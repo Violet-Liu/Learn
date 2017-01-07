@@ -114,6 +114,8 @@ namespace QZ.Instrument.Model
         }
         #endregion
 
+        public string nc_shortcreateTime { get; set; }
+
         #region 创建人[nc_createUser]
         string _nc_createuser;
         /// <summary>

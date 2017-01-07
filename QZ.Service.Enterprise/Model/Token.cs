@@ -33,14 +33,17 @@ namespace QZ.Service.Enterprise
         /// </summary>
         public string Sometime { get; set; }
 
+        public string Ustatus { get; set; }
+
         public Token()
         { }
 
-        public Token(string cookie, string uid = "", string uname = "")
+        public Token(string cookie, string uid = "", string uname = "",string ustatus="")
         {
             Uid = uid;
             Uname = uname;
             Cookie = cookie;
+            Ustatus = ustatus;
             Sometime = DateTime.Now.ToString();
         }
 
@@ -58,7 +61,8 @@ namespace QZ.Service.Enterprise
                 _fields.Add(nameof(Uname), Uname);
             if(string.IsNullOrEmpty(Sometime))
                 _fields.Add(nameof(Sometime), Sometime);
-                   
+            if (string.IsNullOrEmpty(Ustatus))
+                _fields.Add(nameof(Ustatus), Ustatus);       
             _fields.Add(nameof(Cookie), Cookie);
             _fields.Add("encrypt_" + nameof(Cookie), Encrypt_CookieId(Cookie));
             
@@ -120,6 +124,29 @@ namespace QZ.Service.Enterprise
                 return false;
             }
             
+        }
+
+        public static bool VerifyBlack(string token)
+        {
+            try
+            {
+                var de = Cipher_Aes.DecryptFromBase64(token, ConfigurationManager.AppSettings[Constants.S_Tok]);
+                var fields_Mb = de
+                .ToMaybe().Select(json => json.ToObject<IDictionary<string, string>>().ToMaybe());
+                if (fields_Mb.HasValue)
+                {
+                    string ustatus = "";
+                    if (fields_Mb.Value.TryGetValue(nameof(Ustatus), out ustatus))
+                    {
+                        return ustatus == "5";
+                    }
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
         #endregion
     }

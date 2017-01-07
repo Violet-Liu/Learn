@@ -39,6 +39,14 @@ namespace QZ.Foundation.Utility
 
             return -1;
         }
+
+        public static long ToLong(this string s)
+        {
+            long i;
+            if (long.TryParse(s, out i))
+                return i;
+            return -1;
+        }
         public static double ToDouble(this string s)
         {
             double d;
@@ -56,6 +64,16 @@ namespace QZ.Foundation.Utility
                 list.Add(matches[i].Value);
             }
             return list;
+        }
+
+        public static bool Email_Get(this string s)
+        {
+            return Regex.IsMatch(s, @"^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$", RegexOptions.Compiled);
+        }
+
+        public static bool Phone_Get(this string s)
+        {
+            return Regex.IsMatch(s, @"^\d{11}$");
         }
     }
 }

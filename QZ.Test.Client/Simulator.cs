@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QZ.Instrument.Utility;
 using QZ.Instrument.Model;
+using QZ.Instrument.Client;
 
 namespace QZ.Test.Client
 {
@@ -48,6 +49,7 @@ namespace QZ.Test.Client
         public void Company_Topic_Query() => Client.Company_Topic_Query().Response_Handle<Resp_Topics_Abs>();
         public void Company_Topic_Detail() => Client.Company_Topic_Detail().Response_Handle<List<Reply_Dtl>>();
         public void Company_Favorite_Add() => Client.Company_Favorite_Add().Response_Handle<Resp_Binary>();
+        public void Company_Favorite_NewAdd() => Client.Company_Favorite_NewAdd().Response_Handle<Resp_Binary>();
         public void Company_Favorite_Remove() => Client.Company_Favorite_Remove().Response_Handle<Resp_Binary>();
         public void Query_Hot() => Client.Query_Hot().Response_Handle<List<Query_Hot>>();
         public void Company_Topic_UpDown_Vote() => Client.Company_Topic_UpDown_Vote().Response_Handle<Resp_Binary>();
@@ -70,9 +72,16 @@ namespace QZ.Test.Client
         public void Judge_Query() => Client.Judge_Query().Response_Handle<Resp_Judges>();
         public void Dishonest_Query() => Client.Dishonest_Query().Response_Handle<Resp_Judges>();
         public void ExtQuery_Hot() => Client.ExtQuery_Hot().Response_Handle<List<string>>();
-
+        public void Company_Search4Exhibit()=> Client.Company_Search4Exhibit().Response_Handle<Resp_Patents>();
         public void Exhibit_Companies() => Client.Exhibit_Companies().Response_Handle<List<ExhibitCompany>>();
         public void Exhibit_Search() => Client.Exhibit_Search().Response_Handle<Resp_Exhibit_List>();
+
+        public void Vip_Order_Submit()=> Client.Vip_Order_Submit().Response_Handle<Resp_Common>();
+
+        public void Vip_Order_Notify()=>Client.Vip_Order_Notify().Response_Handle<Resp_Common>();
+
+        public void test() => Client.test();
+
         #endregion
 
         #region community
@@ -81,6 +90,7 @@ namespace QZ.Test.Client
         public void Community_Topic_Query() => Client.Community_Topic_Query().Response_Handle<Resp_Cm_Topics_Dtl>();
         public void Community_Topic_Detail() => Client.Community_Topic_Detail().Response_Handle<List<Reply_Dtl>>();
         public void Community_Topic_UpDown_Vote() => Client.Community_Topic_UpDown_Vote().Response_Handle<Resp_Binary>();
+        public void Company_CetificationList()=> Client.Company_CetificationList().Response_Handle<Resp_Certifications>(); 
         #endregion
 
         #region user
@@ -91,7 +101,7 @@ namespace QZ.Test.Client
         public void Face_Reset() => Client.Face_Reset().Response_Handle<Resp_Login>();
         public void Info_Set() => Client.Info_Set().Response_Handle<Resp_User_Info_Set>();
         public void Info_Get() => Client.Info_Get().Response_Handle<User_Append_Info>();
-        public void Query() => Client.History_Query().Response_Handle<List<History_Query>>();
+        public void Query() => Client.History_Query().Response_Handle<List<Company4FavorBrowse>>();
         public void Query_Delete() => Client.Query_Delete().Response_Handle<List<History_Query>>();
         public void Query_Drop() => Client.Query_Drop().Response_Handle<List<History_Query>>();
         public void Browse_Get() => Client.Browse_Get().Response_Handle<List<History_Query>>();
@@ -99,7 +109,46 @@ namespace QZ.Test.Client
         public void Browse_Drop() => Client.Browse_Drop().Response_Handle<List<History_Query>>();
         public void ExtQuery_History() => Client.ExtQuery_History().Response_Handle<Ext_SearchHistory>();
         public void Favorites() => Client.Favorites().Response_Handle<Resp_Favorites>();
+        public void FavoritesNew()=>Client.FavoritesNew().Response_Handle<Resp_NewFavorites>();
         public void Notices_Get() => Client.Notices_Get().Response_Handle<Resp_Topic_Notice>();
+        public void SysNotices_Get() => Client.SysNotices_Get().Response_Handle<Resp_Topic_Notice>();
+        
+        public void Favorite_Group_Insert()=>Client.Favorite_Group_Insert().Response_Handle<Resp_Binary>();
+        public void Favorite_Group_Del() => Client.Favorite_Group_Del().Response_Handle<Resp_Binary>();
+        public void Favorite_Group_Update() => Client.Favorite_Group_Update().Response_Handle<Resp_Binary>();
+        public void FavoriteGroups_Get() => Client.FavoriteGroups_Get().Response_Handle<List<Favorite_Log>>();
+        public void Favorites_GetbyId() => Client.Favorites_GetbyId().Response_Handle<List<Favorite_Log>>();
+        public void UnGroupedFavorites_Get()=>Client.UnGroupedFavorites_Get().Response_Handle<List<Favorite_Log>>();
+        public void Favorite_Into_Group()=>Client.Favorite_Into_Group().Response_Handle<Resp_Binary>();
+        public void Favorite_Out_Group()=>Client.Favorite_Out_Group().Response_Handle<Resp_Binary>();
+        public void Company_CertificateDtl()=>Client.Company_CertificateDtl().Response_Handle<Resp_Binary>();
+        public void Company_RegList()=>Client.Company_RegList().Response_Handle<Req_Business_State>();
+        public void Company_Executes() => Client.Company_Executes().Response_Handle<Req_Business_State>();
+        public void Company_LinkCach() => Client.Company_LinkCach().Response_Handle<Req_Business_State>();
+        
+
+        public void Company_InvList()=>Client.Company_InvList().Response_Handle<Req_Business_State>();
+        public void Company_InvDtl() => Client.Company_InvDtl().Response_Handle<Resp_Binary>();
+        public void Company_JobDtl() => Client.Company_JobDtl().Response_Handle<Resp_Binary>();
+        public void Company_ExecuteDtl() => Client.Company_ExecuteDtl().Response_Handle<Resp_Binary>();
+
+        public void Company_Employs()=>Client.Company_Employs().Response_Handle<Resp_Binary>();
+
+
+        public void Brand_NewQuery(Req_Info_Query req) => Client.Brand_NewQuery(req).Response_Handle<ES_Outcome<ES_Dishonest>>();
+        public void Patent_NewQuery(Req_Info_Query req) => Client.Patent_NewQuery(req).Response_Handle<ES_Outcome<ES_Patent>>();
+        public void Judge_NewQuery(Req_Info_Query req) => Client.Judge_NewQuery(req).Response_Handle<ES_Outcome<ES_Patent>>();
+        public void Dishonest_NewQuery(Req_Info_Query req) => Client.Dishonest_NewQuery(req).Response_Handle<Resp_Judges>();
+
+        public void Favorite_Note_Add()=>Client.Favorite_Note_Add().Response_Handle<Resp_Binary>();
+        public void Favorite_Note_UP() => Client.Favorite_Note_UP().Response_Handle<Resp_Binary>();
+        public void Favorite_Note_Del() => Client.Favorite_Note_Del().Response_Handle<Resp_Binary>();
+        public void Favorite_Note_Get() => Client.Favorite_Note_Get().Response_Handle<Resp_Binary>();
+        
+        public void SysNotice_Single_Del()=> Client.SysNotice_Single_Del().Response_Handle<Resp_Binary>();
+        public void SysNotice_All_Del()=>Client.SysNotice_All_Del().Response_Handle<Resp_Binary>();
+
+        public void Process_SysNoticeDtl_Get()=> Client.Process_SysNoticeDtl_Get().Response_Handle<Resp_Binary>();
         #endregion
 
 

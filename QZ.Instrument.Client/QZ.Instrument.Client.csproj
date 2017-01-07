@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,18 +29,19 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elasticsearch.Net.5.0.0-rc1\lib\net45\Elasticsearch.Net.dll</HintPath>
+    <Reference Include="Elasticsearch.Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.2.4.1\lib\net45\Elasticsearch.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEST.5.0.0-beta1\lib\net45\Nest.dll</HintPath>
+    <Reference Include="Nest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.2.3.1\lib\net45\Nest.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -54,10 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classic\ES_Transform.cs" />
     <Compile Include="Elasticsearch\ElasticsearchClient.cs" />
     <Compile Include="Elasticsearch\ESAnalyzer.cs" />
     <Compile Include="Elasticsearch\ESClient.cs" />
     <Compile Include="Elasticsearch\ESResponseHandlerTemp.cs" />
+    <Compile Include="Elasticsearch\ES_Analyzer.cs" />
     <Compile Include="Elasticsearch\ES_Buffer.cs" />
     <Compile Include="Elasticsearch\ES_Client.cs" />
     <Compile Include="Elasticsearch\ES_Metas.cs" />
@@ -74,6 +78,10 @@
     <ProjectReference Include="..\QZ.Foundation.Monad\QZ.Foundation.Monad.csproj">
       <Project>{4c7b018b-0c86-45f9-877b-ae539589a7eb}</Project>
       <Name>QZ.Foundation.Monad</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QZ.Foundation.Segment\QZ.Foundation.Segment.csproj">
+      <Project>{6f287731-617a-4467-83fd-296d68d34a2f}</Project>
+      <Name>QZ.Foundation.Segment</Name>
     </ProjectReference>
     <ProjectReference Include="..\QZ.Foundation.Utility\QZ.Foundation.Utility.csproj">
       <Project>{43f30ad8-4d4a-4a7f-a9ed-79a64930ebc0}</Project>

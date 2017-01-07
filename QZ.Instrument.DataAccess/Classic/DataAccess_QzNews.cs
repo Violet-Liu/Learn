@@ -146,6 +146,11 @@ namespace QZ.Instrument.DataAccess
             obj.n_sourceClassId = reader["n_sourceClassId"].ToString();
             obj.n_sourceId = reader["n_sourceId"].ToString();
             obj.n_type = (int)reader["n_type"];
+            DateTime dt = DateTime.Now;
+            if (DateTime.TryParse(obj.n_date, out dt))
+                obj.DistanceNow = Util.DateStringFromNow(dt);
+            else
+                obj.DistanceNow = obj.n_date;
             return obj;
         }
         /// <summary>
@@ -210,6 +215,11 @@ namespace QZ.Instrument.DataAccess
             obj.n_tags = reader["n_tags"].ToString();
             obj.n_source = reader["n_source"].ToString();
             obj.n_date = reader["n_date"].ToString();
+            DateTime dt = DateTime.Now;
+            if (DateTime.TryParse(obj.n_date, out dt))
+                obj.DistanceNow = Util.DateStringFromNow(dt);
+            else
+                obj.DistanceNow = obj.n_date;
             obj.n_css = reader["n_css"].ToString();
             obj.n_icon = reader["n_icon"].ToString();
             obj.n_listType = (int)reader["n_listType"];
@@ -276,6 +286,7 @@ namespace QZ.Instrument.DataAccess
                         obj.nc_bimg_url = reader["nc_bimg_url"].ToString();
                         obj.nc_content = reader["nc_content"].ToString();
                         obj.nc_createTime = (DateTime)reader["nc_createTime"];
+                        obj.nc_shortcreateTime= ((DateTime)reader["nc_createTime"]).ToShortDateString();
                         obj.nc_createUser = reader["nc_createUser"].ToString();
                         obj.nc_order = (int)reader["nc_order"];
                         obj.nc_n_gid = reader["nc_n_gid"].ToString();

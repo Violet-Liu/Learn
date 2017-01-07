@@ -96,6 +96,12 @@ namespace QZ.Service.Enterprise
             UriTemplate = "company/intelli_tip")]
         [Description("company intelli tip")]
         Response Company_Intelli_Tip(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/favorite_browse")]
+        Response Company_FavoriteScan(Request request);
         #endregion
 
         #region investment
@@ -126,6 +132,50 @@ namespace QZ.Service.Enterprise
             UriTemplate = "company/stock_holder")]
         [Description("company stock holder")]
         Response Company_Stock_Holder(Request request);
+        #endregion
+
+        #region CertificationInfo
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_cetifications")]
+        [Description("company cetification List")]
+        Response Company_CetificationList(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_certificatedtl/{ci_id}")]
+        [Description("company cetification detail")]
+        Response Company_CertificateDtl(string ci_id);
+        #endregion
+
+        #region Firm
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_gsreglist")]
+        [Description("company gsreglist")]
+        Response Company_RegList(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_invlist")]
+        [Description("company inventory list")]
+        Response Company_InvList(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_invdtl/{ogs_id}")]
+        [Description("company inventory dtl")]
+        Response Company_InvDtl(string ogs_id);
         #endregion
 
         #region company changing
@@ -224,8 +274,20 @@ namespace QZ.Service.Enterprise
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/favorite_newadd")]
+        Response Company_Favorite_NewAdd(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "company/favorite_remove")]
         Response Company_Favorite_Remove(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/favorite_newremove")]
+        Response Company_Favorite_NewRemove(Request request);
         [OperationContract]
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
@@ -268,6 +330,17 @@ namespace QZ.Service.Enterprise
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "company/brands")]
         Response Query_Brand(Request request);
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/new_brands")]
+        Response NewQuery_Brand(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/new_patents")]
+        Response Patent_NewQuery(Request request);
         [OperationContract]
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
@@ -296,6 +369,12 @@ namespace QZ.Service.Enterprise
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/new_judges")]
+        Response Judge_NewQuery(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "company/judges")]
         Response Judge_Query(Request request);
         [OperationContract]
@@ -310,6 +389,12 @@ namespace QZ.Service.Enterprise
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "company/dishonest_dtl")]
         Response Dishonest_Detail(Request request);
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/new_dishonests")]
+        Response Dishonest_NewQuery(Request request);
         [OperationContract]
         [WebInvoke(Method = "POST",
             ResponseFormat = WebMessageFormat.Json,
@@ -442,5 +527,86 @@ namespace QZ.Service.Enterprise
             BodyStyle = WebMessageBodyStyle.Bare,
             UriTemplate = "company/search_exhibit")]
         Response Company_Search4Exhibit(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+             ResponseFormat = WebMessageFormat.Json,
+             BodyStyle = WebMessageBodyStyle.Bare,
+             UriTemplate = "company/oc_employs")]
+        Response Company_Employs(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_jobdtl/{ogs_id}")]
+        [Description("company job dtl")]
+        Response Company_JobDtl(string ogs_id);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_searchItemSite")]
+        [Description("company searchItemSite")]
+        Response Company_SearchItemSite(Request  request);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_executes")]
+        [Description("company executes")]
+        Response Company_Executes(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_executedtl/{zx_id}")]
+        [Description("company executes")]
+        Response Company_ExecuteDtl(string zx_id);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_linkcach")]
+        [Description("company link man")]
+        Response Company_LinkCach(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_exhibitions")]
+        [Description("company exhibitions")]
+        Response Company_Exhibitions(Request request);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_report")]
+        [Description("company oc_report")]
+        Response Company_Report_Collect(Request request);
+
+        #region claim company
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare,
+            UriTemplate = "company/oc_claim")]
+        [Description("company oc_claim")]
+        Response Company_Claim_Submit(Request request);
+
+        //[OperationContract]
+        //[WebInvoke(Method = "POST",
+        //    ResponseFormat = WebMessageFormat.Json,
+        //    BodyStyle = WebMessageBodyStyle.Bare,
+        //    UriTemplate = "company/oc_vipexport")]
+        //[Description("company oc_vipexport")]
+        //Response Company_Query_VipExport(Request request);
+        #endregion
     }
 }

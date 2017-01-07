@@ -136,13 +136,14 @@ namespace QZ.Service.Enterprise
                    .Where(q => q.pg_index < ConfigurationManager.AppSettings["query_pg_limit"].ToInt())
                    .ShiftWhenOrElse(q => q.v == 1,
                         q => NextGen_Company_Search(q),
-                        q => Req_Ext.PrevGen_Company_Search(q));
+                        q => Req_Ext.PrevGen_Company_Search(q))
+                    .Do(q=>q.oc_list.ForEach(u=>u.oc_reg_capital=Util.InvestMoneyHandle(u.oc_reg_capital)));
 
         
 
         private static Resp_Company_List NextGen_Company_Search(Company c)
         {
-            Nest.ISearchResponse<ES_Company> resp;
+            Nest.ISearchResponse<Instrument.Client.ES_Company> resp;
             if(c.q_type == q_type.q_general)
             {
                 resp = Company.Filter_Flag_Get(c) ? ESClient.Company_General_Filter_Search(c) : ESClient.Company_General_Search(c);
@@ -228,12 +229,10 @@ namespace QZ.Service.Enterprise
 
         public static List<ExhibitCompany> Exhibit_Companies_Get(this Req_Exhibit_Dtl e)
         {
-            var companies = DataAccess.Exhibit_Companies_Get(new DatabaseSearchModel().SetWhere($" ee_namemd = '{e.e_md}'").SetOrder(" ee_id ").SetPageIndex(e.pg_index).SetPageSize(e.pg_size));
+            var companies = DataAccess.Exhibit_Companies_Get(new DatabaseSearchModel().SetWhere($" ee_namemd = '{e.e_md}'").SetWhere(" len(ee_company) > 6").SetOrder(" ee_id ").SetPageIndex(e.pg_index).SetPageSize(e.pg_size));
             var model = new DatabaseSearchModel().SetPageSize(e.pg_size).SetOrder(" oc_id ");
 
-            var validCompanies = companies.Where(c => c.oc_code != null && c.oc_code != "000000000").ToList();
-
-            foreach(var c in validCompanies)
+            foreach(var c in companies)
             {
                 model.SetOrWhere($" oc_code='{c.oc_code}'");
             }
@@ -279,7 +278,63 @@ namespace QZ.Service.Enterprise
             if (ar.forwardTradeList != null)
                 tip.fwd_names = ar.forwardTradeList.Select(pair => pair.Key).ToList();
 
+            if (tip.exh_names.Count == 0)
+            {
+                tip.exh_names.Add("暂无数据");
+                tip.exh_names.Add("暂无数据");
+            }
+            if (tip.pro_trades.Count == 0)
+            {
+                tip.pro_trades.Add("01", "暂无数据");
+                tip.pro_trades.Add("01", "暂无数据");
+            }
+            if (tip.gb_trades.Count == 0)
+            {
+                tip.gb_trades.Add("01", "暂无数据");
+                tip.gb_trades.Add("01", "暂无数据");
+            }
+            if (tip.fwd_names.Count == 0)
+            {
+                tip.fwd_names.Add("暂无数据");
+                tip.fwd_names.Add("暂无数据");
+            }
+
             return tip;
         }
+
+        public static List<CertificationInfo> Company_CetificateList_Get(this Req_Business_State req,out int count) =>
+            DataAccess.Certificatelst_Get(new DatabaseSearchModel().SetWhere($" ci_oc_code='{req.oc_code}'").SetOrder("ci_expiredDate DESC ").SetPageIndex(req.pg_index).SetPageSize(req.pg_size),out count);
+
+        public static List<CertificationInfo> Company_CetificateDtl_Get(int ci_id) =>
+            DataAccess.CertificateDtl_Get(ci_id);
+
+        public static List<OrgGS1RegListInfo> Company_RegList_Get(this Req_Business_State req,out int count) =>
+           DataAccess.Reglst_Get(new DatabaseSearchModel().SetWhere($" ori_oc_code='{req.oc_code}'").SetOrder("ori_code").SetPageIndex(req.pg_index).SetPageSize(req.pg_size),out count);
+
+        public static List<OrgGS1ItemInfo> Company_InvList_Get(this Req_Business_State req,out int count) =>
+           DataAccess.Invlst_Get(new DatabaseSearchModel().SetWhere($" ogs_oc_code='{req.oc_code}'").SetOrder("ogs_ori_code").SetPageIndex(req.pg_index).SetPageSize(req.pg_size),out count);
+
+        public static List<QZEmployInfo> Company_Emoloyes_Get(this Req_Business_State req, out int count)=>
+            DataAccess.QZEmploy_SelectPaged(new DatabaseSearchModel().SetWhere($"ep_code='{req.oc_code}'").SetOrder("ep_Date desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+        public static List<OrgCompanySiteInfo> OrgCompanySite_SelectPaged(this Req_Business_State req, out int count)=>
+            DataAccess.OrgCompanySite_SelectPaged(new DatabaseSearchModel().SetWhere($"ocs_oc_code='{req.oc_code}'").SetOrder("ocs_id desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+
+        public static List<ZhiXingInfo> ZhiXing_SelectPaged(this Req_Business_State req, out int count) =>
+            DataAccess.ZhiXing_SelectPaged(new DatabaseSearchModel().SetWhere($"oc_code='{req.oc_code}'").SetOrder("zx_caseCreateTime desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+      
+
+        public static List<ExhibitionEnterpriseInfo> ExhibitionEnterprise_SelectPaged(this Req_Business_State req, out int count)=>
+             DataAccess.ExhibitionEnterprise_SelectPaged(new DatabaseSearchModel().SetWhere($"ee_oc_code='{req.oc_code}'").SetOrder("ee_exhCreateTime desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+
+        public static List<ClaimCompanyInfo> ClaimCompany_SelectPaged(this Req_myClaim req, out int count) =>
+            DataAccess.ClaimCompany_SelectPaged(new DatabaseSearchModel().SetWhere($" cc_u_uid='{req.u_id}'").SetWhere("cc_isvalid=1").SetOrder("cc_createTime desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+
+        public static List<VipUserOrderInfo> VipUserOrder_SelectPaged(this Req_myClaim req, out int count) =>
+            DataAccess.VipUserOrder_SelectPaged(new DatabaseSearchModel().SetWhere($"mo_userid={req.u_id.ToInt()}").SetOrder("mo_state desc,mo_createTime desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+
+        public static List<ExcelCompanyOrderInfo> ExcelCompanyOrder_SelectPaged(this Req_myClaim req, out int count) =>
+            DataAccess.ExcelCompanyOrder_SelectPaged(new DatabaseSearchModel().SetWhere($"eco_userid={req.u_id.ToInt()}").SetOrder("eco_state desc,eco_createTime desc").SetPageIndex(req.pg_index).SetPageSize(req.pg_size), out count);
+
+
     }
 }

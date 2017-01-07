@@ -29,6 +29,7 @@ namespace QZ.Instrument.Client
         /// Induce keyed buckets
         /// </summary>
         /// <param name="items"></param>
+        /// <param name="combine">whether to combine</param>
         /// <returns></returns>
         private static IList<Agg> Agg_Key_Induce(IEnumerable<IBucket> items)
         {
@@ -36,7 +37,7 @@ namespace QZ.Instrument.Client
             foreach (var item in items)
             {
                 var pair = (KeyedBucket)item;
-                list.Add(new Agg($"{pair.Key}({pair.DocCount ?? 0})", pair.Key));
+                list.Add(new Agg(pair.Key, pair.DocCount ?? 0));
             }
             return list;
         }
@@ -52,7 +53,7 @@ namespace QZ.Instrument.Client
             foreach (var item in items)
             {
                 var pair = (DateHistogramBucket)item;
-                list.Add(new Agg($"{pair.Date.Year}({pair.DocCount})", $"{pair.Date.Year}"));
+                list.Add(new Agg(pair.Date.Year.ToString(), pair.DocCount));
             }
             return list;
         }
@@ -69,7 +70,7 @@ namespace QZ.Instrument.Client
             var outcome = new ES_Outcome<T>();
 
             outcome.docs = Doc_Induce(r.Hits);
-
+            outcome.total = r.Total;
             if(r.Aggregations.Count > 0)
             {
                 outcome.aggs = new Aggs();
@@ -78,6 +79,9 @@ namespace QZ.Instrument.Client
                     var items = ((BucketAggregate)agg.Value).Items;
                     switch (agg.Key)
                     {
+                        case "date.int":
+                            outcome.aggs.date = Agg_Key_Induce(items);
+                            break;
                         case "area":
                             outcome.aggs.area = Agg_Key_Induce(items);
                             break;

@@ -17,10 +17,6 @@ namespace QZ.Instrument.Model
         public int e_count { get; set; }
         public string e_namemd { get; set; }
 
-        /// <summary>
-        /// Highlight hits
-        /// Key -> field name; Value -> field value with highlight html tag
-        /// </summary>
-        public Dictionary<string, string> hits { get; set; } = new Dictionary<string, string>();
+        
     }
 }

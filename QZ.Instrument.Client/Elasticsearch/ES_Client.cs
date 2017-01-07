@@ -46,13 +46,11 @@ namespace QZ.Instrument.Client
         /// <returns></returns>
         private static Func<QueryContainerDescriptor<T>, QueryContainer> UQuery_Create<T>(string keyword, IList<ES_Field> fields) where T : class =>
             q =>
-                fields.Select(f => f.ana == Analyzer.Term
-                    ? f.name.Contains('.') 
-                        ? (q.Term(t => t.Field(f.name).Value(keyword).Boost(f.boost)) 
-                         | q.MatchPhrasePrefix(m => m.Field(f.name.Split('.')[0]).Query(keyword).MinimumShouldMatch(MinimumShouldMatch.Percentage(100)).CutoffFrequency(0.001))) 
-                        : q.Term(t => t.Field(f.name).Value(keyword).Boost(f.boost))
+                fields.Select(
+                    f => f.ana == Analyzer.Term
+                    ? q.Term(t => t.Field(f.name).Value(keyword).Boost(f.boost))
                     : (q.MatchPhrase(m => m.Field(f.name).Query(keyword).Boost(f.boost).MinimumShouldMatch(MinimumShouldMatch.Percentage(90)).CutoffFrequency(0.001).Slop(2))
-                       | q.Match(m => m.Field(f.name).Query(keyword).Slop(2)))
+                       | q.Match(m => m.Field(f.name).Query(keyword).Slop(2).MinimumShouldMatch(MinimumShouldMatch.Percentage(90))))
                 ).Aggregate((a, b) => a | b);
 
         /// <summary>
@@ -107,6 +105,11 @@ namespace QZ.Instrument.Client
             Client_Get().Search<T>(des.From(pg_index * pg_size).Take(pg_size).Query(q => keyfun(q) & filterfun(q)));
         #endregion
 
+        #region company
+        //public static ISearchResponse<ES_Company> Company_GSearch(string keyword, int pg_size) =>
+        //    keyword.Any(c => c > 127)
+        //    ? 
+        #endregion
 
         #region brand
         /// <summary>
@@ -144,7 +147,7 @@ namespace QZ.Instrument.Client
         /// <param name="pg_size"></param>
         /// <param name="dict">dict of filter conditions</param>
         /// <returns></returns>
-        public static ISearchResponse<ES_Brand> Brand_FSearch(string keyword, int pg_index, int pg_size, IDictionary<string, string> dict) =>
+        public static ISearchResponse<ES_Brand> Brand_FSearch(string keyword, int pg_size, IDictionary<string, string> dict, int pg_index=0) =>
             keyword.Any(c => c > 127)
             ? FSearch_Template(pg_index, pg_size, ES_Buffer.Brand_GU_NonIni, UQuery_Create<ES_Brand>(keyword, Brand_Meta.U_Fields), Brand_Fill(dict))
             : FSearch_Template(pg_index, pg_size, ES_Buffer.Brand_GA_NonIni, AQuery_Create<ES_Brand>(keyword, Brand_Meta.A_Fields), Brand_Fill(dict))
@@ -160,9 +163,17 @@ namespace QZ.Instrument.Client
             dict.Select(pair =>
                 pair.Key == "date"
                 ? q.DateRange(d => d.Field("ob_date").GreaterThanOrEquals(pair.Value).LessThan($"{int.Parse(pair.Value) + 1}").Format("yyyy"))
-                : q.Term(t => t.Field("ob_classno").Value(pair.Value))
+                : q.Term(t => t.Field(string.Format("ob_{0}", pair.Key == "type" ? "classno": pair.Key)).Value(pair.Value))
             ).Aggregate((a, b) => a & b);
 
+
+        /// <summary>
+        /// 根据oc_code得到公司商标
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static ISearchResponse<ES_Brand> Brand_SearchByCode(string oc_code, int pg_size, int pg_index=0) =>
+            Search_Template(pg_size, ES_Buffer.Brand_GA_Ini, AQuery_Create<ES_Brand>(oc_code, new List<ES_Field>() { new ES_Field("ob_oc_code") }), pg_index);
         #endregion
 
         #region patent
@@ -201,7 +212,7 @@ namespace QZ.Instrument.Client
         /// <param name="pg_size"></param>
         /// <param name="dict">dict of filter conditions</param>
         /// <returns></returns>
-        public static ISearchResponse<ES_Patent> Patent_FSearch(string keyword, int pg_index, int pg_size, IDictionary<string, string> dict) =>
+        public static ISearchResponse<ES_Patent> Patent_FSearch(string keyword, int pg_size, IDictionary<string, string> dict, int pg_index=0) =>
             keyword.Any(c => c > 127)
             ? FSearch_Template(pg_index, pg_size, ES_Buffer.Patent_GU_NonIni, UQuery_Create<ES_Patent>(keyword, Patent_Meta.U_Fields), Patent_Fill(dict))
             : FSearch_Template(pg_index, pg_size, ES_Buffer.Patent_GA_NonIni, AQuery_Create<ES_Patent>(keyword, Patent_Meta.A_Fields), Patent_Fill(dict))
@@ -213,7 +224,7 @@ namespace QZ.Instrument.Client
         /// <param name="dict">dict of filter conditions</param>
         /// <returns></returns>
         private static Func<QueryContainerDescriptor<ES_Patent>, QueryContainer> Patent_Fill(IDictionary<string, string> dict) => q =>
-            dict.Select(pair => q.Term(t => t.Field($"patent_{Name_Callibrate(pair.Key)}").Value(pair.Value))
+            dict.Select(pair => q.Term(t => t.Field($"patent_{Name_Callibrate(pair.Key)}").Value(pair.Value).Verbatim())
             ).Aggregate((a, b) => a & b);
 
         private static string Name_Callibrate(string name) => name[0] == 'd' ? "year" : name;
@@ -255,7 +266,7 @@ namespace QZ.Instrument.Client
         /// <param name="pg_size"></param>
         /// <param name="dict">dict of filter conditions</param>
         /// <returns></returns>
-        public static ISearchResponse<ES_Judge> Judge_FSearch(string keyword, int pg_index, int pg_size, IDictionary<string, string> dict) =>
+        public static ISearchResponse<ES_Judge> Judge_FSearch(string keyword,  int pg_size, IDictionary<string, string> dict, int pg_index=0) =>
             keyword.Any(c => c > 127)
             ? FSearch_Template(pg_index, pg_size, ES_Buffer.Judge_GU_NonIni, UQuery_Create<ES_Judge>(keyword, Judge_Meta.U_Fields), Judge_Fill(dict))
             : FSearch_Template(pg_index, pg_size, ES_Buffer.Judge_GU_NonIni, q => q.Term(t => t.Field(Judge_Meta.A_Field.name).Value(keyword)), Judge_Fill(dict))
@@ -296,7 +307,7 @@ namespace QZ.Instrument.Client
         /// <param name="pg_size"></param>
         /// <param name="dict">dict of filter conditions</param>
         /// <returns></returns>
-        public static ISearchResponse<ES_Dishonest> Dishonest_FSearch(string keyword, int pg_index, int pg_size, IDictionary<string, string> dict) =>
+        public static ISearchResponse<ES_Dishonest> Dishonest_FSearch(string keyword,  int pg_size, IDictionary<string, string> dict, int pg_index=0) =>
             keyword.Any(c => c > 127)
             ? FSearch_Template(pg_index, pg_size, ES_Buffer.Dishonest_GU_NonIni, UQuery_Create<ES_Dishonest>(keyword, Dishonest_Meta.U_Fields), Dishonest_Fill(dict))
             : FSearch_Template(pg_index, pg_size, ES_Buffer.Dishonest_GA_NonIni, q => q.Term(t => t.Field(Dishonest_Meta.A_Field.name).Value(keyword)), Dishonest_Fill(dict))
@@ -317,5 +328,18 @@ namespace QZ.Instrument.Client
                     : q.Term(t => t.Field("sx_areaname").Value(pair.Value)))
             ).Aggregate((a, b) => a & b);
         #endregion
+
+        //"int total = 0; for (int i = 0; i < doc['oc_brands'].length; ++i) {total += doc['oc_brands'][i].length;} return total;"
+        //public static void Script_Search()
+        //{
+        //    var response = Client_Get().Search<ES_Company>(s => s.Index("company_nextgen").Type("company")
+        //        .Query(q => q.F
+            
+            
+            
+        //    //.Query(q => q.Match(m => m.Field("oc_name").Query("腾讯")))
+        //        .ScriptFields(sfs => sfs.ScriptField("count", sf => sf.Inline("doc['oc_tels'].value.size()").Lang("painless"))));
+        //    //return response;
+        //}
     }
 }

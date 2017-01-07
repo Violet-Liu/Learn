@@ -19,6 +19,7 @@ namespace QZ.Test.Client
         private static string[] Names = new[] { "来咯哦哦", "" };
         
         public string u_name { get; set; }
+        public string u_ifda { get; set; }
         public static Faker<Req_Index> Generators { get; } =
             new Faker<Req_Index>()
             .RuleFor(p => p.u_name, p => Names[_index++]);

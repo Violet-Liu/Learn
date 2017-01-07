@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Nest;
 using Elasticsearch.Net;
 
-using QZ.Instrument.Model;
+//using QZ.Instrument.Model;
 using QZ.Instrument.Client;
 using QZ.Instrument.Utility;
 
@@ -21,8 +21,10 @@ namespace QZ.Test.Client
 
         public static void Dishonest_Test(string key, int pg_size, int pg_index = 0)
         {
-            var outcom = Dishonest_PTest(key, pg_size, pg_index);
+            ES_Induce.Induce(ES_Client.Brand_GSearch(key, pg_size));
         }
+
+
 
         public static IEnumerable<ES_Company> ScrollSearch()
         {
@@ -116,6 +118,8 @@ namespace QZ.Test.Client
         }
 
         public static void Company_Script_Search() => ESClient.Script_Search();
+        public static IEnumerable<string> CompanySearch(string keyword) => ESClient.Company_General_Search(new QZ.Instrument.Model.Company() { oc_name = keyword }).Documents.Select(d => d.oc_name);
+
 
         //    private static QueryContainer Dishonest_AsciiSearch(string keyword, QueryContainerDescriptor<ES_Dishonest> q) =>
         //        q.Term(t => t.Field("sx_cardnum").Value(keyword));
@@ -306,21 +310,21 @@ namespace QZ.Test.Client
         //    public Dictionary<string, string> hits { get; set; } = new Dictionary<string, string>();
         //}
 
-        public class Dishonest_Agg
-        {
-            /// <summary>
-            /// 按企业状态统计
-            /// </summary>
-            public List<Agg_Monad> performances { get; set; } = new List<Agg_Monad>();
+        //public class Dishonest_Agg
+        //{
+        //    /// <summary>
+        //    /// 按企业状态统计
+        //    /// </summary>
+        //    public List<Agg_Monad> performances { get; set; } = new List<Agg_Monad>();
 
-            /// <summary>
-            /// 按发布日期统计
-            /// </summary>
-            public List<Agg_Monad> dates { get; set; } = new List<Agg_Monad>();
-            /// <summary>
-            /// 按地区统计
-            /// </summary>
-            public List<Agg_Monad> areas { get; set; } = new List<Agg_Monad>();
-        }
+        //    /// <summary>
+        //    /// 按发布日期统计
+        //    /// </summary>
+        //    public List<Agg_Monad> dates { get; set; } = new List<Agg_Monad>();
+        //    /// <summary>
+        //    /// 按地区统计
+        //    /// </summary>
+        //    public List<Agg_Monad> areas { get; set; } = new List<Agg_Monad>();
+        //}
     }
 }

@@ -91,7 +91,7 @@ namespace QZ.Instrument.DataAccess
         public const string CMSItems_FromPgid_Select = "Proc_CMSItems_SelectPaged";
         public const string Company_Exhibit_PageSelect = "Proc_ExhibitionEnterprise_SelectPaged";
         public const string Exhibit_Detail_Get = "Proc_ExhibitionML_SelectPaged";
-
+        
         public const string OrgCompanyBrand_FromCode_Select = "Proc_OrgCompanyBrand_SelectByCode";
         public const string OrgCompanyPatent_FromCode_Select = "Proc_OrgCompanyPatent_SelectByCode";
         public const string CommunityReply_GroupByTid_Get = "Proc_AppTeiziReply_GroupByTidSelect";
@@ -114,5 +114,14 @@ namespace QZ.Instrument.DataAccess
         public const string TopicUserTrace_Reset = "Proc_TopicUsersTrace_ResetCount";
         public const string GB_Trade_AllSelect = "Proc_TradeCategory2012_SelectAll";
         public const string Product_Cat_AllSelect = "Proc_ProductCategory_SelectPaged";
+        public const string Certificatelst_Get = "Proc_CertificationInfo_SelectPaged"; 
+        public const string CertificateDtl_Get = "Proc_CertificationInfo_Selectbyci_id";
+        public const string Reglst_Get = "Proc_OrgGS1RegList_SelectPaged";
+        public const string Invlst_Get = "Proc_OrgGS1Item_SelectPaged";
+        public const string FavoriteLog_SelectBygid = "Proc_FavoriteLog_Selectbyfl_g_gid_and_fl_u_uid";
+        public const string FavoriteGroup_Insert = "Proc_FavoriteGroup_Insert";
+        public const string FavoriteGroup_Delete = "Proc_FavoriteGroup_Delete";
+        public const string Employ_SelectbyID = "Proc_QZEmploy_SelectbyID";
+        public const string Execute_SelectbyZXID = "Proc_ZhiXing_Selectbyzx_id";
     }
 }

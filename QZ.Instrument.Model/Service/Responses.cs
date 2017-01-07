@@ -169,8 +169,10 @@ namespace QZ.Instrument.Model
     /// </summary>
     public class Resp_Company_Detail
     {
+        public string email { get; set; } = string.Empty;
         public List<string> tel_list { get; set; } = new List<string>();
-        public Dictionary<string, string> gb_trades { get; set; } = new Dictionary<string, string>();
+        //public Dictionary<string, string> gb_trades { get; set; } = new Dictionary<string, string>();
+        public List<statistic> statistic_count { get; set; } = new List<statistic>();
         public string oc_code { get; set; } = string.Empty;
         public string oc_area { get; set; } = string.Empty;
         /// <summary>
@@ -214,7 +216,7 @@ namespace QZ.Instrument.Model
         public string oc_reg_name { get; set; } = string.Empty;
         public string oc_valid_period { get; set; } = string.Empty;
         public List<Company_Member> oc_member_list { get; set; }
-
+        public string oc_creditcode { get; set; }
         public static Resp_Company_Detail Default { get { return new Resp_Company_Detail() { oc_member_list = new List<Company_Member>() }; } }
     }
 
@@ -295,6 +297,7 @@ namespace QZ.Instrument.Model
         /// ratio of money, the stock holder provides
         /// </summary>
         public decimal sh_money_ratio { get; set; }
+        public string sh_money_percent { get; set; }
         /// <summary>
         /// unit of money
         /// </summary>
@@ -338,10 +341,13 @@ namespace QZ.Instrument.Model
     }
     public class Query_Hot
     {
+        public string show_url { get; set; } = string.Empty;
+        public int type { get; set; }
         public string title { get; set; } = string.Empty;
         public string oc_code { get; set; } = string.Empty;
         public string oc_name { get; set; } = string.Empty;
         public string oc_area { get; set; } = string.Empty;
+        public string cat_id { get; set; } = string.Empty;
     }
     public class Resp_Icpl
     {
@@ -423,6 +429,7 @@ namespace QZ.Instrument.Model
         public string oc_addr { get; set; } = string.Empty;
         public string oc_email { get; set; } = string.Empty;
         public bool flag_stock_transfer { get; set; }
+        public string numbers { get; set; }
         /// <summary>
         /// operation status
         /// </summary>
@@ -708,6 +715,8 @@ namespace QZ.Instrument.Model
         public string u_email { get; set; }
         public string u_face { get; set; }
         public string token { get; set; }
+        public bool isVip { get; set; }
+        public string vipremainDays { get; set; }
         public Login_State state { get; set; }
     }
 
@@ -742,6 +751,16 @@ namespace QZ.Instrument.Model
         }
     }
 
+    public class Resp_NewFavorites
+    {
+        public List<Favorite_Log> favorite_list { get; set; }
+        public int count { get; set; }
+        public List<Favorite_Group> favorite_group { get; set; }
+        public static Resp_NewFavorites Default
+        {
+            get { return new Resp_NewFavorites() { favorite_list = new List<Favorite_Log>() }; }
+        }
+    }
 
     public class Resp_Oc_Notice
     {
@@ -1013,6 +1032,8 @@ namespace QZ.Instrument.Model
         public string reg_date { get; set; }
         public string cat_no { get; set; }
         public string author { get; set; }
+        public string version { get; set; }
+        public string first_date { get; set; }
     }
     public class Product_Abs
     {
@@ -1101,5 +1122,57 @@ namespace QZ.Instrument.Model
         }
 
     }
+
+    public class Req_ReportsReq
+    {
+        public string u_id { get; set; }
+
+        public string u_name { get; set; }
+
+        public string oc_name { get; set; }
+
+        public string position { get; set; }
+
+        public string contact { get; set; }
+
+        public string phone { get; set; }
+
+        public string content { get; set; }
+
+        public string email { get; set; }
+
+        public int type { get; set; }
+
+
+    }
+
+    public class Req_Claim
+    {
+        public string u_id { get; set; }
+
+        public string u_name { get; set; }
+
+        public string cc_oc_code { get; set; }
+
+        public string cc_oc_name { get; set; }
+
+        public string cc_e_mail { get; set; }
+
+        public string contact { get; set; }
+
+        public string ccc_mobile { get; set; }
+
+        public string verify_code { get; set; }
+
+        public string[] images { get; set; }
+    }
+    public class Resp_Common
+    {
+        public bool status { get; set; }
+        public string remark { get; set; }
+
+        public string addition { get; set; }
+    }
+
 
 }

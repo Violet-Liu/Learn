@@ -138,5 +138,14 @@ namespace QZ.Instrument.Model
         }
         #endregion
 
+        #region 分组ID[fl_g_gid]
+        int _fl_g_gid;
+        public int fl_g_gid
+        {
+            get { return _fl_g_gid; }
+            set { _fl_g_gid = value; }
+        }
+        #endregion
+
     }
 }

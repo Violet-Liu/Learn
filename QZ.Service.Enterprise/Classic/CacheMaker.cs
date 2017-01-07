@@ -316,5 +316,29 @@ namespace QZ.Service.Enterprise
         }
 
         #endregion
+
+        #region 会员机制
+        public static void SetDateVipStatus(VipStatusUserInfo vus)
+        {
+            if (CacheHelper.Cache_Get(Constants.vipUser_uid_key).IsNotNull())
+            {
+                var list = (List<VipStatusUserInfo>)CacheHelper.Cache_Get(Constants.vipUser_uid_key);
+                if (list.IsNotNull())
+                {
+                    var info = list.Where(u => u.vip_userId == vus.vip_userId).ToList().FirstOrDefault();
+                    if (info != null)
+                    {
+                        list.Remove(info);
+                    }
+                    list.Add(vus);
+                }
+                if (list.IsNotNull() && list.Count > 0)
+                {
+                    CacheHelper.Cache_Store(Constants.vipUser_uid_key, list, DateTime.Now.AddDays(1));
+                }
+            }
+
+        }
+        #endregion
     }
 }

@@ -51,10 +51,10 @@ namespace QZ.Instrument.Utility
 
         public static string Operation_Status_Get(string oc_ext)
         {
-            string BusinessStatus = null;
-            if (oc_ext == "")
+            string BusinessStatus = "在业";
+            if (string.IsNullOrEmpty(oc_ext) || oc_ext.Contains("在业") || oc_ext.Contains("迁入") || oc_ext.Contains("确立") || oc_ext.Contains("登记成立"))
             {
-                BusinessStatus = "正常";
+                BusinessStatus = "在业";
             }
             else if (oc_ext.Contains("吊销"))
             {
@@ -90,7 +90,7 @@ namespace QZ.Instrument.Utility
             }
             else
             {
-                BusinessStatus = "正常";
+                BusinessStatus = "在业";
             }
             return BusinessStatus;
         }

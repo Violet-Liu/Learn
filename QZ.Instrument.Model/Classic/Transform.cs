@@ -199,12 +199,13 @@ namespace QZ.Instrument.Model
                 c.oc_area_name = t.Item2.oc_areaName ?? string.Empty;
                 if (string.IsNullOrEmpty(c.oc_name))
                     c.oc_name = t.Item2.oc_name;
-
+                
                 c.oc_type = t.Item2.oc_companytype;
                 c.oc_reg_name = t.Item2.oc_regOrgName;
+                c.oc_number = t.Item2.oc_number;
                 if (string.IsNullOrEmpty(c.oc_number))
                     c.oc_number = Private_Util.To_Number_Display(t.Item2.oc_number);
-
+                c.oc_creditcode = t.Item2.oc_creditcode;
                 if (string.IsNullOrEmpty(c.oc_addr))
                     c.oc_addr = t.Item2.oc_address;
                 c.oc_valid_period = t.Item2.oc_issuetime.ToString("yyyy-MM-dd") + " 至 " + t.Item2.oc_invalidtime.ToString("yyyy-MM-dd"); // 有效期

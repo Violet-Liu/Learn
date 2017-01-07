@@ -907,26 +907,35 @@ namespace QZ.Service.Enterprise
                 for(int i = 0; i < size; i++)
                 {
                     var s = list[keys[i]];
-                    int index = 0;
+                    //int index = 0;
+                    int end = 0;
                     for(int j = 1; j < s.Length; j++)
                     {
-                        if(s[j] > 127 && s[j - 1] < 127)
+                        //if(s[j] > 127 && s[j - 1] < 127)
+                        //{
+                        //    if(j < 8)
+                        //    {
+                        //        index = j;
+                        //        if (s[j] == '年' || s[j] == '届')
+                        //        {
+                        //            index++;
+                        //        }
+                        //        break;
+                        //    }
+                        //    break;
+                        //}
+                        if(s[j] == '会' || s[j] == '览' || s[j] == '展')
                         {
-                            if(j < 8)
+                            if(j+1 < s.Length && s[j+1] == ' ')
                             {
-                                index = j;
-                                if (s[j] == '年' || s[j] == '届')
-                                {
-                                    index++;
-                                }
+                                end = j;
                                 break;
                             }
-                            break;
                         } 
                     }
-                    if(index > 0)
+                    if(end > 0)
                     {
-                        e_names.Add(s.Substring(index));
+                        e_names.Add(s.Substring(0, end + 1));
                     }
                     else
                     {

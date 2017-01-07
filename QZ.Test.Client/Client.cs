@@ -92,6 +92,8 @@ namespace QZ.Test.Client
             client.Company_Topic_Detail(Request_Composer.Company_Topic_Detail()).ToObject<Response>();
         public static Response Company_Favorite_Add() =>
             client.Company_Favorite_Add(Request_Composer.Company_Favorite_Add()).ToObject<Response>();
+        public static Response Company_Favorite_NewAdd() =>
+            client.Company_Favorite_NewAdd(Request_Composer.Company_Favorite_NewAdd()).ToObject<Response>();
         public static Response Company_Favorite_Remove() =>
             client.Company_Favorite_Remove(Request_Composer.Company_Favorite_Remove()).ToObject<Response>();
 
@@ -116,9 +118,16 @@ namespace QZ.Test.Client
         public static Response Judge_Query() => client.Judge_Query(Request_Composer.Judge_Query()).ToObject<Response>();
         public static Response Dishonest_Query() => client.Dishonest_Query(Request_Composer.Dishonest_Query()).ToObject<Response>();
         public static Response ExtQuery_Hot() => client.ExtQuery_Hot().ToObject<Response>();
-
+        public static Response Company_Search4Exhibit() => client.Company_Search4Exhibit(Request_Composer.Company_Search4Exhibit()).ToObject<Response>();
+       
         public static Response Exhibit_Companies() => client.Exhibit_Companies(Request_Composer.Exhibit_Companies()).ToObject<Response>();
         public static Response Exhibit_Search() => client.Exhibit_Search(Request_Composer.Exhibit_Search()).ToObject<Response>();
+
+        public static Response Vip_Order_Submit() => client.Vip_Order_Submit(Request_Composer.Vip_Order_Submit()).ToObject<Response>();
+
+        public static Response Vip_Order_Notify() => client.Vip_Order_Notify(Request_Composer.Vip_Order_Notify()).ToObject<Response>();
+
+        public static String test() => client.test();
         #endregion
 
         #region community
@@ -127,6 +136,7 @@ namespace QZ.Test.Client
         public static Response Community_Topic_Query() => client.Community_Topic_Query(Request_Composer.Community_Topic_Query()).ToObject<Response>();
         public static Response Community_Topic_Detail() => client.Community_Topic_Detail(Request_Composer.Community_Topic_Detail()).ToObject<Response>();
         public static Response Community_Topic_UpDown_Vote() => client.Community_Topic_UpDown_Vote(Request_Composer.Community_Topic_UpDown_Vote()).ToObject<Response>();
+        public static Response Company_CetificationList()=>client.Company_CetificationList(Request_Composer.Company_CetificationList()).ToObject<Response>();
         #endregion
 
         #region user
@@ -150,7 +160,44 @@ namespace QZ.Test.Client
         public static Response Browse_Drop() => client.Browse_Drop(Request_Composer.Browse_Drop()).ToObject<Response>();
         public static Response ExtQuery_History() => client.ExtQuery_History(Request_Composer.ExtQuery_History()).ToObject<Response>();
         public static Response Favorites() => client.Favorites(Request_Composer.Favorites()).ToObject<Response>();
+        public static Response FavoritesNew() => client.FavoritesNew(Request_Composer.FavoritesNew()).ToObject<Response>();
         public static Response Notices_Get() => client.Notices_Get(Request_Composer.Notices_Get()).ToObject<Response>();
+        public static Response SysNotices_Get() => client.SysNotices_Get(Request_Composer.SysNotices_Get()).ToObject<Response>();
+        
+        public static Response Favorite_Group_Insert() => client.Favorite_Group_Insert(Request_Composer.Favorite_Group_Insert()).ToObject<Response>();
+        public static Response Favorite_Group_Del() => client.Favorite_Group_Del(Request_Composer.Favorite_Group_Del()).ToObject<Response>();
+        public static Response Favorite_Group_Update()=>client.Favorite_Group_Update(Request_Composer.Favorite_Group_Update()).ToObject<Response>();
+        public static Response FavoriteGroups_Get() => client.FavoriteGroups_Get().ToObject<Response>();
+        public static Response Favorites_GetbyId()=>client.Favorites_GetbyId(Request_Composer.Favorites_GetbyId()).ToObject<Response>();
+        public static Response UnGroupedFavorites_Get()=>client.UnGroupedFavorites_Get(Request_Composer.UnGroupedFavorites_Get()).ToObject<Response>();
+        public static Response Favorite_Into_Group()=>client.Favorite_Into_Group(Request_Composer.Favorite_Into_Group()).ToObject<Response>();
+        public static Response Favorite_Out_Group() => client.Favorite_Out_Group().ToObject<Response>();
+        public static Response Company_CertificateDtl()=>client.Company_CertificateDtl().ToObject<Response>();
+        public static Response Company_InvDtl() => client.Company_InvDtl().ToObject<Response>();
+        public static Response Company_JobDtl() => client.Company_JobDtl().ToObject<Response>();
+        public static Response Company_ExecuteDtl() => client.Company_ExecuteDtl().ToObject<Response>();
+        
+        public static Response Company_LinkCach() => client.Company_LinkCach(Request_Composer.Company_LinkCach()).ToObject<Response>();
+        public static Response Company_Executes() => client.Company_Executes(Request_Composer.Company_Executes()).ToObject<Response>();
+        public static Response Company_RegList()=>client.Company_RegList(Request_Composer.Company_RegList()).ToObject<Response>();
+        public static Response Company_InvList() => client.Company_InvList(Request_Composer.Company_InvList()).ToObject<Response>();
+        public static Response Company_Employs() => client.Company_Employs(Request_Composer.Company_Employs()).ToObject<Response>();
+        public static Response Favorite_Note_Add() => client.Favorite_Note_Add(Request_Composer.Favorite_Note_Add()).ToObject<Response>();
+        public static Response Favorite_Note_UP() => client.Favorite_Note_UP(Request_Composer.Favorite_Note_UP()).ToObject<Response>();
+
+        public static Response Favorite_Note_Get() => client.Favorite_Note_Get(Request_Composer.Favorite_Note_Get()).ToObject<Response>();
+        public static Response Favorite_Note_Del() => client.Favorite_Note_Del().ToObject<Response>();
+        public static Response SysNotice_All_Del() => client.SysNotice_All_Del().ToObject<Response>();
+        public static Response SysNotice_Single_Del() => client.SysNotice_Single_Del(Request_Composer.SysNotice_Single_Del()).ToObject<Response>();
+        public static Response Process_SysNoticeDtl_Get() => client.Process_SysNoticeDtl_Get(Request_Composer.Process_SysNoticeDtl_Get()).ToObject<Response>();
+        
+        public static Response Brand_NewQuery(Req_Info_Query req) => client.Brand_NewQuery(Request_Composer.Compose(req.ToJson())).ToObject<Response>();
+        public static Response Patent_NewQuery(Req_Info_Query req) => client.Patent_NewQuery(Request_Composer.Compose(req.ToJson())).ToObject<Response>();
+        public static Response Judge_NewQuery(Req_Info_Query req) => client.Judge_NewQuery(Request_Composer.Compose(req.ToJson())).ToObject<Response>();
+        public static Response Dishonest_NewQuery(Req_Info_Query req) => client.Dishonest_NewQuery(Request_Composer.Compose(req.ToJson())).ToObject<Response>();
+
+
+        //public static Response Company_RegList()=>client.Company_RegList(Request_Composer.Company_RegList()).ToObject<Response>();
         #endregion
     }
 }

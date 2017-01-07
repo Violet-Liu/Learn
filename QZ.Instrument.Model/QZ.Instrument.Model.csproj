@@ -34,8 +34,8 @@
       <HintPath>..\packages\Bogus.7.1.2\lib\net40\Bogus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -59,11 +59,19 @@
     <Compile Include="Classic\Area.cs" />
     <Compile Include="Classic\AppTieziTopicInfo.cs" />
     <Compile Include="Classic\AppTieziReplyInfo.cs" />
+    <Compile Include="Classic\ClaimCompanyInfo.cs" />
     <Compile Include="Classic\CommentTipOff.cs" />
+    <Compile Include="Classic\ExcelCompanyOrderInfo.cs" />
     <Compile Include="Classic\ExhibitionEnterprise.cs" />
     <Compile Include="Classic\ForwardTrade.cs" />
+    <Compile Include="Classic\OrgCompanyBrandInfo.cs" />
+    <Compile Include="Classic\OrgCompanyDtlPack4Site.cs" />
+    <Compile Include="Classic\OrgCompanyExtensionDataInfo.cs" />
     <Compile Include="Classic\OrgCompanyGsxtDtlGDInfo.cs" />
     <Compile Include="Classic\OrgCompanyDtlGDInfo.cs" />
+    <Compile Include="Classic\OrgCompanyGsxtNbInfo.cs" />
+    <Compile Include="Classic\OrgCompanyGsxtWwInfo.cs" />
+    <Compile Include="Classic\OrgCompanyPatentInfo.cs" />
     <Compile Include="Classic\OrgCompanyTradeIndex.cs" />
     <Compile Include="Classic\OrgCompanySiteInfo.cs" />
     <Compile Include="Classic\TradeEntity.cs" />
@@ -147,7 +155,10 @@
     <Compile Include="Service\Responses.cs" />
     <Compile Include="Service\ResponseSet.cs" />
     <Compile Include="Service\Transition.cs" />
+    <Compile Include="User\InvoiceInfo.cs" />
     <Compile Include="User\User.cs" />
+    <Compile Include="User\VipStatusUserInfo.cs" />
+    <Compile Include="User\VipUserOrderInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QZ.Foundation.Monad\QZ.Foundation.Monad.csproj">
